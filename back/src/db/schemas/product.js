@@ -2,6 +2,10 @@ import { Schema, model } from "mongoose";
 
 const ProductSchema = new Schema(
   {
+    userId: {
+      type: String,
+      required: true,
+    }, 
     id: {
       type: String,
       required: true,
@@ -9,11 +13,11 @@ const ProductSchema = new Schema(
     images: {
       type: Array,
     },
-    name: {
+    category: {
       type: String,
       required: true,
     },
-    description: {
+    name: {
       type: String,
       required: true,
     },
@@ -25,7 +29,7 @@ const ProductSchema = new Schema(
       type: Number,
       required: true,
     },
-    minPurchase: {
+    minPurchaseQty: {
       type: Number,
       required: true,
     },
