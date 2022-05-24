@@ -72,6 +72,12 @@ class ProductService {
    */
   static async getProductCategoryList({ category }) { 
     const productList = await Product.findProductCategoryList({ category });
+
+    if (productList.length === 0) { 
+      const errorMessage = "해당 카테고리 상품이 존재하지 않습니다";
+      return { errorMessage };
+    }
+
     return productList;
   }
 

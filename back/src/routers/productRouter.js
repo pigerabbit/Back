@@ -482,6 +482,15 @@ productRouter.get(
 
     const products = await ProductService.getProductList();
 
+    if (product.errorMessage) { 
+      const body = {
+        success: true,
+        payload: products,
+      };
+      
+      return res.status(200).send(body);
+    }
+
     const body = {
       success: true,
       payload: products,
