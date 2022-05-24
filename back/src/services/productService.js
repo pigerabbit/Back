@@ -101,7 +101,7 @@ class ProductService {
     const product = await Product.findUserProduct({ userId });
 
     if (product.length === 0) {
-      const errorMessage = "해당 유저의 상품이 존재하지 않아요";
+      const errorMessage = "해당 유저의 상품이 존재하지 않습니다";
       return { errorMessage };
     }
 

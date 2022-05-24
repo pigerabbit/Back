@@ -751,7 +751,8 @@ productRouter.get(
       return res.status(400).send(body); 
     }
 
-    // 존재한다면 유저가 판매하는 상품 목록 조회 : 빈 배열일 때는 상품을 팔지 X
+    // 존재한다면 유저가 판매하는 상품 목록 조회
+    // 유저가 판매하는 상품이 없을 때는 에러메시지로 "해당 유저의 상품이 존재하지 않습니다"를 전달
     const productList = await ProductService.getUserProduct({ userId });
 
     const body = {
