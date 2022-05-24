@@ -29,10 +29,22 @@ const ProductSchema = new Schema(
       type: Number,
       required: true,
     },
+    salePrice: {
+      type: Number,
+      required: true,
+    },
     minPurchaseQty: {
       type: Number,
       required: true,
     },
+    maxPurchaseQty: {
+      type: Number,
+      required: false,
+    },
+    dueDate: {
+      type: Date,
+      required: true,
+    }
   },
   {
     timestamps: true,
