@@ -65,7 +65,7 @@ const userRouter = Router();
  *                      description: 유저 비밀번호
  *                      example: password
  *      400:
- *        description: 유저 생성 오류
+ *        description: 댓글 생성 오류
  *        content:
  *         application/json:
  *            schema:
