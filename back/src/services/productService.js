@@ -97,10 +97,10 @@ class ProductService {
    * @param {Strings} userId - 유저 id 
    * @returns 상품 Object
    */
-   static async getUserProduct({ userId }) { 
+  static async getUserProduct({ userId }) { 
     const product = await Product.findUserProduct({ userId });
 
-    if (!product) {
+    if (product.length === 0) {
       const errorMessage = "해당 유저의 상품이 존재하지 않아요";
       return { errorMessage };
     }

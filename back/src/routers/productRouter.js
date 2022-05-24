@@ -557,6 +557,10 @@ productRouter.get(
  *                      type: number
  *                      description: 공동구매가 진행될 최소 인원
  *                      example: 2
+ *                    dueDate:
+ *                      type: Date
+ *                      description: 공동구매 마감일
+ *                      example: 2022-05-24
  *      400:
  *        description: 상품 조회 오류
  *        content:
@@ -598,6 +602,15 @@ productRouter.get(
   async (req, res, next) => { 
     const id = req.params.id;
     const product = await ProductService.getProduct({ id });
+
+    if (product.errorMessage) {
+      const body = {
+        success: false,
+        payload: product,
+      };
+  
+      return res.status(200).send(body);
+    }
 
     const body = {
       success: true,
@@ -673,10 +686,17 @@ productRouter.get(
  *                      type: number
  *                      description: 상품 가격
  *                      example: 10000000
+ *                    salePrice:
+ *                      type: number
+ *                      description: 상품 가격
+ *                      example: 50000
  *                    minPurchaseQty:
  *                      type: number
  *                      description: 공동구매가 진행될 최소 인원
  *                      example: 2
+ *                    dueDate:
+ *                      type: Date
+ *                      description: 공동구매 마감 인원
  *      400:
  *        description: 상품 조회 오류
  *        content:
