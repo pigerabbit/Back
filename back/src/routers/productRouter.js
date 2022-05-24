@@ -148,7 +148,7 @@ const productRouter = Router();
 productRouter.post(
   "/products",
   login_required,
-  // [ express-validator가 있으면 작동되지 않는,,, => try-catch로 변경
+  // express-validator가 있으면 작동되지 않는,,, => try-catch로 변경
   //   body("category")
   //     .exists()
   //     .withMessage("카테고리를 입력해주세요.")
@@ -221,6 +221,112 @@ productRouter.post(
     } catch (err) { 
       next(err);
     }
+  }
+);
+
+/**
+ *  @swagger
+ *  tags:
+ *    name: Product
+ *    description: Products MVP.
+ */
+/**
+ * @swagger
+ * /products?category={category}:
+ *   get:
+ *    summary: 상품 API
+ *    description: 모든 상품 정보를 조회할 때 사용하는 API 입니다.
+ *    tags: [Products]
+ *    parameters:
+ *      - in: query
+ *        name: category
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: 모든 상품을 반환합니다.
+ *    responses:
+ *      200:
+ *        description: 상품 조회 완료
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: string
+ *                  example: true
+ *                payload:
+ *                  type: object
+ *                  properties:
+ *                    userId:
+ *                      type: string
+ *                      description: 유저 id
+ *                      example: 12341234
+ *                    id:
+ *                      type: string
+ *                      description: 상품 id
+ *                      example: 00001
+ *                    images:
+ *                      type: string
+ *                      description: 상품 이미지
+ *                      example: 이미지
+ *                    category:
+ *                      type: string
+ *                      description: 상품 카테고리
+ *                      example: 과일
+ *                    name:
+ *                      type: string
+ *                      description: 상품명
+ *                      example: 사과
+ *                    description:
+ *                      type: string
+ *                      description: 상품 상세 설명
+ *                      example: 아주 맛있는 사과
+ *                    price:
+ *                      type: number
+ *                      description: 상품 가격
+ *                      example: 10000000
+ *                    minPurchaseQty:
+ *                      type: number
+ *                      description: 공동구매가 진행될 최소 인원
+ *                      example: 2
+ *                    dueDate:
+ *                      type: Date,
+ *                      example: 2022-05-24
+ */
+ productRouter.get(
+  "/products",
+  async (req, res, next) => {
+    const category = req.query.category;
+
+    if (category !== undefined) { // 쿼리가 없다면 전체 상품 조회
+      const products = await ProductService.getProductCategoryList({ category });
+
+      const body = {
+        success: true,
+        payload: products,
+      };
+      
+      return res.status(200).send(body);
+    } 
+
+    const productList = await ProductService.getProductList();
+
+    if (productList.errorMessage) { 
+      const body = {
+        success: true,
+        payload: productList,
+      };
+      
+      return res.status(200).send(body);
+    }
+
+    const body = {
+      success: true,
+      payload: productList,
+    };
+    
+    return res.status(200).send(body);
   }
 );
 
@@ -368,6 +474,7 @@ productRouter.put(
   upload.array("images", 3),
   [],
   async (req, res, next) => {
+    const userId = req.currentUserId;
     const id = req.params.id;
     const category = req.body.category ?? null;
     const name = req.body.name ?? null;
@@ -377,126 +484,25 @@ productRouter.put(
     const minPurchaseQty = req.body.minPurchaseQty ?? null;
     const dueDate = req.body.dueDate ?? null;
 
-    if (req.files != null) {
+    if (req.files != null) { // 변경 이미지가 존재하면
       const images = req.files.map((file) => file.filename);
       const toUpdate = { category, images, name, description, price, salePrice, minPurchaseQty, dueDate };
 
-      const product = await ProductService.setProduct({ id, toUpdate });
+      const product = await ProductService.setProduct({ userId, id, toUpdate });
       
       res.status(200).send(product);
-    } else { 
-      const toUpdate = { category, images, name, description, price, salePrice, minPurchaseQty, dueDate };
+    } else { // 변경 이미지가 존재하지 않는다면
+      const toUpdate = { category, name, description, price, salePrice, minPurchaseQty, dueDate };
 
-      const product = await ProductService.setProduct({ id, toUpdate });
-      
-      res.status(200).send(product);
-    }
-  }
-);
-
-/**
- *  @swagger
- *  tags:
- *    name: Product
- *    description: Products MVP.
- */
-/**
- * @swagger
- * /products?category={category}:
- *   get:
- *    summary: 상품 API
- *    description: 모든 상품 정보를 조회할 때 사용하는 API 입니다.
- *    tags: [Products]
- *    parameters:
- *      - in: query
- *        name: category
- *        schema:
- *          type: string
- *        required: true
- *        description: 모든 상품을 반환합니다.
- *    responses:
- *      200:
- *        description: 상품 조회 완료
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                success:
- *                  type: string
- *                  example: true
- *                payload:
- *                  type: object
- *                  properties:
- *                    userId:
- *                      type: string
- *                      description: 유저 id
- *                      example: 12341234
- *                    id:
- *                      type: string
- *                      description: 상품 id
- *                      example: 00001
- *                    images:
- *                      type: string
- *                      description: 상품 이미지
- *                      example: 이미지
- *                    category:
- *                      type: string
- *                      description: 상품 카테고리
- *                      example: 과일
- *                    name:
- *                      type: string
- *                      description: 상품명
- *                      example: 사과
- *                    description:
- *                      type: string
- *                      description: 상품 상세 설명
- *                      example: 아주 맛있는 사과
- *                    price:
- *                      type: number
- *                      description: 상품 가격
- *                      example: 10000000
- *                    minPurchaseQty:
- *                      type: number
- *                      description: 공동구매가 진행될 최소 인원
- *                      example: 2
- *                    dueDate:
- *                      type: Date,
- *                      example: 2022-05-24
- */
-productRouter.get(
-  "/products",
-  async (req, res, next) => {
-    const category = req.query.category;
-
-    if (category !== undefined) { // 쿼리가 없다면 전체 상품 조회
-      const products = await ProductService.getProductCategoryList({ category });
+      const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });
 
       const body = {
         success: true,
-        payload: products,
-      };
-      
-      return res.status(200).send(body);
-    } 
-
-    const products = await ProductService.getProductList();
-
-    if (product.errorMessage) { 
-      const body = {
-        success: true,
-        payload: products,
-      };
+        payload: updatedProduct,
+      }
       
       return res.status(200).send(body);
     }
-
-    const body = {
-      success: true,
-      payload: products,
-    };
-    
-    return res.status(200).send(body);
   }
 );
 
@@ -612,6 +618,7 @@ productRouter.get(
     const id = req.params.id;
     const product = await ProductService.getProduct({ id });
 
+    // 아이디가 존재하지 않음
     if (product.errorMessage) {
       const body = {
         success: false,
@@ -750,11 +757,11 @@ productRouter.get(
     // 유저가 존재하는지 확인
     const user = await userAuthService.getUserInfo({ user_id: userId });
 
-    // 존재하지 않는다면 에러
+    // 유저가 존재하지 않는다면 에러
     if (user.errorMessage) { 
       const body = {
         success: false,
-        message: "존재하지 않는 유저입니다.",
+        payload: "존재하지 않는 유저입니다.",
       };
 
       return res.status(400).send(body); 

@@ -11,6 +11,16 @@ class Product {
     return createdNewProduct;
   }
 
+  /** 상품 id로 상품 정보를 얻는 함수
+   * 
+   * @param {uuid} id - 상품 id 
+   * @returns 
+   */
+   static async findProduct({ id }) { 
+    const product = await ProductModel.findOne({ id });
+    return product;
+  }
+
   /** 상품 오브젝트 수정 함수
    * 
    * @param {Object} newProduct- 수정할 상품 Object 
@@ -18,8 +28,9 @@ class Product {
    */
   static async update({ id, toUpdate }) { 
     const updatedProduct = await ProductModel.findOneAndUpdate(
-      { id },
+      { id: id },
       { $set: toUpdate },
+      { returnOriginal: false },
     );
     return updatedProduct;
   }
@@ -30,8 +41,6 @@ class Product {
    */
   static async findProductList() { 
     const productList = await ProductModel.find();
-    console.log(productList);
-    console.log("전체");
     return productList;
   }
 
@@ -42,16 +51,14 @@ class Product {
    */
   static async findProductCategoryList({ category }) { 
     const productList = await ProductModel.find({ category: category }); 
-    console.log(productList);
-    console.log("cate :", category);
     return productList;
   }
 
-  static async findProduct({ id }) { 
-    const product = await ProductModel.findOne({ id });
-    return product;
-  }
-
+  /** 유저가 판매하는 상품 리스트 반환 함수
+   * 
+   * @param {uuid} userId - 유저 id 
+   * @returns productList
+   */
   static async findUserProduct({ userId }) { 
     const productList = await ProductModel.find({ userId: userId });
     return productList;

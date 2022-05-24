@@ -38,16 +38,21 @@ class ProductService {
    * @param {Object} toUpdate - 수정할 상품 내용
    * @return {Object} 수정된 상품 정보
    */
-  static async setProduct({ id, toUpdate }) { 
-    let product = await Product.findById({ id });
+  static async setProduct({ userId, id, toUpdate }) { 
+    let product = await Product.findProduct({ id });
 
     if (!product) {
       const errorMessage = "해당 제품이 존재하지 않습니다.";
       return { errorMessage };
     }
 
+    if (product.userId !== userId) { 
+      const errorMessage = "해당 상품을 판매하는 유저만 수정이 가능합니다.";
+      return { errorMessage };
+    }
+
     Object.keys(toUpdate).forEach((key) => {
-      if (toUpdate[key] !== undefined || toUpdate[key] === null) {
+      if (toUpdate[key] === undefined || toUpdate[key] === null) {
         delete toUpdate[key];
       }
     });
