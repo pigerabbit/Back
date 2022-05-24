@@ -1,0 +1,61 @@
+import { ProductModel } from "../schemas/product.js";
+
+class Product { 
+  /** 상품 오브젝트 생성 함수
+   * 
+   * @param {Object} newProduct- 생성될 상품 Object 
+   * @return {Object} createdNewProduct
+   */
+  static async create({ newProduct }) { 
+    const createdNewProduct = await ProductModel.create(newProduct);
+    return createdNewProduct;
+  }
+
+  /** 상품 오브젝트 수정 함수
+   * 
+   * @param {Object} newProduct- 수정할 상품 Object 
+   * @return {Object} updatedProduct
+   */
+  static async update({ id, toUpdate }) { 
+    const updatedProduct = await ProductModel.findOneAndUpdate(
+      { id },
+      { $set: toUpdate },
+    );
+    return updatedProduct;
+  }
+
+  /** 전체 상품 반환 함수
+   * 
+   * @returns productList
+   */
+  static async findProductList() { 
+    const productList = await ProductModel.find();
+    console.log(productList);
+    console.log("전체");
+    return productList;
+  }
+
+  //! 카테고리 한글로 지원하는 부분 추가 필요!!
+  /** 카테고리별 상품 반환 함수
+   * 
+   * @returns productList
+   */
+  static async findProductCategoryList({ category }) { 
+    const productList = await ProductModel.find({ category: category }); 
+    console.log(productList);
+    console.log("cate :", category);
+    return productList;
+  }
+
+  static async findProduct({ id }) { 
+    const product = await ProductModel.findOne({ id });
+    return product;
+  }
+
+  static async findUserProduct({ userId }) { 
+    const productList = await ProductModel.find({ userId: userId });
+    return productList;
+  }
+}
+
+export { Product };
