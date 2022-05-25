@@ -9,11 +9,12 @@ class ProductService {
    * @param {Strings} category - 상품 카테고리
    * @param {Strings} name - 상품 이름
    * @param {Strings} description - 상품 설명
-   * @param {Number} price - 가격
-   * @param {Number} minPurchaseQty - 최소 수량
+   * @param {Number} price - 상품 원가
+   * @param {Number} salePrice - 판매 가격
+   * @param {Number} maxPurchaseQty - 유저가 가진 상품 재고
    * @return {Object} 생성된 상품 정보 
    */
-  static async addProduct({ userId, images, category, name, description, price, salePrice, minPurchaseQty, dueDate }) { 
+  static async addProduct({ userId, images, category, name, description, price, salePrice, maxPurchaseQty }) { 
     const id = crypto.randomUUID();
     
     const newProduct = {
@@ -25,8 +26,7 @@ class ProductService {
       description,
       price,
       salePrice,
-      minPurchaseQty,
-      dueDate,
+      maxPurchaseQty,
     };
 
     const product = await Product.create({ newProduct });
@@ -42,7 +42,7 @@ class ProductService {
     let product = await Product.findProduct({ id });
 
     if (!product) {
-      const errorMessage = "해당 제품이 존재하지 않습니다.";
+      const errorMessage = "해당 상품이 존재하지 않습니다.";
       return { errorMessage };
     }
 
@@ -56,7 +56,8 @@ class ProductService {
         delete toUpdate[key];
       }
     });
-
+    
+    console.log("toUpdate :", toUpdate);
     const updatedProduct = await Product.update({ id, toUpdate });
 
     return updatedProduct;
@@ -95,9 +96,28 @@ class ProductService {
     const product = await Product.findProduct({ id });
 
     if (!product) {
-      const errorMessage = "해당 제품이 존재하지 않습니다.";
+      const errorMessage = "해당 상품이 존재하지 않습니다.";
       return { errorMessage };
     }
+
+    const toUpdate = {
+      views: product.views + 1,
+    };
+
+    const updatedProduct = await Product.update({ id, toUpdate });
+
+    return updatedProduct;
+  }
+
+  static async deleteProduct({ userId, id }) { 
+    const product = await Product.findProduct({ id });
+
+    if (product.userId !== userId) { 
+      const errorMessage = "다른 유저의 상품을 삭제할 수 없습니다.";
+      return { errorMessage };
+    }
+    
+    await Product.deleteProduct({ id });
 
     return product;
   }

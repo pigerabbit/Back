@@ -98,19 +98,16 @@ const productRouter = Router();
  *                      example: 아주 맛있는 사과
  *                    price:
  *                      type: number
- *                      description: 상품 가격
+ *                      description: 상품 원가
  *                      example: 10000000
  *                    salePrice:
  *                      type: number
- *                      description: 할인된 상품 가격
+ *                      description: 판매 가격
  *                      example: 10000000
- *                    minPurchaseQty:
+ *                    maxPurchaseQty:
  *                      type: number
- *                      description: 공동구매가 진행될 최소 인원
- *                      example: 2
- *                    dueDate:
- *                      type: Date
- *                      example: 2022-05-24
+ *                      description: 유저가 가진 상품 재고수
+ *                      example: 20
  *      400:
  *        description: 상품 생성 오류
  *        content:
@@ -165,7 +162,7 @@ productRouter.post(
   //     .exists()
   //     .withMessage("가격을 입력해주세요.")
   //     .bail(),
-  //   body("minPurchaseQty")
+  //   body("maxPurchaseQty")
   //     .exists()
   //     .withMessage("최소 수량을 입력해주세요.")
   //     .bail(),
@@ -175,7 +172,7 @@ productRouter.post(
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const { category, name, description, price, salePrice, minPurchaseQty, dueDate } = req.body;
+      const { category, name, description, price, salePrice, maxPurchaseQty } = req.body;
       
       if (req.files != null) { // 이미지 파일이 존재하면
         const images = req.files.map((file) => file.filename);
@@ -188,8 +185,7 @@ productRouter.post(
           description,
           price,
           salePrice,
-          minPurchaseQty,
-          dueDate,
+          maxPurchaseQty,
         });
 
         const body = {
@@ -207,8 +203,8 @@ productRouter.post(
           description,
           price,
           salePrice,
-          minPurchaseQty,
-          dueDate,
+          maxPurchaseQty,
+          views,
         });
 
         const body = {
@@ -284,15 +280,15 @@ productRouter.post(
  *                      example: 아주 맛있는 사과
  *                    price:
  *                      type: number
- *                      description: 상품 가격
+ *                      description: 상품 원가
  *                      example: 10000000
- *                    minPurchaseQty:
+ *                    maxPurchaseQty:
  *                      type: number
- *                      description: 공동구매가 진행될 최소 인원
- *                      example: 2
- *                    dueDate:
- *                      type: Date,
- *                      example: 2022-05-24
+ *                      description: 유저가 가진 상품 재고수
+ *                      example: 20
+ *                    views:
+ *                      type: number
+ *                      example: 30
  */
  productRouter.get(
   "/products",
@@ -373,14 +369,11 @@ productRouter.post(
  *                example: 10000000
  *              salePrice:
  *                type: number
- *                description: 할인된 상품 가격
+ *                description: 판매 가격
  *                example: 50000000
- *              minPurchaseQty:
+ *              maxPurchaseQty:
  *                type: number
  *                example: 2
- *              dueDate:
- *                type: Date
- *                example: 2022-05-24
  *    responses:
  *      200:
  *        description: 상품 수정 완료
@@ -421,19 +414,19 @@ productRouter.post(
  *                      example: 아주 맛있는 사과
  *                    price:
  *                      type: number
- *                      description: 원래 상품 가격
+ *                      description: 상품 원가
  *                      example: 10000000
  *                    salePrice:
  *                      type: number
- *                      description: 할인된 상품 가격
+ *                      description: 판매 가격
  *                      example: 50000000
- *                    minPurchaseQty:
+ *                    maxPurchaseQty:
  *                      type: number
- *                      description: 공동구매가 진행될 최소 인원
+ *                      description: 유저가 가진 상품 재고수
  *                      example: 2
- *                    dueDate:
- *                      type: Date,
- *                      example: 2022-05-24
+ *                    views:
+ *                      type: number
+ *                      example: 20
  *      400:
  *        description: 상품 수정 오류
  *        content:
@@ -481,18 +474,17 @@ productRouter.put(
     const description = req.body.description ?? null;
     const price = req.body.price ?? null;
     const salePrice = req.body.salePrice ?? null;
-    const minPurchaseQty = req.body.minPurchaseQty ?? null;
-    const dueDate = req.body.dueDate ?? null;
+    const maxPurchaseQty = req.body.maxPurchaseQty ?? null;
 
     if (req.files != null) { // 변경 이미지가 존재하면
       const images = req.files.map((file) => file.filename);
-      const toUpdate = { category, images, name, description, price, salePrice, minPurchaseQty, dueDate };
+      const toUpdate = { category, images, name, description, price, salePrice, maxPurchaseQty };
 
       const product = await ProductService.setProduct({ userId, id, toUpdate });
       
       res.status(200).send(product);
     } else { // 변경 이미지가 존재하지 않는다면
-      const toUpdate = { category, name, description, price, salePrice, minPurchaseQty, dueDate };
+      const toUpdate = { category, name, description, price, salePrice, maxPurchaseQty };
 
       const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });
 
@@ -566,16 +558,20 @@ productRouter.put(
  *                      example: 아주 맛있는 사과
  *                    price:
  *                      type: number
- *                      description: 상품 가격
+ *                      description: 상품 원가
  *                      example: 10000000
- *                    minPurchaseQty:
+ *                    salePrice:
  *                      type: number
- *                      description: 공동구매가 진행될 최소 인원
+ *                      description: 판매 가격
+ *                      example: 5000
+ *                    maxPurchaseQty:
+ *                      type: number
+ *                      description: 유저가 가진 상품 재고수
  *                      example: 2
- *                    dueDate:
- *                      type: Date
- *                      description: 공동구매 마감일
- *                      example: 2022-05-24
+ *                    views:
+ *                      type: number
+ *                      description: 조회수
+ *                      example: 20
  *      400:
  *        description: 상품 조회 오류
  *        content:
@@ -622,10 +618,10 @@ productRouter.get(
     if (product.errorMessage) {
       const body = {
         success: false,
-        payload: product,
+        error: product,
       };
   
-      return res.status(200).send(body);
+      return res.status(400).send(body);
     }
 
     const body = {
@@ -637,8 +633,122 @@ productRouter.get(
   }
 );
 
-//! 삭제 만듭시다아!
-// DELETE /products/:id
+/**
+ *  @swagger
+ *  tags:
+ *    name: Product
+ *    description: Products MVP.
+ */
+/**
+ * @swagger
+ * /products/:id:
+ *   delete:
+ *    summary: 상품 API
+ *    description: 상품 정보를 삭제할 때 사용하는 API 입니다.
+ *    tags: [Products]
+ *    parameters:
+ *        name: id
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: 상품 글을 반환합니다.
+ *    responses:
+ *      200:
+ *        description: 상품 삭제 성공
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: string
+ *                  example: true
+ *                payload:
+ *                  type: string
+ *                  example: 상품 삭제를 성공했습니다.
+ *      400:
+ *        description: 해당 상품이 존재하지 않을 경우
+ *        content:
+ *         application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: string
+ *                  example: false
+ *                error:
+ *                  type: object
+ *                  properties:
+ *                    errorMessage:
+ *                      type: string
+ *                      description: 오류 내용
+ *                      example: 해당 상품이 존재하지 않습니다.
+ *      403:
+ *        description: 다른 유저의 상품을 삭제할 때
+ *        content:
+ *         application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: string
+ *                  example: false
+ *                error:
+ *                  type: object
+ *                  properties:
+ *                    errorMessage:
+ *                      type: string
+ *                      description: 오류 내용
+ *                      example: 다른 유저의 상품을 삭제할 수 없습니다.
+ * 
+ */
+productRouter.delete(
+  "/products/:id",
+  login_required,
+  [
+    check("id")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 상품의 아이디를 입력해주세요.")
+      .bail(),
+    notFoundValidate,
+    validate,
+  ],
+  async (req, res, next) => {
+    const id = req.params.id;
+    const userId = req.currentUserId;
+    const product = await ProductService.getProduct({ id });
+    
+    // 해당 제품이 존재하지 않음
+    if (product.errorMessage) {
+      const body = {
+        success: false,
+        error: product,
+      };
+      
+      return res.status(400).send(body);
+    }
+    
+    const deletedProduct = await ProductService.deleteProduct({ userId, id });
+
+    if (deletedProduct.errorMessage) {
+      const body = {
+        success: false,
+        error: deletedProduct,
+      };
+
+      return res.status(403).send(body);
+    }
+
+    const body = {
+      success: true,
+      payload: "상품 삭제를 성공했습니다.",
+    }
+
+    return res.status(200).send(body);
+  }
+);
 
 /**
  *  @swagger
@@ -700,19 +810,20 @@ productRouter.get(
  *                      example: 아주 맛있는 사과
  *                    price:
  *                      type: number
- *                      description: 상품 가격
+ *                      description: 상품 원가
  *                      example: 10000000
  *                    salePrice:
  *                      type: number
- *                      description: 상품 가격
+ *                      description: 판매 가격
  *                      example: 50000
- *                    minPurchaseQty:
+ *                    maxPurchaseQty:
  *                      type: number
- *                      description: 공동구매가 진행될 최소 인원
+ *                      description: 유저가 가진 상품 재고수
  *                      example: 2
- *                    dueDate:
- *                      type: Date
- *                      description: 공동구매 마감 인원
+ *                    views:
+ *                      type: number
+ *                      description: 조회수
+ *                      example: 20
  *      400:
  *        description: 상품 조회 오류
  *        content:
@@ -761,7 +872,7 @@ productRouter.get(
     if (user.errorMessage) { 
       const body = {
         success: false,
-        payload: "존재하지 않는 유저입니다.",
+        error: user,
       };
 
       return res.status(400).send(body); 

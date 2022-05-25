@@ -54,6 +54,11 @@ class Product {
     return productList;
   }
 
+  static async deleteProduct({ id }) { 
+    const product = await ProductModel.deleteOne({ id });
+    return product;
+  }
+
   /** 유저가 판매하는 상품 리스트 반환 함수
    * 
    * @param {uuid} userId - 유저 id 

@@ -33,18 +33,13 @@ const ProductSchema = new Schema(
       type: Number,
       required: true,
     },
-    // group API에 들어간다면 스웨거도 변경 필요
-    minPurchaseQty: {
-      type: Number,
-      required: false,
-    },
     maxPurchaseQty: {
       type: Number,
-      required: false,
+      required: true,
     },
-    dueDate: {
-      type: Date,
-      required: false,
+    views: {
+      type: Number,
+      default: 0,
     }
   },
   {
