@@ -322,40 +322,48 @@ productRouter.post(
  *                      example: 30
  */
 // query : page, perPage, category
- productRouter.get(
+productRouter.get(
   "/products",
   async (req, res, next) => {
-    if (req.query.page && req.query.perPage) {
-      const { page, perPage } = req.query;
-      
-      if (page <= 0 || perPage <= 0) { 
-        const body = {
-          success: false,
-          errorMessage: "잘못된 페이지를 입력하셨습니다.",
-        }
-        
-        return res.status(400).send(body);
+    const { page, perPage, category } = req.query;
+
+    if (page <= 0 || perPage <= 0) { 
+      const body = {
+        success: false,
+        errorMessage: "잘못된 페이지를 입력하셨습니다.",
       }
+      
+      return res.status(400).send(body);
     }
 
-    const { category } = req.query;
+    // 카테고리 쿼리가 존재한다면 카테고리별 상품 조회
+    if (category !== undefined) { 
+      const productList = await ProductService.getProductCategoryList({ category, page, perPage });
 
-    if (category !== undefined) { // 카테고리 쿼리가 있다면 카테고리별상품 조회
-      const products = await ProductService.getProductCategoryList({ category });
+      // 카테고리 이름이 존재하지 않는다면
+      if (productList.errorMessage) { 
+        const body = {
+          success: false,
+          error: productList,
+        }
 
-      const body = {
-        success: true,
-        payload: products,
-      };
+        return res.status(400).send(body);
+      }
+
+      // const body = {
+      //   success: true,
+      //   productList,
+      // };
       
-      return res.status(200).send(body);
+      return res.status(200).send(productList);
     } 
 
+    // 카테고리 쿼리가 없다면 전체 상품 조회
     const productList = await ProductService.getProductList();
 
     const body = {
       success: true,
-      payload: productList,
+      productList,
     };
     
     return res.status(200).send(body);

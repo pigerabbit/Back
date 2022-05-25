@@ -84,7 +84,6 @@ class ProductService {
       }
     });
     
-    console.log("toUpdate :", toUpdate);
     const updatedProduct = await Product.update({ id, toUpdate });
 
     return updatedProduct;
@@ -103,10 +102,10 @@ class ProductService {
    * 
    * @returns 카테고리별 상품 Object List
    */
-  static async getProductCategoryList({ category }) { 
-    const productList = await Product.findProductCategoryList({ category });
+  static async getProductCategoryList({ category, page, perPage }) { 
+    const productList = await Product.findProductCategoryList({ category, page, perPage });
 
-    if (productList.length === 0) { 
+    if (productList.len === 0) { 
       const errorMessage = "해당 카테고리 상품이 존재하지 않습니다";
       return { errorMessage };
     }

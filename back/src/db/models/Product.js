@@ -48,9 +48,17 @@ class Product {
    * 
    * @returns productList
    */
-  static async findProductCategoryList({ category }) { 
-    const productList = await ProductModel.find({ category: category }); 
-    return productList;
+  static async findProductCategoryList({ category, page, perPage }) { 
+    const len = await ProductModel.countDocuments({ category });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({ category })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean()
+    
+    return { productList, totalPage, len };
   }
 
   static async deleteProduct({ id }) { 
