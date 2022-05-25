@@ -5,6 +5,7 @@ export function getRequiredInfoFromData(data) {
     name: data.name,
     address: data.address,
     business: data.business,
+    distance: data.distance,
     type: data.type,
   };
 }
