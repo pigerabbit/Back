@@ -18,10 +18,21 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    description: {
+    location: {
       type: String,
       required: false,
-      default: "설명이 아직 없습니다. 추가해 주세요.",
+    },
+    distance: {
+      type: Number,
+      required: false,
+    },
+    business: {
+      type: String,
+      required: false,
+    },
+    address: {
+      type: String,
+      required: false,
     },
   },
   {
