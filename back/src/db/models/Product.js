@@ -44,7 +44,6 @@ class Product {
     return productList;
   }
 
-  //! 카테고리 한글로 지원하는 부분 추가 필요!!
   /** 카테고리별 상품 반환 함수
    * 
    * @returns productList
