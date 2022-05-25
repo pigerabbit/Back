@@ -9,16 +9,10 @@ import { userAuthService } from "../services/userService";
 const productRouter = Router();
 
 /**
- *  @swagger
- *  tags:
- *    name: Product
- *    description: Products MVP.
- */
-/**
  * @swagger
  * /products:
  *   post:
- *    summary: 상품 API
+ *    summary: 상품 생성 API
  *    description: 상품을 생성할 때 사용하는 API 입니다.
  *    tags: [Products]
  *    requestBody:
@@ -32,7 +26,7 @@ const productRouter = Router();
  *            - name
  *            - description
  *            - price
- *            - minPurchaseQty
+ *            - maxPurchaseQty
  *            properties:
  *              images:
  *                type: string
@@ -52,12 +46,12 @@ const productRouter = Router();
  *              salePrice: 
  *                type: number
  *                example: 500
- *              minPurchaseQty:
+ *              maxPurchaseQty:
  *                type: number
  *                example: 5
- *              dueDate:
- *                type: Date
- *                example: 2022-05-24
+ *              views:
+ *                type: number
+ *                example: 0
  *    responses:
  *      201:
  *        description: 상품 생성
@@ -67,7 +61,7 @@ const productRouter = Router();
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: true
  *                payload:
  *                  type: object
@@ -116,7 +110,7 @@ const productRouter = Router();
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: false
  *                error:
  *                  type: object
@@ -128,7 +122,7 @@ const productRouter = Router();
  *                    message:
  *                      type: string
  *                      description: 오류 내용
- *                      example: 이름을 입력해주세요.
+ *                      example: 상품명을 입력해주세요.
  *                    detail:
  *                      type: object
  *                      description: 오류 세부 사항
@@ -136,7 +130,7 @@ const productRouter = Router();
  *                        msg:
  *                          type: string
  *                          description: 오류 내용
- *                          example: 이름을 입력해주세요.
+ *                          example: 상품명을 입력해주세요.
  *                        body:
  *                          type: string
  *                          description: 입력하지 않은 파라미터
@@ -152,7 +146,7 @@ productRouter.post(
   //     .bail(),
   //   body("name")
   //     .exists()
-  //     .withMessage("이름을 입력해주세요.")
+  //     .withMessage("상품명을 입력해주세요.")
   //     .bail(),
   //   body("description")
   //     .exists()
@@ -221,16 +215,10 @@ productRouter.post(
 );
 
 /**
- *  @swagger
- *  tags:
- *    name: Product
- *    description: Products MVP.
- */
-/**
  * @swagger
  * /products?category={category}:
  *   get:
- *    summary: 상품 API
+ *    summary: 상품 조회 API
  *    description: 모든 상품 정보를 조회할 때 사용하는 API 입니다.
  *    tags: [Products]
  *    parameters:
@@ -239,7 +227,7 @@ productRouter.post(
  *        schema:
  *          type: string
  *        required: true
- *        description: 모든 상품을 반환합니다.
+ *        description: 쿼리가 없다면 모든 상품을 반환합니다.
  *    responses:
  *      200:
  *        description: 상품 조회 완료
@@ -249,7 +237,7 @@ productRouter.post(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: true
  *                payload:
  *                  type: object
@@ -282,6 +270,10 @@ productRouter.post(
  *                      type: number
  *                      description: 상품 원가
  *                      example: 10000000
+ *                    salePrice:
+ *                      type: number
+ *                      description: 판매 가격 
+ *                      example: 5000000
  *                    maxPurchaseQty:
  *                      type: number
  *                      description: 유저가 가진 상품 재고수
@@ -327,16 +319,10 @@ productRouter.post(
 );
 
 /**
- *  @swagger
- *  tags:
- *    name: Product
- *    description: Products MVP.
- */
-/**
  * @swagger
  * /products:
  *   put:
- *    summary: 상품 API
+ *    summary: 상품 정보 수정 API
  *    description: 상품 정보를 수정할 때 사용하는 API 입니다.
  *    tags: [Products]
  *    requestBody:
@@ -350,7 +336,7 @@ productRouter.post(
  *            - name
  *            - description
  *            - price
- *            - minPurchaseQty
+ *            - maxPurchaseQty
  *            properties:
  *              images:
  *                type: string
@@ -383,7 +369,7 @@ productRouter.post(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: true
  *                payload:
  *                  type: object
@@ -435,7 +421,7 @@ productRouter.post(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: false
  *                error:
  *                  type: object
@@ -447,7 +433,7 @@ productRouter.post(
  *                    message:
  *                      type: string
  *                      description: 오류 내용
- *                      example: 이름을 입력해주세요.
+ *                      example: 상품명을 입력해주세요.
  *                    detail:
  *                      type: object
  *                      description: 오류 세부 사항
@@ -455,7 +441,7 @@ productRouter.post(
  *                        msg:
  *                          type: string
  *                          description: 오류 내용
- *                          example: 이름을 입력해주세요.
+ *                          example: 상품명을 입력해주세요.
  *                        body:
  *                          type: string
  *                          description: 입력하지 않은 파라미터
@@ -499,20 +485,14 @@ productRouter.put(
 );
 
 /**
- *  @swagger
- *  tags:
- *    name: Product
- *    description: Products MVP.
- */
-/**
  * @swagger
  * /products/:id:
  *   get:
- *    summary: 상품 API
+ *    summary: 상품 상세페이지 조회 API
  *    description: 상품 정보를 조회할 때 사용하는 API 입니다.
  *    tags: [Products]
  *    parameters:
- *      - in: query
+ *      - in: path
  *        name: id
  *        schema:
  *          type: string
@@ -527,7 +507,7 @@ productRouter.put(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: true
  *                payload:
  *                  type: object
@@ -580,7 +560,7 @@ productRouter.put(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: false
  *                error:
  *                  type: object
@@ -589,13 +569,10 @@ productRouter.put(
  *                      type: integer
  *                      description: http status
  *                      example: 400
- *                    message:
+ *                    errorMessage:
  *                      type: string
  *                      description: 오류 내용
  *                      example: id가 존재하지 않습니다.
- *                    detail:
- *                      type: string
- *                      description: id가 존재하지 않습니다.
  *
  */
 productRouter.get(
@@ -634,19 +611,14 @@ productRouter.get(
 );
 
 /**
- *  @swagger
- *  tags:
- *    name: Product
- *    description: Products MVP.
- */
-/**
  * @swagger
  * /products/:id:
  *   delete:
- *    summary: 상품 API
+ *    summary: 상품 삭제 API
  *    description: 상품 정보를 삭제할 때 사용하는 API 입니다.
  *    tags: [Products]
  *    parameters:
+ *      - in: path
  *        name: id
  *        schema:
  *          type: string
@@ -661,7 +633,7 @@ productRouter.get(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: true
  *                payload:
  *                  type: string
@@ -674,7 +646,7 @@ productRouter.get(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: false
  *                error:
  *                  type: object
@@ -691,7 +663,7 @@ productRouter.get(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: false
  *                error:
  *                  type: object
@@ -751,12 +723,6 @@ productRouter.delete(
 );
 
 /**
- *  @swagger
- *  tags:
- *    name: Product
- *    description: Products MVP.
- */
-/**
  * @swagger
  * /markets/:userId:
  *   get:
@@ -764,7 +730,7 @@ productRouter.delete(
  *    description: 유저가 가진 전체 상품 정보를 조회할 때 사용하는 API 입니다.
  *    tags: [Products]
  *    parameters:
- *      - in: query
+ *      - in: path
  *        name: id
  *        schema:
  *          type: string
@@ -779,7 +745,7 @@ productRouter.delete(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: true
  *                payload:
  *                  type: object
@@ -832,7 +798,7 @@ productRouter.delete(
  *              type: object
  *              properties:
  *                success:
- *                  type: string
+ *                  type: boolean
  *                  example: false
  *                error:
  *                  type: object
@@ -841,13 +807,10 @@ productRouter.delete(
  *                      type: integer
  *                      description: http status
  *                      example: 400
- *                    message:
+ *                    errorMessage:
  *                      type: string
  *                      description: 오류 내용
  *                      example: id가 존재하지 않습니다.
- *                    detail:
- *                      type: string
- *                      description: id가 존재하지 않습니다.
  *
  */
 productRouter.get(
