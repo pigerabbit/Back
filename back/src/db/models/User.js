@@ -6,9 +6,12 @@ export class User {
     return createdNewUser;
   }
 
-  static async findById({ user_id }) {
-    const user = await UserModel.findOne({ id: user_id }).lean();
+  static async isEmailExists({ email, type }) {
+    return await UserModel.exists({ email, type });
+  }
 
+  static async findByEmail({ email, type }) {
+    const user = await UserModel.findOne({ email, type });
     return user;
   }
 
@@ -19,16 +22,20 @@ export class User {
       {
         _id: false,
         id: true,
-        email: true,
         name: true,
-        location: true,
-        distance: true,
-        business: true,
+        email: true,
         address: true,
-        imageLink: true,
+        business: true,
+        type: true,
       }
     );
     return users;
+  }
+
+  static async findById({ user_id }) {
+    const user = await UserModel.findOne({ id: user_id }).lean();
+
+    return user;
   }
 
   static async updateAll({ user_id, setter }) {
@@ -40,17 +47,8 @@ export class User {
     return updatedUser;
   }
 
-  static async findByEmail({ email, type }) {
-    const user = await UserModel.findOne({ email, type });
+  static async findByName({ name }) {
+    const user = await UserModel.findOne({ name });
     return user;
-  }
-
-  static async deleteById({ user_id }) {
-    const user = await UserModel.deleteOne({ id: user_id });
-    return user;
-  }
-
-  static async isEmailExists({ email, type }) {
-    return await UserModel.exists({ email, type });
   }
 }

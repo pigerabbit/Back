@@ -3,10 +3,8 @@ export function getRequiredInfoFromData(data) {
     id: data.id,
     email: data.email,
     name: data.name,
-    location: data.location,
-    distance: data.distance,
+    address: data.address,
     business: data.business,
     type: data.type,
-    imageLink: data.imageLink,
   };
 }

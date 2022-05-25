@@ -6,11 +6,11 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    email: {
+    name: {
       type: String,
       required: true,
     },
-    name: {
+    email: {
       type: String,
       required: true,
     },
@@ -28,9 +28,13 @@ const UserSchema = new Schema(
     },
     business: {
       type: String,
-      required: false,
+      required: true,
     },
     address: {
+      type: String,
+      required: true,
+    },
+    type: {
       type: String,
       required: false,
     },
