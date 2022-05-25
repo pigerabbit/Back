@@ -14,7 +14,7 @@ class ProductService {
    * @param {Number} maxPurchaseQty - 유저가 가진 상품 재고
    * @return {Object} 생성된 상품 정보 
    */
-  static async addProduct({ userId, images, category, name, description, price, salePrice, maxPurchaseQty }) { 
+  static async addProduct({ userId, images, category, name, description, price, salePrice, minPurchaseQty, maxPurchaseQty }) { 
     const id = crypto.randomUUID();
     
     const newProduct = {
@@ -26,6 +26,7 @@ class ProductService {
       description,
       price,
       salePrice,
+      minPurchaseQty,
       maxPurchaseQty,
     };
 

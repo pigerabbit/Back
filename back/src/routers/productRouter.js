@@ -46,6 +46,9 @@ const productRouter = Router();
  *              salePrice: 
  *                type: number
  *                example: 500
+ *              minPurchaseQty:
+ *                type: number
+ *                example: 5
  *              maxPurchaseQty:
  *                type: number
  *                example: 5
@@ -98,10 +101,18 @@ const productRouter = Router();
  *                      type: number
  *                      description: 판매 가격
  *                      example: 10000000
+ *                    minPurchaseQty:
+ *                      type: number
+ *                      description: 유저가 가진 상품 재고수
+ *                      example: 20
  *                    maxPurchaseQty:
  *                      type: number
  *                      description: 유저가 가진 상품 재고수
  *                      example: 20
+ *                    views:
+ *                      type: number
+ *                      description: 조회수
+ *                      example: 3
  *      400:
  *        description: 상품 생성 오류
  *        content:
@@ -166,7 +177,7 @@ productRouter.post(
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const { category, name, description, price, salePrice, maxPurchaseQty } = req.body;
+      const { category, name, description, price, salePrice, minPurchaseQty, maxPurchaseQty } = req.body;
       
       if (req.files != null) { // 이미지 파일이 존재하면
         const images = req.files.map((file) => file.filename);
@@ -179,6 +190,7 @@ productRouter.post(
           description,
           price,
           salePrice,
+          minPurchaseQty,
           maxPurchaseQty,
         });
 
@@ -197,6 +209,7 @@ productRouter.post(
           description,
           price,
           salePrice,
+          minPurchaseQty,
           maxPurchaseQty,
           views,
         });
@@ -274,6 +287,10 @@ productRouter.post(
  *                      type: number
  *                      description: 판매 가격 
  *                      example: 5000000
+ *                    minPurchaseQty:
+ *                      type: number
+ *                      description: 공동구매 인원수
+ *                      example: 5
  *                    maxPurchaseQty:
  *                      type: number
  *                      description: 유저가 가진 상품 재고수
@@ -336,6 +353,8 @@ productRouter.post(
  *            - name
  *            - description
  *            - price
+ *            - salePrice
+ *            - minPurchaseQty
  *            - maxPurchaseQty
  *            properties:
  *              images:
@@ -357,6 +376,9 @@ productRouter.post(
  *                type: number
  *                description: 판매 가격
  *                example: 50000000
+ *              minPurchaseQty:
+ *                type: number
+ *                example: 5
  *              maxPurchaseQty:
  *                type: number
  *                example: 2
@@ -406,6 +428,10 @@ productRouter.post(
  *                      type: number
  *                      description: 판매 가격
  *                      example: 50000000
+ *                    minPurchaseQty:
+ *                      type: number
+ *                      description: 공구 최소 인원
+ *                      example: 5
  *                    maxPurchaseQty:
  *                      type: number
  *                      description: 유저가 가진 상품 재고수
@@ -460,17 +486,18 @@ productRouter.put(
     const description = req.body.description ?? null;
     const price = req.body.price ?? null;
     const salePrice = req.body.salePrice ?? null;
+    const minPurchaseQty = req.body.minPurchaseQty ?? null;
     const maxPurchaseQty = req.body.maxPurchaseQty ?? null;
 
     if (req.files != null) { // 변경 이미지가 존재하면
       const images = req.files.map((file) => file.filename);
-      const toUpdate = { category, images, name, description, price, salePrice, maxPurchaseQty };
+      const toUpdate = { category, images, name, description, price, salePrice, minPurchaseQty, maxPurchaseQty };
 
       const product = await ProductService.setProduct({ userId, id, toUpdate });
       
       res.status(200).send(product);
     } else { // 변경 이미지가 존재하지 않는다면
-      const toUpdate = { category, name, description, price, salePrice, maxPurchaseQty };
+      const toUpdate = { category, name, description, price, salePrice, minPurchaseQty, maxPurchaseQty };
 
       const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });
 
@@ -544,6 +571,10 @@ productRouter.put(
  *                      type: number
  *                      description: 판매 가격
  *                      example: 5000
+ *                    minPurchaseQty:
+ *                      type: number
+ *                      description: 공동구매 최소 인원
+ *                      example: 5
  *                    maxPurchaseQty:
  *                      type: number
  *                      description: 유저가 가진 상품 재고수
@@ -782,6 +813,10 @@ productRouter.delete(
  *                      type: number
  *                      description: 판매 가격
  *                      example: 50000
+ *                    minPurchaseQty:
+ *                      type: number
+ *                      description: 공동구매 최소 인원
+ *                      example: 5
  *                    maxPurchaseQty:
  *                      type: number
  *                      description: 유저가 가진 상품 재고수

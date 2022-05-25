@@ -33,6 +33,10 @@ const ProductSchema = new Schema(
       type: Number,
       required: true,
     },
+    minPurchaseQty: {
+      type: Number,
+      required: true,
+    },
     maxPurchaseQty: {
       type: Number,
       required: true,
