@@ -11,6 +11,7 @@ class ProductService {
    * @param {Strings} description - 상품 설명
    * @param {Number} price - 상품 원가
    * @param {Number} salePrice - 판매 가격
+   * @param {Number} minPurchaseQty - 공동구매 최소 인원
    * @param {Number} maxPurchaseQty - 유저가 가진 상품 재고
    * @return {Object} 생성된 상품 정보 
    */
