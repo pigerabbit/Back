@@ -44,7 +44,27 @@ const ProductSchema = new Schema(
     views: {
       type: Number,
       default: 1,
-    }
+    },
+    shippingFee: {
+      type: Number,
+      required: true,
+    },
+    shippingFeeCon: {
+      type: String,
+      required: true,
+    },
+    detail: {
+      type: String,
+      required: true,
+    },
+    shippingInfo: {
+      type: String,
+      required: true,
+    },
+    policy: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

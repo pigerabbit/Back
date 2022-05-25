@@ -177,7 +177,20 @@ productRouter.post(
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const { category, name, description, price, salePrice, minPurchaseQty, maxPurchaseQty } = req.body;
+      const {
+        category,
+        name,
+        description,
+        price,
+        salePrice,
+        minPurchaseQty,
+        maxPurchaseQty,
+        shippingFee,
+        shippingFeeCon,
+        detail,
+        shippingInfo,
+        policy,
+      } = req.body;
       
       if (req.files != null) { // 이미지 파일이 존재하면
         const images = req.files.map((file) => file.filename);
@@ -192,6 +205,11 @@ productRouter.post(
           salePrice,
           minPurchaseQty,
           maxPurchaseQty,
+          shippingFee,
+          shippingFeeCon,
+          detail,
+          shippingInfo,
+          policy,
         });
 
         const body = {
@@ -211,7 +229,11 @@ productRouter.post(
           salePrice,
           minPurchaseQty,
           maxPurchaseQty,
-          views,
+          shippingFee,
+          shippingFeeCon,
+          detail,
+          shippingInfo,
+          policy,
         });
 
         const body = {
@@ -299,12 +321,26 @@ productRouter.post(
  *                      type: number
  *                      example: 30
  */
+// query : page, perPage, category
  productRouter.get(
   "/products",
   async (req, res, next) => {
-    const category = req.query.category;
+    if (req.query.page && req.query.perPage) {
+      const { page, perPage } = req.query;
+      
+      if (page <= 0 || perPage <= 0) { 
+        const body = {
+          success: false,
+          errorMessage: "잘못된 페이지를 입력하셨습니다.",
+        }
+        
+        return res.status(400).send(body);
+      }
+    }
 
-    if (category !== undefined) { // 쿼리가 없다면 전체 상품 조회
+    const { category } = req.query;
+
+    if (category !== undefined) { // 카테고리 쿼리가 있다면 카테고리별상품 조회
       const products = await ProductService.getProductCategoryList({ category });
 
       const body = {
@@ -316,15 +352,6 @@ productRouter.post(
     } 
 
     const productList = await ProductService.getProductList();
-
-    if (productList.errorMessage) { 
-      const body = {
-        success: true,
-        payload: productList,
-      };
-      
-      return res.status(200).send(body);
-    }
 
     const body = {
       success: true,
@@ -488,16 +515,48 @@ productRouter.put(
     const salePrice = req.body.salePrice ?? null;
     const minPurchaseQty = req.body.minPurchaseQty ?? null;
     const maxPurchaseQty = req.body.maxPurchaseQty ?? null;
+    const shippingFee = req.body.shippingFee ?? null;
+    const shippingFeeCon = req.body.shippingFeeCon ?? null;
+    const detail = req.body.detail ?? null;
+    const shippingInfo = req.body.shippingInfo ?? null;
+    const policy = req.body.policy ?? null;
 
     if (req.files != null) { // 변경 이미지가 존재하면
       const images = req.files.map((file) => file.filename);
-      const toUpdate = { category, images, name, description, price, salePrice, minPurchaseQty, maxPurchaseQty };
+      const toUpdate = {
+        category,
+        images,
+        name,
+        description,
+        price,
+        salePrice,
+        minPurchaseQty,
+        maxPurchaseQty,
+        shippingFee,
+        shippingFeeCon,
+        detail,
+        shippingInfo,
+        policy,
+      };
 
       const product = await ProductService.setProduct({ userId, id, toUpdate });
       
       res.status(200).send(product);
     } else { // 변경 이미지가 존재하지 않는다면
-      const toUpdate = { category, name, description, price, salePrice, minPurchaseQty, maxPurchaseQty };
+      const toUpdate = {
+        category,
+        name,
+        description,
+        price,
+        salePrice,
+        minPurchaseQty,
+        maxPurchaseQty,
+        shippingFee,
+        shippingFeeCon,
+        detail,
+        shippingInfo,
+        policy,
+      };
 
       const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });
 

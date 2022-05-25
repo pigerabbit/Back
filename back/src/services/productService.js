@@ -13,9 +13,29 @@ class ProductService {
    * @param {Number} salePrice - 판매 가격
    * @param {Number} minPurchaseQty - 공동구매 최소 인원
    * @param {Number} maxPurchaseQty - 유저가 가진 상품 재고
+   * @param {Number} shippingFee - 배송비
+   * @param {Strings} shippingFeeCon - 무료 배송 조건
+   * @param {Strings} detail - 상품 상세 설명
+   * @param {Strings} shippingInfo - 배송 안내
+   * @param {Strings} policy - 교환 및 환불 정책
    * @return {Object} 생성된 상품 정보 
    */
-  static async addProduct({ userId, images, category, name, description, price, salePrice, minPurchaseQty, maxPurchaseQty }) { 
+  static async addProduct({
+    userId,
+    images,
+    category,
+    name,
+    description,
+    price,
+    salePrice,
+    minPurchaseQty,
+    maxPurchaseQty,
+    shippingFee,
+    shippingFeeCon,
+    detail,
+    shippingInfo,
+    policy
+  }) { 
     const id = crypto.randomUUID();
     
     const newProduct = {
@@ -29,6 +49,11 @@ class ProductService {
       salePrice,
       minPurchaseQty,
       maxPurchaseQty,
+      shippingFee,
+      shippingFeeCon,
+      detail,
+      shippingInfo,
+      policy,
     };
 
     const product = await Product.create({ newProduct });
