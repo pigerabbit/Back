@@ -11,7 +11,7 @@ const ProductSchema = new Schema(
       required: true,
     },
     images: {
-      type: Array,
+      type: String,
     },
     category: {
       type: String,
@@ -23,13 +23,19 @@ const ProductSchema = new Schema(
     },
     description: {
       type: String,
-      required: true,
+    },
+    descriptionImg: {
+      type: String,
     },
     price: {
       type: Number,
       required: true,
     },
     salePrice: {
+      type: Number,
+      required: true,
+    },
+    discountRate: {
       type: Number,
       required: true,
     },
@@ -55,7 +61,9 @@ const ProductSchema = new Schema(
     },
     detail: {
       type: String,
-      required: true,
+    },
+    detailImg: {
+      type: String,
     },
     shippingInfo: {
       type: String,

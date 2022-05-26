@@ -39,9 +39,17 @@ class Product {
    * 
    * @returns productList
    */
-  static async findProductList() { 
-    const productList = await ProductModel.find();
-    return productList;
+  static async findProductList({ page, perPage }) { 
+    const len = await ProductModel.countDocuments();
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean();
+    
+    return { productList, totalPage, len };
   }
 
   /** 카테고리별 상품 반환 함수
@@ -56,8 +64,108 @@ class Product {
       .sort({ createdAt: -1 })
       .skip((page - 1) * perPage)
       .limit(perPage)
+      .lean();
+    
+    return { productList, totalPage, len };
+  }
+
+  static async deleteProduct({ id }) { 
+    const product = await ProductModel.deleteOne({ id });
+    return product;
+  }
+  
+  /** 상품 id 반환 함수 for 쨍
+   * 
+   * @returns productIdList
+   */
+  static async findProductIdList() { 
+    const productList = await ProductModel.find();
+    const productIdList = productList.map(obj => obj.id)
+    return productIdList;
+  }
+
+  /** 검색어별 상품 반환 함수
+   * 
+   * @returns productList
+   */
+   static async findProductSearch({ search, page, perPage }) { 
+    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({ name: { $regex: search } })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
       .lean()
     
+    return { productList, totalPage, len };
+  }
+
+  /** 검색어 + 열린 공동 구매 많은순 상품 반환 함수 (default)
+   * 
+   * @returns productList
+   */
+   static async findProductSearchSortByGroups({ search, page, perPage }) { 
+    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({ name: { $regex: search } })
+      .sort({ groups: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean()
+   
+    return { productList, totalPage, len };
+  }
+  
+  /** 검색어 + 낮은 가격순 상품 반환 함수
+   * 
+   * @returns productList
+   */
+  static async findProductSearchSortByPrice({ search, page, perPage }) { 
+    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({ name: { $regex: search } })
+      .sort({ salePrice: 1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean()
+   
+    return { productList, totalPage, len };
+  }
+
+  /** 검색어 + 후기 많은순 상품 반환 함수
+   * 
+   * @returns productList
+   */
+   static async findProductSearchSortByReviews({ search, page, perPage }) { 
+    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({ name: { $regex: search } })
+      .sort({ reviews: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean()
+   
+    return { productList, totalPage, len };
+  }
+
+  /** 검색어 + 조회 많은순 상품 반환 함수
+   * 
+   * @returns productList
+   */
+   static async findProductSearchSortByViews({ search, page, perPage }) { 
+    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({ name: { $regex: search } })
+      .sort({ views: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean()
+   
     return { productList, totalPage, len };
   }
 

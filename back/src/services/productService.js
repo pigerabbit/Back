@@ -26,6 +26,7 @@ class ProductService {
     category,
     name,
     description,
+    descriptionImg,
     price,
     salePrice,
     minPurchaseQty,
@@ -33,10 +34,12 @@ class ProductService {
     shippingFee,
     shippingFeeCon,
     detail,
+    detailImg,
     shippingInfo,
-    policy
+    policy,
   }) { 
     const id = crypto.randomUUID();
+    const discountRate = Math.ceil(((price - salePrice) / price) * 100);
     
     const newProduct = {
       userId,
@@ -45,13 +48,16 @@ class ProductService {
       images,
       name,
       description,
+      descriptionImg,
       price,
       salePrice,
+      discountRate,
       minPurchaseQty,
       maxPurchaseQty,
       shippingFee,
       shippingFeeCon,
       detail,
+      detailImg,
       shippingInfo,
       policy,
     };
@@ -93,8 +99,8 @@ class ProductService {
    * 
    * @returns 상품 전체 Object List
    */
-  static async getProductList() { 
-    const productList = await Product.findProductList();
+  static async getProductList({ page, perPage }) { 
+    const productList = await Product.findProductList({ page, perPage });
     return productList;
   }
 
@@ -110,6 +116,56 @@ class ProductService {
       return { errorMessage };
     }
 
+    return productList;
+  }
+
+  /** 검색어로 상품을 반환하는 함수
+   * 
+   * @returns 검색어 상품 Object List
+   */
+  static async getProductSearch({ search, page, perPage }) { 
+    const productList = await Product.findProductSearch({ search, page, perPage });
+  
+    if (productList.len === 0) { 
+      const errorMessage = "검색한 상품이 존재하지 않습니다";
+      return { errorMessage };
+    }
+  
+    return productList;
+  }
+
+  /** 검색어 + 옵션별로 상품을 반환하는 함수
+   * 
+   * optionField = ["salePrice", "reviews", "views", "likes"]
+   * @returns 검색어 + 옵션 상품 Object List
+   */
+  static async getProductSearchSortByOption({ search, option, page, perPage }) { 
+
+    // 검색어에 해당하는 상품이 존재하는지 확인
+    const productList = await Product.findProductSearch({ search, page, perPage });
+
+    if (productList.len === 0) { 
+      const errorMessage = "검색한 상품이 존재하지 않습니다";
+      return { errorMessage };
+    }
+
+    if (option === "groups") {
+      const productList = await Product.findProductSearchSortByGroups({ search, page, perPage });
+      return productList;
+    } else if (option === "reviews") {
+      const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
+      return productList;
+    } else if (option === "views") {
+      const productList = await Product.findProductSearchSortByViews({ search, page, perPage });
+      return productList;
+    } else if (option === "salePrice") {
+      const productList = await Product.findProductSearchSortByPrice({ search, page, perPage });
+      return productList;
+    } else {
+      const errorMessage = "존재하지 않는 옵션입니다.";
+      return { errorMessage };
+     }
+  
     return productList;
   }
 

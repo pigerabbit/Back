@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ProductService } from "../services/productService";
 import { validate, notFoundValidate } from "../middlewares/validator";
-import { check, body } from "express-validator";
+import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
 import { upload } from "../middlewares/multerMiddleware.js";
 import { userAuthService } from "../services/userService";
@@ -150,7 +150,7 @@ const productRouter = Router();
 productRouter.post(
   "/products",
   login_required,
-  // express-validator가 있으면 작동되지 않는,,, => try-catch로 변경
+  // express-validator로 작동되지 않는,,, => try-catch로 변경
   //   body("category")
   //     .exists()
   //     .withMessage("카테고리를 입력해주세요.")
@@ -192,8 +192,71 @@ productRouter.post(
         policy,
       } = req.body;
       
-      if (req.files != null) { // 이미지 파일이 존재하면
-        const images = req.files.map((file) => file.filename);
+      if (req.files.length === 3) { // 이미지 모두 파일이 존재하면
+        // const images = req.files.map((file) => file.filename);
+        const images = req.files[0].filename;
+        const descriptionImg = req.files[1].filename;
+        const detailImg = req.files[2].filename;
+
+        const newProduct = await ProductService.addProduct({
+          userId,
+          images,
+          category,
+          name,
+          description,
+          descriptionImg,
+          price,
+          salePrice,
+          minPurchaseQty,
+          maxPurchaseQty,
+          shippingFee,
+          shippingFeeCon,
+          detail,
+          detailImg,
+          shippingInfo,
+          policy,
+        });
+
+        const body = {
+          success: true,
+          payload: newProduct,
+        };
+    
+        return res.status(201).json(body);
+
+      } else if (req.files.length === 2) { // 이미지 파일이 2개만 존재하면
+        // const images = req.files.map((file) => file.filename);
+        const images = req.files[0].filename;
+        const descriptionImg = req.files[1].filename;
+
+        const newProduct = await ProductService.addProduct({
+          userId,
+          images,
+          category,
+          name,
+          description,
+          descriptionImg,
+          price,
+          salePrice,
+          minPurchaseQty,
+          maxPurchaseQty,
+          shippingFee,
+          shippingFeeCon,
+          detail,
+          shippingInfo,
+          policy,
+        });
+
+        const body = {
+          success: true,
+          payload: newProduct,
+        };
+    
+        return res.status(201).json(body);
+
+      } else if (req.files.length === 1) { // 이미지 파일이 1개만 존재하면
+        // const images = req.files.map((file) => file.filename);
+        const images = req.files[0].filename;
 
         const newProduct = await ProductService.addProduct({
           userId,
@@ -324,6 +387,22 @@ productRouter.post(
 // query : page, perPage, category
 productRouter.get(
   "/products",
+  [
+    query("page")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 page를 입력해주세요.")
+      .bail(),
+    query("perPage")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 perPage를 입력해주세요.")
+      .bail(),
+    notFoundValidate,
+    validate,
+  ],
   async (req, res, next) => {
     const { page, perPage, category } = req.query;
 
@@ -359,7 +438,7 @@ productRouter.get(
     } 
 
     // 카테고리 쿼리가 없다면 전체 상품 조회
-    const productList = await ProductService.getProductList();
+    const productList = await ProductService.getProductList({ page, perPage });
 
     const body = {
       success: true,
@@ -367,6 +446,90 @@ productRouter.get(
     };
     
     return res.status(200).send(body);
+  }
+);
+
+// query : page, perPage, search(검색어), option(salePrice, reviews, views, groups)
+productRouter.get(
+  "/products/search",
+  // [ express-validator 왜 작동을 안할까,,?
+  //   query("page")
+  //     .trim()
+  //     .isLength()
+  //     .exists()
+  //     .withMessage("query 값으로 page를 입력해주세요.")
+  //     .bail(),
+  //   query("perPage")
+  //     .trim()
+  //     .isLength()
+  //     .exists()
+  //     .withMessage("query 값으로 perPage를 입력해주세요.")
+  //     .bail(),
+  //   query("search")
+  //     .trim()
+  //     .isLength()
+  //     .exists()
+  //     .withMessage("query 값으로 search를 입력해주세요.")
+  //     .bail(),
+  //   notFoundValidate,
+  //   validate,
+  // ],
+  async (req, res, next) => {
+    try {
+      const { page, perPage, search, option } = req.query;
+
+      if (page <= 0 || perPage <= 0) {
+        const body = {
+          success: false,
+          errorMessage: "잘못된 페이지를 입력하셨습니다.",
+        }
+        
+        return res.status(400).send(body);
+      }
+
+      // search 쿼리가 없다면 오류
+      if (!search) {
+        const body = {
+          success: false,
+          errorMessage: "검색어를 입력해주세요",
+        };
+        
+        return res.status(400).send(body);
+      }
+
+      // option 쿼리가 존재한다면 옵션에 맞게 상품 조회
+      if (option !== undefined) {
+        const productList = await ProductService.getProductSearchSortByOption({ search, option, page, perPage });
+        
+        // 맞지 않는 option이 들어왔다면
+        if (productList.errorMessage) {
+          const body = {
+            success: false,
+            errorMessage: productList.errorMessage,
+          }
+    
+          return res.status(400).send(body);
+        }
+
+        return res.status(200).send(productList);
+      } else { // 아니라면 최신순 정렬
+        const productList = await ProductService.getProductSearch({ search, page, perPage });
+        return res.status(200).send(productList);
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+productRouter.put(
+  "/products/:id/reviews",
+  login_required,
+  async (req, res, next) => {
+    const userId = req.currentUserId;
+    const { id } = req.params;
+
+
   }
 );
 
@@ -512,7 +675,16 @@ productRouter.put(
   "/products/:id",
   login_required,
   upload.array("images", 3),
-  [],
+  [
+    check("id")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 상품의 아이디를 입력해주세요.")
+      .bail(),
+    notFoundValidate,
+    validate,
+  ],
   async (req, res, next) => {
     const userId = req.currentUserId;
     const id = req.params.id;
