@@ -3,8 +3,8 @@ import { ProductService } from "../services/productService";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
-import { upload } from "../middlewares/multerMiddleware.js";
 import { userAuthService } from "../services/userService";
+
 const { productImgUpload, descriptionImgUpload, detailImgUpload } = require("../utils/s3");
 
 const productRouter = Router();
@@ -174,12 +174,17 @@ productRouter.post(
   //     .bail(),
   //   validate,
   // ],
-  productImgUpload.single("images"),
-  descriptionImgUpload.single("descriptionImg"),
-  detailImgUpload.single("detailImg"),
+  productImgUpload.fields([
+    { name: "images", maxCount: 1 },
+    { name: "descriptionImg", maxCount: 1 },
+    { name: "detailImg", maxCount: 1 },
+  ]),
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
+      const images = req.files["images"][0].location;
+      const descriptionImg = req.files["descriptionImg"][0].location;
+      const detailImg = req.files["detailImg"][0].location;
       const {
         category,
         name,
@@ -194,8 +199,6 @@ productRouter.post(
         shippingInfo,
         policy,
       } = req.body;
-    
-      const { images, descriptionImg, detailImg } = req.file.location;
 
       const newProduct = await ProductService.addProduct({
         userId,
@@ -588,10 +591,13 @@ productRouter.put(
  *                          description: 입력하지 않은 파라미터
  *                          example: name
  */
+// 이미지가 아닌 필드 수정하는 함수 
 productRouter.put(
   "/products/:id",
   login_required,
-  upload.array("images", 3),
+  productImgUpload.single("images"),
+  descriptionImgUpload.single("descriptionImg"),
+  detailImgUpload.single("detailImg"),
   [
     check("id")
       .trim()
@@ -618,52 +624,65 @@ productRouter.put(
     const shippingInfo = req.body.shippingInfo ?? null;
     const policy = req.body.policy ?? null;
 
-    if (req.files != null) { // 변경 이미지가 존재하면
-      const images = req.files.map((file) => file.filename);
-      const toUpdate = {
-        category,
-        images,
-        name,
-        description,
-        price,
-        salePrice,
-        minPurchaseQty,
-        maxPurchaseQty,
-        shippingFee,
-        shippingFeeCon,
-        detail,
-        shippingInfo,
-        policy,
-      };
+    const toUpdate = {
+      category,
+      images,
+      name,
+      description,
+      price,
+      salePrice,
+      minPurchaseQty,
+      maxPurchaseQty,
+      shippingFee,
+      shippingFeeCon,
+      detail,
+      shippingInfo,
+      policy,
+    };
 
-      const product = await ProductService.setProduct({ userId, id, toUpdate });
-      
-      res.status(200).send(product);
-    } else { // 변경 이미지가 존재하지 않는다면
-      const toUpdate = {
-        category,
-        name,
-        description,
-        price,
-        salePrice,
-        minPurchaseQty,
-        maxPurchaseQty,
-        shippingFee,
-        shippingFeeCon,
-        detail,
-        shippingInfo,
-        policy,
-      };
+    const product = await ProductService.setProduct({ userId, id, toUpdate });
 
-      const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });
-
-      const body = {
-        success: true,
-        payload: updatedProduct,
-      }
-      
-      return res.status(200).send(body);
+    const body = {
+      success: true,
+      payload: updatedProduct,
     }
+    
+    return res.status(200).send(body);
+  }
+);
+
+// 이미지가 아닌 필드 수정하는 함수 
+productRouter.put(
+  "/products/:id",
+  login_required,
+  productImgUpload.single("images"),
+  descriptionImgUpload.single("descriptionImg"),
+  detailImgUpload.single("detailImg"),
+  [
+    check("id")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 상품의 아이디를 입력해주세요.")
+      .bail(),
+    notFoundValidate,
+    validate,
+  ],
+  async (req, res, next) => {
+    const userId = req.currentUserId;
+
+    const toUpdate = {
+      user
+    };
+
+    const product = await ProductService.setProduct({ userId, id, toUpdate });
+
+    const body = {
+      success: true,
+      payload: updatedProduct,
+    }
+    
+    return res.status(200).send(body);
   }
 );
 

@@ -11,7 +11,7 @@ const ProductSchema = new Schema(
       required: true,
     },
     images: {
-      type: String,
+      type: Array,
     },
     category: {
       type: String,
@@ -56,8 +56,9 @@ const ProductSchema = new Schema(
       required: true,
     },
     shippingFeeCon: {
-      type: String,
+      type: Number,
       required: true,
+      default: 0,
     },
     detail: {
       type: String,

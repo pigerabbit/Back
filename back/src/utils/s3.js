@@ -34,33 +34,7 @@ let productImgUpload = multer({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     acl: "public-read",
     key: (req, file, cb) => {
-      cb(null, `diets/${Date.now()}_${file.originalname}`);
-    },
-  }),
-  fileFilter: fileFilter,
-});
-
-let descriptionImgUpload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: process.env.S3_BUCKET_NAME,
-    contentType: multerS3.AUTO_CONTENT_TYPE,
-    acl: "public-read",
-    key: (req, file, cb) => {
-      cb(null, `diets/${Date.now()}_${file.originalname}`);
-    },
-  }),
-  fileFilter: fileFilter,
-});
-
-let detailImgUpload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: process.env.S3_BUCKET_NAME,
-    contentType: multerS3.AUTO_CONTENT_TYPE,
-    acl: "public-read",
-    key: (req, file, cb) => {
-      cb(null, `diets/${Date.now()}_${file.originalname}`);
+      cb(null, `products/${Date.now()}_${file.originalname}`);
     },
   }),
   fileFilter: fileFilter,
@@ -87,6 +61,4 @@ let userImageUpload = multer({
 });
 
 exports.userImageUpload = multer(userImageUpload);
-exports.userImageUpload = multer(productImgUpload);
-exports.userImageUpload = multer(descriptionImgUpload);
-exports.userImageUpload = multer(detailImgUpload);
+exports.productImgUpload = multer(productImgUpload);

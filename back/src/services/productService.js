@@ -9,13 +9,15 @@ class ProductService {
    * @param {Strings} category - 상품 카테고리
    * @param {Strings} name - 상품 이름
    * @param {Strings} description - 상품 설명
+   * @param {Strings} descriptionImg - 상품 설명 사진
    * @param {Number} price - 상품 원가
    * @param {Number} salePrice - 판매 가격
    * @param {Number} minPurchaseQty - 공동구매 최소 인원
    * @param {Number} maxPurchaseQty - 유저가 가진 상품 재고
    * @param {Number} shippingFee - 배송비
-   * @param {Strings} shippingFeeCon - 무료 배송 조건
+   * @param {Number} shippingFeeCon - 무료 배송 조건
    * @param {Strings} detail - 상품 상세 설명
+   * @param {Strings} detailImg - 상품 상세 설명 사진
    * @param {Strings} shippingInfo - 배송 안내
    * @param {Strings} policy - 교환 및 환불 정책
    * @return {Object} 생성된 상품 정보 
@@ -42,10 +44,10 @@ class ProductService {
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
     
     const newProduct = {
-      userId,
       id,
-      category,
+      userId,
       images,
+      category,
       name,
       description,
       descriptionImg,
