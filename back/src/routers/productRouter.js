@@ -5,6 +5,7 @@ import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
 import { upload } from "../middlewares/multerMiddleware.js";
 import { userAuthService } from "../services/userService";
+const { productImgUpload, descriptionImgUpload, detailImgUpload } = require("../utils/s3");
 
 const productRouter = Router();
 
@@ -173,7 +174,9 @@ productRouter.post(
   //     .bail(),
   //   validate,
   // ],
-  upload.array("images", 3),
+  productImgUpload.single("images"),
+  descriptionImgUpload.single("descriptionImg"),
+  detailImgUpload.single("detailImg"),
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
@@ -191,121 +194,34 @@ productRouter.post(
         shippingInfo,
         policy,
       } = req.body;
-      
-      if (req.files.length === 3) { // 이미지 모두 파일이 존재하면
-        // const images = req.files.map((file) => file.filename);
-        const images = req.files[0].filename;
-        const descriptionImg = req.files[1].filename;
-        const detailImg = req.files[2].filename;
-
-        const newProduct = await ProductService.addProduct({
-          userId,
-          images,
-          category,
-          name,
-          description,
-          descriptionImg,
-          price,
-          salePrice,
-          minPurchaseQty,
-          maxPurchaseQty,
-          shippingFee,
-          shippingFeeCon,
-          detail,
-          detailImg,
-          shippingInfo,
-          policy,
-        });
-
-        const body = {
-          success: true,
-          payload: newProduct,
-        };
     
-        return res.status(201).json(body);
+      const { images, descriptionImg, detailImg } = req.file.location;
 
-      } else if (req.files.length === 2) { // 이미지 파일이 2개만 존재하면
-        // const images = req.files.map((file) => file.filename);
-        const images = req.files[0].filename;
-        const descriptionImg = req.files[1].filename;
+      const newProduct = await ProductService.addProduct({
+        userId,
+        images,
+        category,
+        name,
+        description,
+        descriptionImg,
+        price,
+        salePrice,
+        minPurchaseQty,
+        maxPurchaseQty,
+        shippingFee,
+        shippingFeeCon,
+        detail,
+        detailImg,
+        shippingInfo,
+        policy,
+      });
 
-        const newProduct = await ProductService.addProduct({
-          userId,
-          images,
-          category,
-          name,
-          description,
-          descriptionImg,
-          price,
-          salePrice,
-          minPurchaseQty,
-          maxPurchaseQty,
-          shippingFee,
-          shippingFeeCon,
-          detail,
-          shippingInfo,
-          policy,
-        });
-
-        const body = {
-          success: true,
-          payload: newProduct,
-        };
-    
-        return res.status(201).json(body);
-
-      } else if (req.files.length === 1) { // 이미지 파일이 1개만 존재하면
-        // const images = req.files.map((file) => file.filename);
-        const images = req.files[0].filename;
-
-        const newProduct = await ProductService.addProduct({
-          userId,
-          images,
-          category,
-          name,
-          description,
-          price,
-          salePrice,
-          minPurchaseQty,
-          maxPurchaseQty,
-          shippingFee,
-          shippingFeeCon,
-          detail,
-          shippingInfo,
-          policy,
-        });
-
-        const body = {
-          success: true,
-          payload: newProduct,
-        };
-    
-        return res.status(201).json(body);
-
-      } else { // 이미지 파일이 존재하지 않는다면
-        const newProduct = await ProductService.addProduct({
-          userId,
-          category,
-          name,
-          description,
-          price,
-          salePrice,
-          minPurchaseQty,
-          maxPurchaseQty,
-          shippingFee,
-          shippingFeeCon,
-          detail,
-          shippingInfo,
-          policy,
-        });
-
-        const body = {
-          success: true,
-          payload: newProduct,
-        };
-    
-        return res.status(201).json(body);
-      }
+      const body = {
+        success: true,
+        payload: newProduct,
+      };
+  
+      return res.status(201).json(body);
     } catch (err) { 
       next(err);
     }
