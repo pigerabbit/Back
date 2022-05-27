@@ -182,9 +182,11 @@ productRouter.post(
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const images = req.files["images"][0].location;
-      const descriptionImg = req.files["descriptionImg"][0].location;
-      const detailImg = req.files["detailImg"][0].location;
+
+      const images = req.files["images"]?.[0].location ?? null;
+      const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
+      const detailImg = req.files["detailImg"]?.[0].location ?? null;
+
       const {
         category,
         name,
@@ -625,11 +627,16 @@ productRouter.put(
     const shippingInfo = req.body.shippingInfo ?? null;
     const policy = req.body.policy ?? null;
 
+    const images = req.files["images"]?.[0].location ?? null;
+    const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
+    const detailImg = req.files["detailImg"]?.[0].location ?? null;
+
     const toUpdate = {
       category,
       images,
       name,
       description,
+      descriptionImg,
       price,
       salePrice,
       minPurchaseQty,
@@ -637,11 +644,12 @@ productRouter.put(
       shippingFee,
       shippingFeeCon,
       detail,
+      detailImg,
       shippingInfo,
       policy,
     };
 
-    const product = await ProductService.setProduct({ userId, id, toUpdate });
+    const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });
 
     const body = {
       success: true,
