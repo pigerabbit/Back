@@ -2,11 +2,11 @@ import { Schema, model } from "mongoose";
 
 const GroupSchema = new Schema(
   {
-    group_id: {
+    groupId: {
       type: String,
       required: true,
     },
-    group_type: {
+    groupType: {
       type: String,
       required: true,
     },
@@ -22,11 +22,11 @@ const GroupSchema = new Schema(
       type: [String],
       required: false,
     },
-    not_paid: {
+    notPaid: {
       type: [String],
       required: false,
     },
-    product_id: {
+    productId: {
       type: String,
       required: true,
     },
