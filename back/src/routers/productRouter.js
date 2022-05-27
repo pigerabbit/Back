@@ -591,13 +591,9 @@ productRouter.put(
  *                          description: 입력하지 않은 파라미터
  *                          example: name
  */
-// 이미지가 아닌 필드 수정하는 함수 
 productRouter.put(
   "/products/:id",
   login_required,
-  productImgUpload.single("images"),
-  descriptionImgUpload.single("descriptionImg"),
-  detailImgUpload.single("detailImg"),
   [
     check("id")
       .trim()
@@ -608,6 +604,11 @@ productRouter.put(
     notFoundValidate,
     validate,
   ],
+  productImgUpload.fields([
+    { name: "images", maxCount: 1 },
+    { name: "descriptionImg", maxCount: 1 },
+    { name: "detailImg", maxCount: 1 },
+  ]),
   async (req, res, next) => {
     const userId = req.currentUserId;
     const id = req.params.id;
@@ -651,40 +652,6 @@ productRouter.put(
   }
 );
 
-// 이미지가 아닌 필드 수정하는 함수 
-productRouter.put(
-  "/products/:id",
-  login_required,
-  productImgUpload.single("images"),
-  descriptionImgUpload.single("descriptionImg"),
-  detailImgUpload.single("detailImg"),
-  [
-    check("id")
-      .trim()
-      .isLength()
-      .exists()
-      .withMessage("parameter 값으로 상품의 아이디를 입력해주세요.")
-      .bail(),
-    notFoundValidate,
-    validate,
-  ],
-  async (req, res, next) => {
-    const userId = req.currentUserId;
-
-    const toUpdate = {
-      user
-    };
-
-    const product = await ProductService.setProduct({ userId, id, toUpdate });
-
-    const body = {
-      success: true,
-      payload: updatedProduct,
-    }
-    
-    return res.status(200).send(body);
-  }
-);
 
 /**
  * @swagger
