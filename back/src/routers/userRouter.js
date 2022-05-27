@@ -96,9 +96,9 @@ userRouter.get(
   async function (req, res, next) {
     try {
       // jwt토큰에서 추출된 사용자 id를 가지고 db에서 사용자 정보를 찾음.
-      const user_id = req.currentUserId;
+      const userId = req.currentUserId;
       const currentUserInfo = await userService.getUserInfo({
-        user_id,
+        userId,
       });
 
       if (currentUserInfo.errorMessage) {
@@ -119,9 +119,9 @@ userRouter.get(
 userRouter.put("/users/:id", login_required, async function (req, res, next) {
   try {
     // URI로부터 사용자 id를 추출함.
-    const user_id = req.params.id;
+    const userId = req.params.id;
     // body data 로부터 업데이트할 사용자 정보를 추출함.
-    if (user_id != req.currentUserId) {
+    if (userId != req.currentUserId) {
       throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
     }
     //name,desciption,weight,height,gender만 변경가능하고 비밀번호는 다른 라우터를 사용
@@ -134,7 +134,7 @@ userRouter.put("/users/:id", login_required, async function (req, res, next) {
     const toUpdate = { name, address, business, location, distance };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
-    const updatedUser = await userService.setUser({ user_id, toUpdate });
+    const updatedUser = await userService.setUser({ userId, toUpdate });
 
     if (updatedUser.errorMessage) {
       throw new Error(updatedUser.errorMessage);
@@ -152,8 +152,8 @@ userRouter.put("/users/:id", login_required, async function (req, res, next) {
 
 userRouter.get("/users/:id", login_required, async function (req, res, next) {
   try {
-    const user_id = req.params.id;
-    const userInfo = await userService.getUserInfo({ user_id });
+    const userId = req.params.id;
+    const userInfo = await userService.getUserInfo({ userId });
 
     if (userInfo.errorMessage) {
       throw new Error(userInfo.errorMessage);
@@ -174,15 +174,15 @@ userRouter.put(
   login_required,
   async function (req, res, next) {
     try {
-      const user_id = req.params.id;
+      const userId = req.params.id;
       // body data 로부터 업데이트할 사용자 정보를 추출함.
-      if (user_id != req.currentUserId) {
+      if (userId != req.currentUserId) {
         throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
       }
       const currentPassword = req.body.currentPassword;
 
       const checkPassword = await userService.checkPassword({
-        user_id,
+        userId,
         password: currentPassword,
       });
 
@@ -195,7 +195,7 @@ userRouter.put(
       const toUpdate = { password: hashedPassword };
 
       const updatedUser = await userService.setUser({
-        user_id,
+        userId,
         toUpdate,
       });
       if (updatedUser.errorMessage) {
@@ -218,12 +218,12 @@ userRouter.post(
   login_required,
   async function (req, res, next) {
     try {
-      const user_id = req.params.id;
-      if (user_id != req.currentUserId) {
+      const userId = req.params.id;
+      if (userId != req.currentUserId) {
         throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
       }
       //추후 service단으로 빠질 예정입니다.
-      const user = await User.findById({ user_id });
+      const user = await User.findById({ userId });
 
       if (!user) {
         throw new Error("해당 메일로 가입된 사용자가 없습니다.");
@@ -237,7 +237,7 @@ userRouter.post(
       //   console.log(newPassword);
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       const toUpdate = { password: hashedPassword };
-      const updatedUser = await userService.setUser({ user_id, toUpdate });
+      const updatedUser = await userService.setUser({ userId, toUpdate });
 
       if (updatedUser.errorMessage) {
         throw new Error(updatedUser.errorMessage);
@@ -262,14 +262,14 @@ userRouter.delete(
   login_required,
   async function (req, res, next) {
     try {
-      const user_id = req.params.id;
+      const userId = req.params.id;
       const password = req.body.password;
-      if (user_id != req.currentUserId) {
+      if (userId != req.currentUserId) {
         throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
       }
 
       const checkPassword = await userService.checkPassword({
-        user_id,
+        userId,
         password,
       });
 
@@ -278,7 +278,7 @@ userRouter.delete(
       }
 
       const deletedUser = await userService.deleteUser({
-        user_id,
+        userId,
       });
 
       if (deletedUser.errorMessage) {

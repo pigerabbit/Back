@@ -32,15 +32,15 @@ export class User {
     return users;
   }
 
-  static async findById({ user_id }) {
-    const user = await UserModel.findOne({ id: user_id }).lean();
+  static async findById({ userId }) {
+    const user = await UserModel.findOne({ id: userId }).lean();
 
     return user;
   }
 
-  static async updateAll({ user_id, setter }) {
+  static async updateAll({ userId, setter }) {
     const updatedUser = await UserModel.findOneAndUpdate(
-      { id: user_id },
+      { id: userId },
       { $set: setter },
       { returnOriginal: false }
     );
