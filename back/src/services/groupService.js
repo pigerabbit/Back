@@ -5,15 +5,15 @@ import { nextTick } from "process";
 import { GroupModel } from "../db/schemas/group";
 
 export class groupService {
-  static async addGroup({ group_type, location, deadline, product_id, state }) {
-    const group_id = crypto.randomUUID();
+  static async addGroup({ groupType, location, deadline, productId, state }) {
+    const groupId = crypto.randomUUID();
 
     const newGroup = {
-      group_id,
-      group_type,
+      groupId,
+      groupType,
       location,
       deadline,
-      product_id,
+      productId,
       state,
     };
 
@@ -22,28 +22,28 @@ export class groupService {
     return createdNewGroup;
   }
 
-  static async setParticipants({ group_id, toUpdate }) {
-    let groupInfo = await Group.findByGroupId({ group_id });
+  static async setParticipants({ groupId, toUpdate }) {
+    let groupInfo = await Group.findByGroupId({ groupId });
     console.log("groupInfo:", groupInfo);
     if (!groupInfo) {
       const errorMessage =
-        "정보가 없습니다. group_id 값을 다시 한 번 확인해 주세요.";
+        "정보가 없습니다. groupId 값을 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
 
     let participantsInfo = groupInfo.participants;
     let newValue = {};
 
-    const index = participantsInfo.findIndex((f) => f === toUpdate.user_id);
+    const index = participantsInfo.findIndex((f) => f === toUpdate.userId);
     console.log("index:", index);
     if (index > -1) {
       participantsInfo.splice(index, 1);
     } else {
-      participantsInfo.push(toUpdate.user_id);
+      participantsInfo.push(toUpdate.userId);
     }
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(
-      { group_id },
+      { groupId },
       { $set: { participants: newValue } },
       { returnOriginal: false }
     );
@@ -51,39 +51,39 @@ export class groupService {
     return updatedParticipants;
   }
 
-  static async setNotPaid({ group_id, toUpdate }) {
-    let groupInfo = await Group.findByGroupId({ group_id });
+  static async setNotPaid({ groupId, toUpdate }) {
+    let groupInfo = await Group.findByGroupId({ groupId });
 
     if (!groupInfo) {
       const errorMessage =
-        "정보가 없습니다. group_id 값을 다시 한 번 확인해 주세요.";
+        "정보가 없습니다. groupId 값을 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
 
-    let notPaidInfo = groupInfo.not_paid;
+    let notPaidInfo = groupInfo.notPaid;
     let newValue = {};
 
-    const index = notPaidInfo.findIndex((f) => f === toUpdate.user_id);
+    const index = notPaidInfo.findIndex((f) => f === toUpdate.userId);
 
     if (index > -1) {
       notPaidInfo.splice(index, 1);
     } else {
-      notPaidInfo.push(toUpdate.user_id);
+      notPaidInfo.push(toUpdate.userId);
     }
     newValue = notPaidInfo;
     const updatedNotPaid = await GroupModel.findOneAndUpdate(
-      { group_id },
-      { $set: { not_paid: newValue } },
+      { groupId },
+      { $set: { notPaid: newValue } },
       { returnOriginal: false }
     );
 
     return updatedNotPaid;
   }
 
-  static async getParticipants({ group_id }) {
-    const groupInfo = await Group.findByGroupId({ group_id });
+  static async getParticipants({ groupId }) {
+    const groupInfo = await Group.findByGroupId({ groupId });
     if (!groupInfo) {
-      const errorMessage = "group_id에 대한 groupInfo가 존재하지 않습니다.";
+      const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
       return { errorMessage };
     }
 
@@ -92,32 +92,32 @@ export class groupService {
     return participants;
   }
 
-  static async getNotPaid({ group_id }) {
-    const groupInfo = await Group.findByGroupId({ group_id });
+  static async getNotPaid({ groupId }) {
+    const groupInfo = await Group.findByGroupId({ groupId });
     if (!groupInfo) {
-      const errorMessage = "group_id에 대한 groupInfo가 존재하지 않습니다.";
+      const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
       return { errorMessage };
     }
 
-    const notPaid = groupInfo.not_paid;
+    const notPaid = groupInfo.notPaid;
 
     return notPaid;
   }
 
-  static async setGroup({ group_id, toUpdate }) {
-    let group = await Group.findByGroupId({ group_id });
+  static async setGroup({ groupId, toUpdate }) {
+    let group = await Group.findByGroupId({ groupId });
 
     if (!group) {
       const errorMessage = "그룹 아이디를 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
 
-    const updatedGroup = await Group.updateAll({ group_id, setter: toUpdate });
+    const updatedGroup = await Group.updateAll({ groupId, setter: toUpdate });
     return updatedGroup;
   }
 
-  static async getGroupInfo({ group_id }) {
-    const group = await Group.findByGroupId({ group_id });
+  static async getGroupInfo({ groupId }) {
+    const group = await Group.findByGroupId({ groupId });
 
     // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!group) {
@@ -128,7 +128,7 @@ export class groupService {
     return group;
   }
 
-  /** 전체 상품 반환 함수
+  /** 공동구매 개수를 기준으로 내림차순 정렬한 상품들 리스트
    *
    * @returns productList
    */
@@ -136,7 +136,7 @@ export class groupService {
     let productList = await GroupModel.aggregate([
       {
         $group: {
-          _id: "$product_id",
+          _id: "$productId",
           total_pop: { $sum: 1 },
         },
       },
@@ -146,7 +146,7 @@ export class groupService {
       return b.total_pop - a.total_pop;
     });
 
-    return productList;
+    return productList.slice(0, 10);
   }
 
   static async getGroups() {

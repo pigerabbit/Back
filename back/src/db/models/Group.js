@@ -6,14 +6,14 @@ class Group {
     return createdNewGroup;
   }
 
-  static async findByGroupId({ group_id }) {
-    const GroupInfo = await GroupModel.findOne({ group_id });
+  static async findByGroupId({ groupId }) {
+    const GroupInfo = await GroupModel.findOne({ groupId });
     return GroupInfo;
   }
 
-  static async updateAll({ group_id, setter }) {
+  static async updateAll({ groupId, setter }) {
     const updatedGroup = await GroupModel.findOneAndUpdate(
-      { group_id },
+      { groupId },
       { $set: setter },
       { returnOriginal: false }
     );

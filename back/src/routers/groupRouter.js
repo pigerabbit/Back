@@ -10,13 +10,13 @@ groupRouter.post(
   login_required,
   async function (req, res, next) {
     try {
-      const { group_type, location, deadline, product_id, state } = req.body;
+      const { groupType, location, deadline, productId, state } = req.body;
 
       const newGroup = await groupService.addGroup({
-        group_type,
+        groupType,
         location,
         deadline,
-        product_id,
+        productId,
         state,
       });
 
@@ -36,16 +36,16 @@ groupRouter.post(
 );
 
 groupRouter.put(
-  "/groups/:group_id/participants",
+  "/groups/:groupId/participants",
   login_required,
   async function (req, res, next) {
     try {
-      const user_id = req.body.user_id;
-      const group_id = req.params.group_id;
+      const userId = req.body.userId;
+      const groupId = req.params.groupId;
 
-      const toUpdate = { user_id };
+      const toUpdate = { userId };
       const updatedGroupInfo = await groupService.setParticipants({
-        group_id,
+        groupId,
         toUpdate,
       });
 
@@ -58,7 +58,7 @@ groupRouter.put(
         payload: updatedGroupInfo,
       };
 
-      res.status(200).json(updatedGroupInfo);
+      res.status(200).json(body);
     } catch (error) {
       next(error);
     }
@@ -66,16 +66,16 @@ groupRouter.put(
 );
 
 groupRouter.put(
-  "/groups/:group_id/not-paid",
+  "/groups/:groupId/notPaid",
   login_required,
   async function (req, res, next) {
     try {
-      const user_id = req.body.user_id;
-      const group_id = req.params.group_id;
+      const userId = req.body.userId;
+      const groupId = req.params.groupId;
 
-      const toUpdate = { user_id };
+      const toUpdate = { userId };
       const updatedGroupInfo = await groupService.setNotPaid({
-        group_id,
+        groupId,
         toUpdate,
       });
 
@@ -88,7 +88,7 @@ groupRouter.put(
         payload: updatedGroupInfo,
       };
 
-      res.status(200).json(updatedGroupInfo);
+      res.status(200).json(body);
     } catch (error) {
       next(error);
     }
@@ -96,13 +96,13 @@ groupRouter.put(
 );
 
 groupRouter.get(
-  "/groups/:group_id/participants",
+  "/groups/:groupId/participants",
   login_required,
   async function (req, res, next) {
     try {
-      const group_id = req.params.group_id;
+      const groupId = req.params.groupId;
 
-      const participantsInfo = await groupService.getParticipants({ group_id });
+      const participantsInfo = await groupService.getParticipants({ groupId });
 
       if (participantsInfo.errorMessage) {
         throw new Error(participantsInfo.errorMessage);
@@ -121,13 +121,13 @@ groupRouter.get(
 );
 
 groupRouter.get(
-  "/groups/:group_id/not-paid",
+  "/groups/:groupId/notPaid",
   login_required,
   async function (req, res, next) {
     try {
-      const group_id = req.params.group_id;
+      const groupId = req.params.groupId;
 
-      const notPaidInfo = await groupService.getNotPaid({ group_id });
+      const notPaidInfo = await groupService.getNotPaid({ groupId });
 
       if (notPaidInfo.errorMessage) {
         throw new Error(notPaidInfo.errorMessage);
@@ -146,21 +146,21 @@ groupRouter.get(
 );
 
 groupRouter.put(
-  "/groups/:group_id",
+  "/groups/:groupId",
   login_required,
   async function (req, res, next) {
     try {
-      const group_id = req.params.group_id;
+      const groupId = req.params.groupId;
 
-      const group_type = req.body.group_type;
+      const groupType = req.body.groupType;
       const location = req.body.location;
       const deadline = req.body.deadline;
-      const product_id = req.body.product_id;
+      const productId = req.body.productId;
       const state = req.body.state;
 
-      const toUpdate = { group_type, location, deadline, product_id, state };
+      const toUpdate = { groupType, location, deadline, productId, state };
 
-      const updatedGroup = await groupService.setGroup({ group_id, toUpdate });
+      const updatedGroup = await groupService.setGroup({ groupId, toUpdate });
 
       if (updatedGroup.errorMessage) {
         throw new Error(updatedGroup.errorMessage);
@@ -179,12 +179,12 @@ groupRouter.put(
 );
 
 groupRouter.get(
-  "/groups/:group_id",
+  "/groups/:groupId",
   login_required,
   async function (req, res, next) {
     try {
-      const group_id = req.params.group_id;
-      const groupInfo = await groupService.getGroupInfo({ group_id });
+      const groupId = req.params.groupId;
+      const groupInfo = await groupService.getGroupInfo({ groupId });
 
       if (groupInfo.errorMessage) {
         throw new Error(groupInfo.errorMessage);
