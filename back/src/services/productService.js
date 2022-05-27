@@ -165,8 +165,6 @@ class ProductService {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
      }
-  
-    return productList;
   }
 
   /** 상품 id와 일치하는 상품을 반환하는 함수
