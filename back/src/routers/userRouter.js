@@ -4,6 +4,33 @@ import { login_required } from "../middlewares/login_required";
 import { userAuthService } from "../services/userService";
 
 const userAuthRouter = Router();
+const { userImageUpload } = require("../utils/s3");
+
+userAuthRouter.put(
+  "/users/:id/profileImage",
+  login_required,
+  userImageUpload.single("userImg"),
+  async function (req, res, next) {
+    try {
+      const user_id = req.params.id;
+      // if (user_id != req.currentUserId) {
+      //   throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
+      // }
+      console.log("18번째 줄:", req.file);
+      const toUpdate = { imageLink: req.file.location };
+      const updatedUser = await userAuthService.setUser({
+        user_id,
+        toUpdate,
+      });
+      if (updatedUser.errorMessage) {
+        throw new Error(updatedUser.errorMessage);
+      }
+      res.json(updatedUser);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 /**
  *  @swagger

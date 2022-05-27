@@ -12,7 +12,7 @@ class User {
   }
 
   static async findById({ user_id }) {
-    const user = await UserModel.findOne({ id: user_id });
+    const user = await UserModel.findOne({ id: user_id }).lean();
     return user;
   }
 
@@ -30,6 +30,15 @@ class User {
       filter,
       update,
       option
+    );
+    return updatedUser;
+  }
+
+  static async updateAll({ user_id, setter }) {
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { id: user_id },
+      { $set: setter },
+      { returnOriginal: false }
     );
     return updatedUser;
   }
