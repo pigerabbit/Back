@@ -449,7 +449,7 @@ productRouter.get(
   }
 );
 
-// query : page, perPage, search(검색어), option(salePrice, reviews, views, groups)
+// query : page, perPage, search(검색어), option(groups, salePrice, reviews, views)
 productRouter.get(
   "/products/search",
   // [ express-validator 왜 작동을 안할까,,?
@@ -522,6 +522,7 @@ productRouter.get(
   }
 );
 
+// 후기, 문의, 공구 참여자 게시글
 productRouter.put(
   "/products/:id/reviews",
   login_required,
