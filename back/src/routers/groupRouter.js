@@ -221,4 +221,20 @@ groupRouter.get(
   }
 );
 
+groupRouter.get("/grouplist", login_required, async function (req, res, next) {
+  try {
+    // 전체 사용자 목록을 얻음
+    const groups = await groupService.getGroups();
+
+    const body = {
+      success: true,
+      payload: groups,
+    };
+
+    res.status(200).send(body);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export { groupRouter };

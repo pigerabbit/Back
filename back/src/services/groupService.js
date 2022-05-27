@@ -148,4 +148,9 @@ export class groupService {
 
     return productList;
   }
+
+  static async getGroups() {
+    const groups = await Group.findAll();
+    return groups;
+  }
 }

@@ -19,6 +19,11 @@ class Group {
     );
     return updatedGroup;
   }
+
+  static async findAll() {
+    const groups = await GroupModel.find({});
+    return groups;
+  }
 }
 
 export { Group };
