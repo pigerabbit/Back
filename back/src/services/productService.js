@@ -110,15 +110,36 @@ class ProductService {
    * 
    * @returns 카테고리별 상품 Object List
    */
-  static async getProductCategoryList({ category, page, perPage }) { 
-    const productList = await Product.findProductCategoryList({ category, page, perPage });
+  static async getProductCategoryList({
+    category,
+    option,
+    page,
+    perPage,
+  }) { 
+    const productList = await Product.findProductCategoryList({ category, option, page, perPage });
 
     if (productList.len === 0) { 
       const errorMessage = "해당 카테고리 상품이 존재하지 않습니다";
       return { errorMessage };
     }
 
-    return productList;
+    if (option === "groups") {
+      const productList = await Product.findProductSortByGroups({ category, page, perPage });
+      if (product)
+      return productList;
+    } else if (option === "reviews") {
+      const productList = await Product.findProductSortByReviews({ category, page, perPage });
+      return productList;
+    } else if (option === "views") {
+      const productList = await Product.findProductSortByViews({ category, page, perPage });
+      return productList;
+    } else if (option === "salePrice") {
+      const productList = await Product.findProductSortByPrice({ category, page, perPage });
+      return productList;
+    } else {
+      const errorMessage = "존재하지 않는 옵션입니다.";
+      return { errorMessage };
+    }
   }
 
   /** 검색어로 상품을 반환하는 함수
@@ -167,7 +188,7 @@ class ProductService {
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
-     }
+    }
   }
 
   /** 상품 id와 일치하는 상품을 반환하는 함수

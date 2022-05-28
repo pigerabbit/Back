@@ -182,7 +182,6 @@ productRouter.post(
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-
       const images = req.files["images"]?.[0].location ?? null;
       const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
       const detailImg = req.files["detailImg"]?.[0].location ?? null;
@@ -199,7 +198,6 @@ productRouter.post(
         shippingFeeCon,
         detail,
         shippingInfo,
-
       } = req.body;
 
       const newProduct = await ProductService.addProduct({
@@ -218,7 +216,6 @@ productRouter.post(
         detail,
         detailImg,
         shippingInfo,
-
       });
 
       const body = {
@@ -226,7 +223,7 @@ productRouter.post(
         payload: newProduct,
       };
   
-      res.status(201).json(body);
+      return res.status(201).json(body);
     } catch (err) { 
       next(err);
     }
@@ -305,7 +302,7 @@ productRouter.post(
  *                      type: number
  *                      example: 30
  */
-// query : page, perPage, category
+// query : page, perPage, category, option(groups, salePrice, reviews, views)
 productRouter.get(
   "/products",
   [
@@ -325,7 +322,7 @@ productRouter.get(
     validate,
   ],
   async (req, res, next) => {
-    const { page, perPage, category } = req.query;
+    const { page, perPage, category, option } = req.query;
 
     if (page <= 0 || perPage <= 0) { 
       const body = {
@@ -333,34 +330,39 @@ productRouter.get(
         errorMessage: "잘못된 페이지를 입력하셨습니다.",
       }
       
-      res.status(400).send(body);
+      return res.status(400).send(body);
     }
 
     // 카테고리 쿼리가 존재한다면 카테고리별 상품 조회
     if (category !== undefined) { 
-      const productList = await ProductService.getProductCategoryList({ category, page, perPage });
+      const productList = await ProductService.getProductCategoryList({
+        category,
+        option,
+        page,
+        perPage,
+      });
 
-      // 카테고리 이름이 존재하지 않는다면
-      if (productList.errorMessage) { 
-        const body = {
-          success: false,
-          error: productList.errorMessage,
-        }
-
-        res.status(400).send(body);
+    // 카테고리 이름이 존재하지 않는다면
+    if (productList.errorMessage) { 
+      const body = {
+        success: false,
+        error: productList.errorMessage,
       }
+
+      return res.status(400).send(body);
+    }
 
       // const body = {
       //   success: true,
       //   productList,
       // };
       
-      res.status(200).send(productList);
+      return res.status(200).send(productList);
     } 
 
     // 카테고리 쿼리가 없다면 전체 상품 조회
     const productList = await ProductService.getProductList({ page, perPage });
-    res.status(200).send(productList);
+    return res.status(200).send(productList);
   }
 );
 
@@ -399,7 +401,7 @@ productRouter.get(
           errorMessage: "잘못된 페이지를 입력하셨습니다.",
         }
         
-        res.status(400).send(body);
+        return res.status(400).send(body);
       }
       // search 쿼리가 없다면 오류
       if (!search) {
@@ -408,7 +410,7 @@ productRouter.get(
           errorMessage: "검색어를 입력해주세요",
         };
         
-        res.status(400).send(body);
+        return res.status(400).send(body);
       }
 
       // option 쿼리가 존재한다면 옵션에 맞게 상품 조회
@@ -422,13 +424,13 @@ productRouter.get(
             errorMessage: productList.errorMessage,
           }
     
-          res.status(400).send(body);
+          return res.status(400).send(body);
         }
 
-        res.status(200).send(productList);
+        return res.status(200).send(productList);
       } else { // 아니라면 최신순 정렬
         const productList = await ProductService.getProductSearch({ search, page, perPage });
-        res.status(200).send(productList);
+        return res.status(200).send(productList);
       }
     } catch (err) {
       next(err);
@@ -636,7 +638,7 @@ productRouter.put(
         error: updatedProduct.errorMessage,
       }
 
-      res.status(400).send(body);
+      return res.status(400).send(body);
     }
 
     const body = {
@@ -644,7 +646,7 @@ productRouter.put(
       payload: updatedProduct,
     }
     
-    res.status(200).send(body);
+    return res.status(200).send(body);
   }
 );
 
@@ -767,7 +769,7 @@ productRouter.get(
         error: product.errorMessage,
       };
   
-      res.status(400).send(body);
+      return res.status(400).send(body);
     }
 
     const body = {
@@ -775,7 +777,7 @@ productRouter.get(
       payload: product,
     };
 
-    res.status(200).send(body);
+    return res.status(200).send(body);
   }
 );
 
@@ -868,7 +870,7 @@ productRouter.delete(
         error: product.errorMessage,
       };
       
-      res.status(400).send(body);
+      return res.status(400).send(body);
     }
     
     const deletedProduct = await ProductService.deleteProduct({ userId, id });
@@ -879,7 +881,7 @@ productRouter.delete(
         error: deletedProduct.errorMessage,
       };
 
-      res.status(403).send(body);
+      return res.status(403).send(body);
     }
 
     const body = {
@@ -887,7 +889,7 @@ productRouter.delete(
       payload: "상품 삭제를 성공했습니다.",
     }
 
-    res.status(200).send(body);
+    return res.status(200).send(body);
   }
 );
 
@@ -1011,7 +1013,7 @@ productRouter.get(
         error: user.errorMessage,
       };
 
-      res.status(400).send(body); 
+      return res.status(400).send(body); 
     }
 
     // 존재한다면 유저가 판매하는 상품 목록 조회
@@ -1023,7 +1025,7 @@ productRouter.get(
       payload: productList,
     };
 
-    res.status(200).send(body);
+    return res.status(200).send(body);
   }
 );
 

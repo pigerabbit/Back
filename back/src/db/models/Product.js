@@ -72,6 +72,99 @@ class Product {
     return { productList, totalPage, len };
   }
 
+  /** 카테고리 + 공동구매순 정렬 함수
+   * 
+  */ 
+   static async findProductSortByGroups({
+    category,
+    page,
+    perPage,
+  }) { 
+    const len = await ProductModel.countDocuments({ category });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({
+      category: { $regex: category },
+    })
+      .sort({ groups: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean();
+    
+    return { productList, totalPage, len };
+  }
+
+  /** 카테고리 + 리뷰순 정렬 함수
+   * 
+  */ 
+   static async findProductSortByReviews({
+    category,
+    page,
+    perPage,
+  }) { 
+    const len = await ProductModel.countDocuments({ category });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({
+      category: { $regex: category },
+    })
+      .sort({ reviews: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean();
+    
+    return { productList, totalPage, len };
+  }
+
+  /** 카테고리 + 조회순 정렬 함수
+   * 
+  */ 
+   static async findProductSortByViews({
+    category,
+    page,
+    perPage,
+  }) { 
+    const len = await ProductModel.countDocuments({ category });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({
+      category: { $regex: category },
+    })
+      .sort({ views: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean();
+    
+    return { productList, totalPage, len };
+  }
+  
+  /** 카테고리 + 가격순 정렬 함수
+   * 
+  */ 
+  static async findProductSortByPrice({
+    category,
+    page,
+    perPage,
+  }) { 
+    const len = await ProductModel.countDocuments({ category });
+    const totalPage = Math.ceil(len / perPage);
+
+    const productList = await ProductModel.find({
+      category: { $regex: category },
+    })
+      .sort({ salePrice: 1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean();
+    
+    return { productList, totalPage, len };
+  }
+
+  /** 상품 삭제 함수
+   * 
+   * @param {uuid} id - 상품 id 
+   * @returns 
+   */
   static async deleteProduct({ id }) { 
     const product = await ProductModel.deleteOne({ id });
     return product;
