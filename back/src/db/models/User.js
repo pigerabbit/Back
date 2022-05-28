@@ -25,7 +25,7 @@ export class User {
         name: true,
         email: true,
         address: true,
-        business: true,
+        businessName: true,
         type: true,
       }
     );

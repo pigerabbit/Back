@@ -6,7 +6,15 @@ import sendMail from "../utils/send-mail";
 import { getRequiredInfoFromData } from "../utils/user";
 
 class userService {
-  static async addUser({ id, name, email, password, address, business, type }) {
+  static async addUser({
+    id,
+    name,
+    email,
+    password,
+    address,
+    businessName,
+    type,
+  }) {
     //일반회원가입일때
     if (type === "sogongx2") {
       const emailExits = await User.isEmailExists({ email, type });
@@ -34,7 +42,7 @@ class userService {
       email,
       password: hashedPassword,
       address,
-      business,
+      businessName,
       type,
       imageLink,
     };

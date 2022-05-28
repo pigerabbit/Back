@@ -26,9 +26,9 @@ const UserSchema = new Schema(
       type: Number,
       required: false,
     },
-    business: {
+    businessName: {
       type: String,
-      required: true,
+      required: false,
     },
     address: {
       type: String,
@@ -40,6 +40,10 @@ const UserSchema = new Schema(
     },
     imageLink: {
       type: String,
+      required: false,
+    },
+    reportedBy: {
+      type: [String],
       required: false,
     },
   },
