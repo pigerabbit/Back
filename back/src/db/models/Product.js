@@ -46,6 +46,8 @@ class Product {
 
     const productList = await ProductModel.find()
       .sort({ createdAt: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean();
@@ -65,6 +67,8 @@ class Product {
 
     const productList = await ProductModel.find({ category })
       .sort({ createdAt: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean();
@@ -87,6 +91,8 @@ class Product {
       category: { $regex: category },
     })
       .sort({ groups: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean();
@@ -109,6 +115,8 @@ class Product {
       category: { $regex: category },
     })
       .sort({ reviews: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean();
@@ -131,6 +139,8 @@ class Product {
       category: { $regex: category },
     })
       .sort({ views: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean();
@@ -153,6 +163,8 @@ class Product {
       category: { $regex: category },
     })
       .sort({ salePrice: 1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean();
@@ -190,6 +202,8 @@ class Product {
 
     const productList = await ProductModel.find({ name: { $regex: search } })
       .sort({ createdAt: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean()
@@ -207,6 +221,8 @@ class Product {
 
     const productList = await ProductModel.find({ name: { $regex: search } })
       .sort({ groups: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean()
@@ -224,6 +240,8 @@ class Product {
 
     const productList = await ProductModel.find({ name: { $regex: search } })
       .sort({ salePrice: 1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean()
@@ -241,6 +259,8 @@ class Product {
 
     const productList = await ProductModel.find({ name: { $regex: search } })
       .sort({ reviews: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean()
@@ -252,12 +272,14 @@ class Product {
    * 
    * @returns productList
    */
-   static async findProductSearchSortByViews({ search, page, perPage }) { 
+  static async findProductSearchSortByViews({ search, page, perPage }) { 
     const len = await ProductModel.countDocuments({ name: { $regex: search } });
     const totalPage = Math.ceil(len / perPage);
 
     const productList = await ProductModel.find({ name: { $regex: search } })
       .sort({ views: -1 })
+      .select('-_id')
+      .select('-__v')
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean()
