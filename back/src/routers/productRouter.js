@@ -443,18 +443,6 @@ productRouter.get(
   }
 );
 
-// 후기, 문의, 공구 참여자 게시글
-productRouter.put(
-  "/products/:id/reviews",
-  login_required,
-  async (req, res, next) => {
-    const userId = req.currentUserId;
-    const { id } = req.params;
-
-
-  }
-);
-
 /**
  * @swagger
  * /products:
