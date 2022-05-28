@@ -20,8 +20,8 @@ class Group {
     return updatedGroup;
   }
 
-  static async findAll() {
-    const groups = await GroupModel.find({});
+  static async findAll({ productId }) {
+    const groups = await GroupModel.find({ productId });
     return groups;
   }
 }

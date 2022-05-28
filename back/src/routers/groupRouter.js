@@ -239,15 +239,15 @@ groupRouter.get(
   }
 );
 
+// 상품별 공동구매 리스트를 반환하는 함수
 groupRouter.get("/groups", login_required, async function (req, res, next) {
   try {
-    // 전체 사용자 목록을 얻음
     const productId = req.body.productId;
-    const groups = await groupService.getGroupByProductId({ productId });
+    const groupList = await groupService.getGroupByProductId({ productId });
 
     const body = {
       success: true,
-      payload: groups,
+      payload: groupList,
     };
 
     res.status(200).send(body);
