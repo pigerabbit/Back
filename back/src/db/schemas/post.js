@@ -4,7 +4,7 @@ const model = mongoose.model;
 
 const PostSchema = new Schema(
   {
-    id: {
+    postId: {
       type: String,
       unique: true,
       required: true,

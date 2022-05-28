@@ -8,9 +8,8 @@ const { postImageUpload } = require("../utils/s3");
 
 const postRouter = Router();
 
-/** POST /products - 글 생성 API 
+/** POST /posts - 글 생성 API 
  * body : type,
- *        sender,
  *        receiver,
  *        title,
  *        content,
@@ -19,31 +18,27 @@ const postRouter = Router();
 postRouter.post(
   "/posts",
   login_required,
-  postImageUpload.single("postImg"),
   [
     body("type")
-      .exists()
-      .withMessage("댓글 내용을 입력해주세요.")
-      .bail(),
-    body("sender")
-      .exists()
-      .withMessage("닉네임을 입력해주세요.")
+    .exists()
+    .withMessage("글 타입을 입력해주세요.")
       .bail(),
     body("receiver")
-      .exists()
-      .withMessage("위치를 입력해주세요")
-      .bail(),
+    .exists()
+    .withMessage("receiver를 입력해주세요")
+    .bail(),
     body("content")
-      .exists()
-      .withMessage("위치를 입력해주세요")
-      .bail(),
+    .exists()
+    .withMessage("content를 입력해주세요")
+    .bail(),
     validate,
   ],
+  postImageUpload.single("postImg"),
   async (req, res, next) => {
     try {
+      const sender = req.currentUserId;
       const { 
         type,
-        sender,
         receiver,
         title,
         content,
@@ -73,7 +68,7 @@ postRouter.post(
 );
 
 
-/** GET /products - 글 읽기 API 
+/** GET /posts - 글 읽기 API 
  * query : receiver
 */
 postRouter.get(
@@ -81,7 +76,7 @@ postRouter.get(
   [
     query("receiver")
       .exists()
-      .withMessage("query에 receiver 값을 입력해주세요.")
+      .withMessage("query에 receiver를 입력해주세요.")
       .bail(),
     validate,
   ],
@@ -111,25 +106,60 @@ postRouter.get(
   }
 );
 
+/** PUT /posts/:id - 글 수정 API 
+ * params: id
+ * body : title,
+ *        content,
+ * file : postImg
+*/
 postRouter.put(
   "/posts/:id",
   login_required,
+  [
+    check("postId")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 postId를 입력해주세요.")
+      .bail(),
+    // body("content")
+    //   .exists()
+    //   .withMessage("content를 입력해주세요.")
+    //   .bail(),
+    // validate,
+  ],
+  postImageUpload.single("postImg"),
   async (req, res, next) => {
     try {
-      const { 
-        type,
-        sender,
-        receiver,
-        title,
-        content,
-      } = req.body;
-
+      const sender = req.currentUserId;
+      const postId = req.params.postId;
+      const title = req.body.title ?? null;
+      const content = req.body.content ?? null;
       const postImg = req.file?.location ?? null;
 
-      
+      const toUpdate = {
+        title,
+        content,
+        postImg,
+      }
 
+      const updatedPost = await PostService.setPost({ sender, postId, toUpdate });
 
+      if (updatedPost.errorMessage) {
+        const body = {
+          success: false,
+          error: updatedPost.errorMessage,
+        }
+        
+        return res.status(400).send(body);
+      } 
 
+      const body = {
+        success: true,
+        payload: updatedPost,
+      }
+
+      return res.status(200).send(body);
     } catch (err) { 
       next(err);
     }

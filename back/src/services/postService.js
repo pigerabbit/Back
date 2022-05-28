@@ -20,9 +20,9 @@ class PostService {
     content,
     postImg,
   }) {
-    const id = crypto.randomUUID();
+    const postId = crypto.randomUUID();
     const newPost = {
-      id,
+      postId,
       type,
       sender,
       receiver,
@@ -50,6 +50,27 @@ class PostService {
     }
 
     return postList;
+  }
+
+  /** 
+   * 
+  */
+  static async setPost({ sender, postId, toUpdate }) { 
+    const post = await Post.findPost({ postId });
+
+    if (!post) { 
+      const errorMessage = "게시글이 존재하지 않습니다.";
+      return { errorMessage };
+    }
+    console.log("찾은 친구", post);
+    console.log("받은 친구", sender);
+    if (post.sender !== sender) {
+      const errorMessage = "글을 쓴 유저만 수정이 가능합니다.";
+      return { errorMessage };
+    }
+
+    const updatedPost = await Post.update({ sender, toUpdate });
+    return updatedPost;
   }
 }
 
