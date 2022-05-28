@@ -393,7 +393,8 @@ productRouter.get(
   // ],
   async (req, res, next) => {
     try {
-      const { page, perPage, search, option } = req.query;
+      const { page, perPage, option } = req.query;
+      let search = decodeURIComponent(req.query.search);
 
       if (page <= 0 || perPage <= 0) {
         const body = {
