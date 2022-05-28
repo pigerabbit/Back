@@ -36,7 +36,8 @@ class Product {
   }
 
   /** 전체 상품 반환 함수
-   * 
+   * @param {Number} page - 현재 페이지
+   * @param {Number} perPage - 한 페이지당 보여줄 페이지 수
    * @returns productList
    */
   static async findProductList({ page, perPage }) { 
@@ -53,7 +54,9 @@ class Product {
   }
 
   /** 카테고리별 상품 반환 함수
-   * 
+   * @param {String} category - 카테고리
+   * @param {Number} page - 현재 페이지
+   * @param {Number} perPage - 한 페이지당 보여줄 페이지 수
    * @returns productList
    */
   static async findProductCategoryList({ category, page, perPage }) { 
@@ -74,7 +77,7 @@ class Product {
     return product;
   }
   
-  /** 상품 id 반환 함수 for 쨍
+  /** 상품 id 리스트 반환 함수 for 쨍
    * 
    * @returns productIdList
    */
@@ -105,7 +108,7 @@ class Product {
    * 
    * @returns productList
    */
-   static async findProductSearchSortByGroups({ search, page, perPage }) { 
+  static async findProductSearchSortByGroups({ search, page, perPage }) { 
     const len = await ProductModel.countDocuments({ name: { $regex: search } });
     const totalPage = Math.ceil(len / perPage);
 

@@ -199,7 +199,7 @@ productRouter.post(
         shippingFeeCon,
         detail,
         shippingInfo,
-        policy,
+
       } = req.body;
 
       const newProduct = await ProductService.addProduct({
@@ -218,7 +218,7 @@ productRouter.post(
         detail,
         detailImg,
         shippingInfo,
-        policy,
+
       });
 
       const body = {
@@ -606,7 +606,6 @@ productRouter.put(
     const shippingFeeCon = req.body.shippingFeeCon ?? null;
     const detail = req.body.detail ?? null;
     const shippingInfo = req.body.shippingInfo ?? null;
-    const policy = req.body.policy ?? null;
 
     const images = req.files["images"]?.[0].location ?? null;
     const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
@@ -627,7 +626,6 @@ productRouter.put(
       detail,
       detailImg,
       shippingInfo,
-      policy,
     };
 
     const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });

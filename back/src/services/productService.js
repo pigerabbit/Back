@@ -20,7 +20,6 @@ class ProductService {
    * @param {Strings} detail - 상품 상세 설명
    * @param {Strings} detailImg - 상품 상세 설명 사진
    * @param {Strings} shippingInfo - 배송 안내
-   * @param {Strings} policy - 교환 및 환불 정책
    * @return {Object} 생성된 상품 정보 
    */
   static async addProduct({
@@ -38,8 +37,7 @@ class ProductService {
     shippingFeeCon,
     detail,
     detailImg,
-    shippingInfo,
-    policy,
+    shippingInfo
   }) { 
     const id = crypto.randomUUID();
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
@@ -62,7 +60,6 @@ class ProductService {
       detail,
       detailImg,
       shippingInfo,
-      policy,
     };
 
     const product = await Product.create({ newProduct });
