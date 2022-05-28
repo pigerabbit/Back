@@ -16,12 +16,11 @@ userRouter.put(
   async function (req, res, next) {
     try {
       const userId = req.params.id;
-      // console.log("userId:", userId);
-      // console.log("req:", req);
-      // if (userId !== req.currentUserId) {
-      //   throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
-      // }
-      console.log("18번째 줄:", req.file);
+
+      if (userId !== req.currentUserId) {
+        throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
+      }
+
       const toUpdate = { imageLink: req.file.location };
       const updatedUser = await userService.setUser({
         userId,
@@ -43,9 +42,9 @@ userRouter.put(
   async function (req, res, next) {
     try {
       const userId = req.params.id;
-      // if (userId != req.currentUserId) {
-      //   throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
-      // }
+      if (userId != req.currentUserId) {
+        throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
+      }
       const user = await userService.getUserInfo({ userId });
       if (user.errorMessage) {
         throw new Error(user.errorMessage);
@@ -300,8 +299,7 @@ userRouter.post(
       const email = user.email;
       //8개 무작위 숫자 string
       const newPassword = generateRandomPassword();
-      console.log(newPassword);
-      //   console.log(newPassword);
+
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       const toUpdate = { password: hashedPassword };
       const updatedUser = await userService.setUser({ userId, toUpdate });
@@ -385,9 +383,8 @@ userRouter.put(
   async function (req, res, next) {
     try {
       // currentId로 바꿀 예정
-      const userId = req.body.userId;
+      const userId = req.currentUserId;
       const badId = req.params.badId;
-      console.log("Router/badId:", badId);
 
       const toUpdate = { userId };
       const updatedBadIdInfo = await userService.setReportedBy({
@@ -404,6 +401,25 @@ userRouter.put(
         payload: updatedBadIdInfo,
       };
 
+      res.status(200).json(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+userRouter.get(
+  "/users/:id/countReport",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.params.id;
+      const countReport = await userService.getCountReport({ userId });
+
+      const body = {
+        success: true,
+        payload: countReport,
+      };
       res.status(200).json(body);
     } catch (error) {
       next(error);
