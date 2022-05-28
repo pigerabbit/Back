@@ -182,7 +182,6 @@ productRouter.post(
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-
       const images = req.files["images"]?.[0].location ?? null;
       const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
       const detailImg = req.files["detailImg"]?.[0].location ?? null;
@@ -199,7 +198,6 @@ productRouter.post(
         shippingFeeCon,
         detail,
         shippingInfo,
-        policy,
       } = req.body;
 
       const newProduct = await ProductService.addProduct({
@@ -218,7 +216,6 @@ productRouter.post(
         detail,
         detailImg,
         shippingInfo,
-        policy,
       });
 
       const body = {
@@ -305,7 +302,7 @@ productRouter.post(
  *                      type: number
  *                      example: 30
  */
-// query : page, perPage, category
+// query : page, perPage, category, option(groups, salePrice, reviews, views)
 productRouter.get(
   "/products",
   [
@@ -325,7 +322,7 @@ productRouter.get(
     validate,
   ],
   async (req, res, next) => {
-    const { page, perPage, category } = req.query;
+    const { page, perPage, category, option } = req.query;
 
     if (page <= 0 || perPage <= 0) { 
       const body = {
@@ -338,17 +335,22 @@ productRouter.get(
 
     // 카테고리 쿼리가 존재한다면 카테고리별 상품 조회
     if (category !== undefined) { 
-      const productList = await ProductService.getProductCategoryList({ category, page, perPage });
+      const productList = await ProductService.getProductCategoryList({
+        category,
+        option,
+        page,
+        perPage,
+      });
 
-      // 카테고리 이름이 존재하지 않는다면
-      if (productList.errorMessage) { 
-        const body = {
-          success: false,
-          error: productList.errorMessage,
-        }
-
-        return res.status(400).send(body);
+    // 카테고리 이름이 존재하지 않는다면
+    if (productList.errorMessage) { 
+      const body = {
+        success: false,
+        error: productList.errorMessage,
       }
+
+      return res.status(400).send(body);
+    }
 
       // const body = {
       //   success: true,
@@ -433,18 +435,6 @@ productRouter.get(
     } catch (err) {
       next(err);
     }
-  }
-);
-
-// 후기, 문의, 공구 참여자 게시글
-productRouter.put(
-  "/products/:id/reviews",
-  login_required,
-  async (req, res, next) => {
-    const userId = req.currentUserId;
-    const { id } = req.params;
-
-
   }
 );
 
@@ -618,7 +608,6 @@ productRouter.put(
     const shippingFeeCon = req.body.shippingFeeCon ?? null;
     const detail = req.body.detail ?? null;
     const shippingInfo = req.body.shippingInfo ?? null;
-    const policy = req.body.policy ?? null;
 
     const images = req.files["images"]?.[0].location ?? null;
     const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
@@ -639,7 +628,6 @@ productRouter.put(
       detail,
       detailImg,
       shippingInfo,
-      policy,
     };
 
     const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });

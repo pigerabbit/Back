@@ -18,6 +18,5 @@ export function getRequiredInfoFromProductData(data) {
     detail: data.detail,
     detailImg: data.detailImg,
     shippingInfo: data.shippingInfo,
-    policy: data.policy,
   };
 }

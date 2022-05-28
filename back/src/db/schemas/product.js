@@ -12,6 +12,7 @@ const ProductSchema = new Schema(
     },
     images: {
       type: String,
+      required: true,
     },
     category: {
       type: String,
@@ -67,10 +68,6 @@ const ProductSchema = new Schema(
       type: String,
     },
     shippingInfo: {
-      type: String,
-      required: true,
-    },
-    policy: {
       type: String,
       required: true,
     },
