@@ -5,11 +5,12 @@ import { nextTick } from "process";
 import { GroupModel } from "../db/schemas/group";
 
 export class groupService {
-  static async addGroup({ groupType, location, deadline, productId, state }) {
+  static async addGroup({ groupType, groupName, location, deadline, productId, state }) {
     const groupId = crypto.randomUUID();
 
     const newGroup = {
       groupId,
+      groupName,
       groupType,
       location,
       deadline,
