@@ -37,6 +37,44 @@ userRouter.put(
   }
 );
 
+userRouter.put(
+  "/users/:id/defaultProfileImage",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.params.id;
+      // if (userId != req.currentUserId) {
+      //   throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
+      // }
+      const user = await userService.getUserInfo({ userId });
+      if (user.errorMessage) {
+        throw new Error(user.errorMessage);
+      }
+      const toUpdate = {};
+      toUpdate.imageLink = process.env.initial_image;
+
+      // } else if (user.type === "naver") {
+      //   toUpdate.imageLink = process.env.initial_naver;
+      // } else if (user.type === "kakao") {
+      //   toUpdate.imageLink = process.env.initial_kakao;
+      // } else {
+      //   toUpdate.imageLink = process.env.initial_google;
+      // }
+
+      const updatedUser = await userService.setUser({
+        userId,
+        toUpdate,
+      });
+      if (updatedUser.errorMessage) {
+        throw new Error(updatedUser.errorMessage);
+      }
+      res.json(updatedUser);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 userRouter.post("/users", async function (req, res, next) {
   try {
     if (is.emptyObject(req.body)) {
