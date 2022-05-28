@@ -4,6 +4,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import sendMail from "../utils/send-mail";
 import { getRequiredInfoFromData } from "../utils/user";
+import { UserModel } from "../db/schemas/user";
 
 class userService {
   static async addUser({
@@ -193,22 +194,39 @@ class userService {
     return message;
   }
 
-  static async deleteUser({ userId }) {
-    const user = await User.findById({ userId });
-
-    // db에서 찾지 못한 경우, 에러 메시지 반환
-    if (!user || user === null) {
-      const errorMessage = "해당 유저가 존재하지 않습니다.";
+  static async setReportedBy({ badId, toUpdate }) {
+    console.log("badId:", badId);
+    let badIdInfo = await User.findById({ userId: badId });
+    console.log("badIdInfo:", badIdInfo);
+    if (!badIdInfo) {
+      const errorMessage =
+        "정보가 없습니다. badId 값을 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-    if (user.deleted === true) {
-      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
-      return { errorMessage };
-    }
-    const setter = { deleted: true };
-    const deletedUser = await User.updateAll({ userId, setter });
 
-    return deletedUser;
+    let reportedByInfo = badIdInfo.reportedBy;
+    let newValue = {};
+    console.log("209번째 줄 reportedByInfo:", reportedByInfo);
+    console.log("toupdate:", toUpdate);
+    const index = reportedByInfo.findIndex((f) => f === toUpdate.userId);
+    console.log("index:", index);
+
+    if (index > -1) {
+      reportedByInfo.splice(index, 1);
+      console.log("if문:", reportedByInfo);
+    } else {
+      reportedByInfo.push(toUpdate.userId);
+      console.log("else문:", reportedByInfo);
+    }
+    newValue = reportedByInfo;
+    console.log("newValue:", newValue);
+    const updatedReportedByInfo = await UserModel.findOneAndUpdate(
+      { id: badId },
+      { $set: { reportedBy: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedReportedByInfo;
   }
 }
 

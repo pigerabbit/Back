@@ -34,7 +34,7 @@ export class User {
 
   static async findById({ userId }) {
     const user = await UserModel.findOne({ id: userId }).lean();
-
+    console.log("modle/user:", user);
     return user;
   }
 

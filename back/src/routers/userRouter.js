@@ -18,10 +18,10 @@ userRouter.put(
       const userId = req.params.id;
       // console.log("userId:", userId);
       // console.log("req:", req);
-      // if (userId != req.currentUserId) {
+      // if (userId !== req.currentUserId) {
       //   throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
       // }
-      // console.log("18번째 줄:", req.file);
+      console.log("18번째 줄:", req.file);
       const toUpdate = { imageLink: req.file.location };
       const updatedUser = await userService.setUser({
         userId,
@@ -378,5 +378,37 @@ userRouter.get("/users/checkName/:name", async function (req, res, next) {
   };
   res.status(200).send(body);
 });
+
+userRouter.put(
+  "/users/:badId/vote",
+  login_required,
+  async function (req, res, next) {
+    try {
+      // currentId로 바꿀 예정
+      const userId = req.body.userId;
+      const badId = req.params.badId;
+      console.log("Router/badId:", badId);
+
+      const toUpdate = { userId };
+      const updatedBadIdInfo = await userService.setReportedBy({
+        badId,
+        toUpdate,
+      });
+
+      if (updatedBadIdInfo.errorMessage) {
+        throw new Error(updatedBadIdInfo.errorMessage);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedBadIdInfo,
+      };
+
+      res.status(200).json(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export { userRouter };
