@@ -5,8 +5,9 @@ import { nextTick } from "process";
 import { GroupModel } from "../db/schemas/group";
 
 export class groupService {
-  static async addGroup({ groupType, groupName, location, deadline, productId, state }) {
+  static async addGroup({ userId, groupType, groupName, location, deadline, productId, state }) {
     const groupId = crypto.randomUUID();
+    const participants = userId;
 
     const newGroup = {
       groupId,
@@ -14,6 +15,7 @@ export class groupService {
       groupType,
       location,
       deadline,
+      participants,
       productId,
       state,
     };
@@ -150,8 +152,8 @@ export class groupService {
     return productList.slice(0, 10);
   }
 
-  static async getGroups() {
-    const groups = await Group.findAll();
+  static async getGroupByProductId({ productId }) {
+    const groups = await Group.findAll({ productId });
     return groups;
   }
 }

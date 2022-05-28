@@ -10,6 +10,7 @@ groupRouter.post(
   login_required,
   async function (req, res, next) {
     try {
+      const userId = req.currentUserId;
       const {
         groupType,
         groupName,
@@ -20,6 +21,7 @@ groupRouter.post(
       } = req.body;
 
       const newGroup = await groupService.addGroup({
+        userId,
         groupType,
         groupName,
         location,
@@ -237,10 +239,11 @@ groupRouter.get(
   }
 );
 
-groupRouter.get("/grouplist", login_required, async function (req, res, next) {
+groupRouter.get("/groups", login_required, async function (req, res, next) {
   try {
     // 전체 사용자 목록을 얻음
-    const groups = await groupService.getGroups();
+    const productId = req.body.productId;
+    const groups = await groupService.getGroupByProductId({ productId });
 
     const body = {
       success: true,
