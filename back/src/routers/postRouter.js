@@ -8,6 +8,14 @@ const { postImageUpload } = require("../utils/s3");
 
 const postRouter = Router();
 
+/** POST /products - 글 생성 API 
+ * body : type,
+ *        sender,
+ *        receiver,
+ *        title,
+ *        content,
+ * file : postImg
+*/
 postRouter.post(
   "/posts",
   login_required,
@@ -64,6 +72,10 @@ postRouter.post(
   }
 );
 
+
+/** GET /products - 글 읽기 API 
+ * query : receiver
+*/
 postRouter.get(
   "/posts",
   [
@@ -94,6 +106,31 @@ postRouter.get(
 
       return res.status(200).json(body);
     } catch (err) {
+      next(err);
+    }
+  }
+);
+
+postRouter.put(
+  "/posts/:id",
+  login_required,
+  async (req, res, next) => {
+    try {
+      const { 
+        type,
+        sender,
+        receiver,
+        title,
+        content,
+      } = req.body;
+
+      const postImg = req.file?.location ?? null;
+
+      
+
+
+
+    } catch (err) { 
       next(err);
     }
   }

@@ -13,7 +13,7 @@ class Post {
 
   /** 글 검색 함수
    *
-   * @param {String} receiver - 글을 검색할 위치
+   * @param {String} receiver - 글이 남겨지는 곳
    * @returns {Object}
    */
   static async postList({ receiver }) {

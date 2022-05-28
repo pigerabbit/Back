@@ -5,7 +5,7 @@ class PostService {
   /** 글 저장 함수
    *
    * @param {String} type - review / inquiry / groupChat
-   * @param {String} sender - 글을 쓰는 사람
+   * @param {String} sender - 글 쓰는 사람
    * @param {String} receiver - 글이 남겨지는 곳
    * @param {String} title - 글 제목
    * @param {String} content - 글 내용
