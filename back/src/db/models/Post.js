@@ -17,13 +17,14 @@ class Post {
    * @returns {Object}
    */
   static async postList({ receiver }) {
-    const list = await PostModel.find(
+    const postList = await PostModel.find(
+      { removed: false },
       { receiver },
       { _id: 0, __v: 0, receiver: 0, updatedAt: 0 }
     )
       .sort({ createdAt: -1 })
       .lean();
-    return list;
+    return postList;
   }
 }
 

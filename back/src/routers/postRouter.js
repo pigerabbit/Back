@@ -78,6 +78,15 @@ postRouter.get(
       const { receiver } = req.query;
       const postList = await PostService.listPost({ receiver });
 
+      if (postList.errorMessage) {
+        const body = {
+          success: false,
+          error: postList.errorMessage,
+        }
+
+        return res.status(400).send(body);
+      }
+
       const body = {
         success: true,
         payload: postList,

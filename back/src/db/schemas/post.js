@@ -41,6 +41,10 @@ const PostSchema = new Schema(
     condition: {
       type: Boolean,
       required: false,
+    },
+    removed: {
+      type: Boolean,
+      required: false,
     }
   },
   {

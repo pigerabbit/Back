@@ -43,6 +43,12 @@ class PostService {
     const postList = await Post.postList({
       receiver
     });
+
+    if (postList.length === 0) {
+      const errorMessage = "잘못된 receiver 입니다.";
+      return { errorMessage };
+    }
+
     return postList;
   }
 }
