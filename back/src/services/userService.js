@@ -89,7 +89,7 @@ class userService {
     // 로그인 성공 -> JWT 웹 토큰 생성
     const secretKey = process.env.JWT_SECRET_KEY || "jwt-secret-key";
     const token = jwt.sign({ userId: user.id }, secretKey);
-    // console.log(user);
+
     // 반환할 loginuser 객체를 위한 변수 설정
     const loginUser = getRequiredInfoFromData(user);
     loginUser.token = token;
@@ -195,9 +195,8 @@ class userService {
   }
 
   static async setReportedBy({ badId, toUpdate }) {
-    console.log("badId:", badId);
     let badIdInfo = await User.findById({ userId: badId });
-    console.log("badIdInfo:", badIdInfo);
+
     if (!badIdInfo) {
       const errorMessage =
         "정보가 없습니다. badId 값을 다시 한 번 확인해 주세요.";
@@ -206,20 +205,15 @@ class userService {
 
     let reportedByInfo = badIdInfo.reportedBy;
     let newValue = {};
-    console.log("209번째 줄 reportedByInfo:", reportedByInfo);
-    console.log("toupdate:", toUpdate);
+
     const index = reportedByInfo.findIndex((f) => f === toUpdate.userId);
-    console.log("index:", index);
 
     if (index > -1) {
       reportedByInfo.splice(index, 1);
-      console.log("if문:", reportedByInfo);
     } else {
       reportedByInfo.push(toUpdate.userId);
-      console.log("else문:", reportedByInfo);
     }
     newValue = reportedByInfo;
-    console.log("newValue:", newValue);
     const updatedReportedByInfo = await UserModel.findOneAndUpdate(
       { id: badId },
       { $set: { reportedBy: newValue } },
@@ -231,7 +225,7 @@ class userService {
 
   static async getCountReport({ userId }) {
     const userInfo = await User.findById({ userId });
-    console.log("userInfo:", userInfo);
+
     // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!userInfo) {
       const errorMessage =
