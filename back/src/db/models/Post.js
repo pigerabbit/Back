@@ -17,6 +17,7 @@ class Post {
    * @returns {Object}
    */
   static async postList({ receiver }) {
+    console.log(receiver);
     const postList = await PostModel.find(
       { removed: false },
       { receiver },
