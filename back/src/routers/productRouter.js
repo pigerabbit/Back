@@ -5,7 +5,7 @@ import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
 import { userAuthService } from "../services/userService";
 
-const { productImgUpload, descriptionImgUpload, detailImgUpload } = require("../utils/s3");
+const { productImgUpload } = require("../utils/s3");
 
 const productRouter = Router();
 
@@ -344,7 +344,7 @@ productRouter.get(
       if (productList.errorMessage) { 
         const body = {
           success: false,
-          error: productList,
+          error: productList.errorMessage,
         }
 
         return res.status(400).send(body);
@@ -360,13 +360,7 @@ productRouter.get(
 
     // 카테고리 쿼리가 없다면 전체 상품 조회
     const productList = await ProductService.getProductList({ page, perPage });
-
-    const body = {
-      success: true,
-      productList,
-    };
-    
-    return res.status(200).send(body);
+    return res.status(200).send(productList);
   }
 );
 
@@ -407,7 +401,6 @@ productRouter.get(
         
         return res.status(400).send(body);
       }
-
       // search 쿼리가 없다면 오류
       if (!search) {
         const body = {
@@ -651,6 +644,15 @@ productRouter.put(
 
     const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });
 
+    if (updatedProduct.errorMessage) { 
+      const body = {
+        success: false,
+        error: updatedProduct.errorMessage,
+      }
+
+      return res.status(400).send(body);
+    }
+
     const body = {
       success: true,
       payload: updatedProduct,
@@ -776,7 +778,7 @@ productRouter.get(
     if (product.errorMessage) {
       const body = {
         success: false,
-        error: product,
+        error: product.errorMessage,
       };
   
       return res.status(400).send(body);
@@ -877,7 +879,7 @@ productRouter.delete(
     if (product.errorMessage) {
       const body = {
         success: false,
-        error: product,
+        error: product.errorMessage,
       };
       
       return res.status(400).send(body);
@@ -888,7 +890,7 @@ productRouter.delete(
     if (deletedProduct.errorMessage) {
       const body = {
         success: false,
-        error: deletedProduct,
+        error: deletedProduct.errorMessage,
       };
 
       return res.status(403).send(body);
@@ -1020,7 +1022,7 @@ productRouter.get(
     if (user.errorMessage) { 
       const body = {
         success: false,
-        error: user,
+        error: user.errorMessage,
       };
 
       return res.status(400).send(body); 

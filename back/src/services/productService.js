@@ -1,5 +1,6 @@
 import { Product } from "../db/index.js";
 import crypto from "crypto";
+import { getRequiredInfoFromProductData } from "../utils/product";
 
 class ProductService { 
   /** 판매 상품 생성 함수
@@ -65,7 +66,8 @@ class ProductService {
     };
 
     const product = await Product.create({ newProduct });
-    return product;
+    const resultProduct = getRequiredInfoFromProductData(product);
+    return resultProduct;
   }
 
   /** 상품 정보 수정 함수
@@ -93,8 +95,9 @@ class ProductService {
     });
     
     const updatedProduct = await Product.update({ id, toUpdate });
+    const resultProduct = getRequiredInfoFromProductData(updatedProduct);
 
-    return updatedProduct;
+    return resultProduct;
   }
 
   /** 상품 전체를 반환하는 함수
@@ -144,15 +147,16 @@ class ProductService {
   static async getProductSearchSortByOption({ search, option, page, perPage }) { 
 
     // 검색어에 해당하는 상품이 존재하는지 확인
-    const productList = await Product.findProductSearch({ search, page, perPage });
+    const product = await Product.findProductSearch({ search, page, perPage });
 
-    if (productList.len === 0) { 
+    if (product.len === 0) { 
       const errorMessage = "검색한 상품이 존재하지 않습니다";
       return { errorMessage };
     }
 
     if (option === "groups") {
       const productList = await Product.findProductSearchSortByGroups({ search, page, perPage });
+      if (product)
       return productList;
     } else if (option === "reviews") {
       const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
@@ -187,8 +191,9 @@ class ProductService {
     };
 
     const updatedProduct = await Product.update({ id, toUpdate });
+    const resultProduct = getRequiredInfoFromProductData(updatedProduct);
 
-    return updatedProduct;
+    return resultProduct;
   }
 
   static async deleteProduct({ userId, id }) { 
