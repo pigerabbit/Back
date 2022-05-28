@@ -17,15 +17,14 @@ class Post {
    * @returns {Object}
    */
   static async postList({ receiver }) {
-    console.log(receiver);
     const postList = await PostModel.find(
-      { removed: false },
-      { receiver },
-      { _id: 0, __v: 0, updatedAt: 0 }
+      { receiver, removed: false },
+      { _id: 0, __v: 0, updatedAt: 0 },
     )
       .sort({ createdAt: -1 })
       .lean();
     
+    console.log("Model", postList);
     return postList;
   }
 
@@ -34,14 +33,14 @@ class Post {
     return post;
   }
 
-  static async update({ sender, toUpdate }) { 
+  static async update({ postId, toUpdate }) { 
     const updatedPost = await PostModel.findOneAndUpdate(
-      { sender: sender },
+      { postId },
       { $set: toUpdate },
-      { returnOriginal: false },
-      { _id: 0, __v: 0, updatedAt: 0 }
+      { _id: 0, __v: 0, updatedAt: 0 },
+      // { returnOriginal: false }
     );
-    
+
     return updatedPost;
   }
 }

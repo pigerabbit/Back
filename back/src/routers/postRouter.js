@@ -113,7 +113,7 @@ postRouter.get(
  * file : postImg
 */
 postRouter.put(
-  "/posts/:id",
+  "/posts/:postId",
   login_required,
   // [
   //   check("postId")

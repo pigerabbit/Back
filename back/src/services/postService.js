@@ -49,27 +49,34 @@ class PostService {
       return { errorMessage };
     }
 
+    console.log("Service", postList);
+
     return postList;
   }
 
   /** 
    * 
   */
-  static async setPost({ sender, postId, toUpdate }) { 
+  static async setPost({ sender, postId, toUpdate }) {
     const post = await Post.findPost({ postId });
 
-    if (!post) { 
+    if (!post) {
       const errorMessage = "게시글이 존재하지 않습니다.";
       return { errorMessage };
     }
-    console.log("찾은 친구", post);
-    console.log("받은 친구", sender);
+
     if (post.sender !== sender) {
       const errorMessage = "글을 쓴 유저만 수정이 가능합니다.";
       return { errorMessage };
     }
 
-    const updatedPost = await Post.update({ sender, toUpdate });
+    Object.keys(toUpdate).forEach((key) => {
+      if (toUpdate[key] === undefined || toUpdate[key] === null) {
+        delete toUpdate[key];
+      }
+    });
+
+    const updatedPost = await Post.update({ postId, toUpdate });
     return updatedPost;
   }
 }
