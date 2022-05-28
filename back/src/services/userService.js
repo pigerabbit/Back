@@ -18,7 +18,8 @@ class userService {
       }
     }
 
-    // 기본 프로필 관련 내용 추가 예정
+    // 기본 프로필
+    const imageLink = process.env.initial_image;
 
     // 비밀번호 해쉬화
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,6 +36,7 @@ class userService {
       address,
       business,
       type,
+      imageLink,
     };
     //소셜로그인시 회원가입이 자동으로될때 없는 성분이 있기때문에 없는 성분들을 삭제
     Object.keys(newUser).forEach((key) => {

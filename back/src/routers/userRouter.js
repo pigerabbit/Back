@@ -5,8 +5,37 @@ import { userService } from "../services/userService";
 import generateRandomPassword from "../utils/generate-random-password";
 import { User } from "../db";
 import bcrypt from "bcrypt";
+const { userImageUpload } = require("../utils/s3");
 
 const userRouter = Router();
+
+userRouter.put(
+  "/users/:id/profileImage",
+  login_required,
+  userImageUpload.single("userImg"),
+  async function (req, res, next) {
+    try {
+      const userId = req.params.id;
+      // console.log("userId:", userId);
+      // console.log("req:", req);
+      // if (userId != req.currentUserId) {
+      //   throw new Error("다른 소유자의 소유물을 변경할 권한이 없습니다.");
+      // }
+      // console.log("18번째 줄:", req.file);
+      const toUpdate = { imageLink: req.file.location };
+      const updatedUser = await userService.setUser({
+        userId,
+        toUpdate,
+      });
+      if (updatedUser.errorMessage) {
+        throw new Error(updatedUser.errorMessage);
+      }
+      res.json(updatedUser);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 userRouter.post("/users", async function (req, res, next) {
   try {

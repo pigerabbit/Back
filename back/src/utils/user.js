@@ -5,7 +5,10 @@ export function getRequiredInfoFromData(data) {
     name: data.name,
     address: data.address,
     business: data.business,
+    location: data.location,
     distance: data.distance,
     type: data.type,
+    imageLink: data.imageLink,
+    reporter: data.reporter,
   };
 }
