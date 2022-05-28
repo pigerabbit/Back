@@ -24,7 +24,6 @@ class Post {
       .sort({ createdAt: -1 })
       .lean();
     
-    console.log("Model", postList);
     return postList;
   }
 
@@ -35,11 +34,13 @@ class Post {
 
   static async update({ postId, toUpdate }) { 
     const updatedPost = await PostModel.findOneAndUpdate(
-      { postId },
+      { postId: postId },
       { $set: toUpdate },
-      { _id: 0, __v: 0, updatedAt: 0 },
-      // { returnOriginal: false }
-    );
+      { returnOriginal: false },
+    )
+      .select('-__v')
+      .select('-_id')
+      .select('-updatedAt');
 
     return updatedPost;
   }

@@ -49,8 +49,6 @@ class PostService {
       return { errorMessage };
     }
 
-    console.log("Service", postList);
-
     return postList;
   }
 
