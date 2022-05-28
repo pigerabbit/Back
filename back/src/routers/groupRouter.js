@@ -6,14 +6,22 @@ import { Group } from "../db";
 const groupRouter = Router();
 
 groupRouter.post(
-  "/group/create",
+  "/groups",
   login_required,
   async function (req, res, next) {
     try {
-      const { groupType, location, deadline, productId, state } = req.body;
+      const {
+        groupType,
+        groupName,
+        location,
+        deadline,
+        productId,
+        state
+      } = req.body;
 
       const newGroup = await groupService.addGroup({
         groupType,
+        groupName,
         location,
         deadline,
         productId,
@@ -152,13 +160,21 @@ groupRouter.put(
     try {
       const groupId = req.params.groupId;
 
-      const groupType = req.body.groupType;
-      const location = req.body.location;
-      const deadline = req.body.deadline;
-      const productId = req.body.productId;
-      const state = req.body.state;
+      const groupType = req.body.groupType ?? null;
+      const groupName = req.body.groupName ?? null;
+      const location = req.body.location ?? null;
+      const deadline = req.body.deadline ?? null;
+      const productId = req.body.productId ?? null;
+      const state = req.body.state ?? null;
 
-      const toUpdate = { groupType, location, deadline, productId, state };
+      const toUpdate = {
+        groupType,
+        groupName,
+        location,
+        deadline,
+        productId,
+        state,
+      };
 
       const updatedGroup = await groupService.setGroup({ groupId, toUpdate });
 
