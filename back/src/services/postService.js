@@ -104,7 +104,7 @@ class PostService {
       return { errorMessage };
     }
 
-    // 답변이 있는지 확인하는 함수
+    // 답변이 있는지 확인하는 부분
     // 있다면 true / 없다면 false
     if (post.type === "cs") {
       const reply = await Post.findPostContent({ postId });
