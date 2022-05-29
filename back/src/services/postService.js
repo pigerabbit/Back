@@ -183,7 +183,7 @@ class PostService {
     return deletedPost;
   }
 
-  /** 내가 쓴 후기 모아보는 함수
+  /** 내가 쓴 글 모아보는 함수
    * 
    * @param {String} userId - 로그인한 유저 id
    * @param {String} writer - 글쓴이
