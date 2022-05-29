@@ -36,7 +36,7 @@ postRouter.post(
   postImageUpload.single("postImg"),
   async (req, res, next) => {
     try {
-      const sender = req.currentUserId;
+      const writer = req.currentUserId;
       const { 
         type,
         receiver,
@@ -48,7 +48,7 @@ postRouter.post(
 
       const createdPost = await PostService.addPost({
         type,
-        sender,
+        writer,
         receiver,
         title,
         content,
@@ -68,7 +68,7 @@ postRouter.post(
 );
 
 
-/** GET /posts - 전체 글 읽기 API 
+/** GET /posts - 전체 글 읽기 API (후기, 문의, 공구에서 활용)
  * query : receiver
  */
 postRouter.get(
@@ -106,7 +106,7 @@ postRouter.get(
   }
 );
 
-/** GET /posts/:postId - 글 하나 읽기 API
+/** GET /posts/:postId - 글 하나 읽기 API (후기, 문의에서 활용 / 공구는 댓글 전체보기로 가능)
  * params: postId
  */
 postRouter.get(
@@ -124,8 +124,9 @@ postRouter.get(
   async (req, res, next) => { 
     try {
       const postId = req.params.postId;
+      const userId = req.currentUserId;
 
-      const post = await PostService.getPost({ postId });
+      const post = await PostService.getPost({ postId, userId });
 
       if (post.errorMessage) { 
         const body = {
@@ -173,7 +174,7 @@ postRouter.put(
   postImageUpload.single("postImg"),
   async (req, res, next) => {
     try {
-      const sender = req.currentUserId;
+      const writer = req.currentUserId;
       const postId = req.params.postId;
       const title = req.body.title ?? null;
       const content = req.body.content ?? null;
@@ -185,7 +186,7 @@ postRouter.put(
         postImg,
       }
 
-      const updatedPost = await PostService.setPost({ sender, postId, toUpdate });
+      const updatedPost = await PostService.setPost({ writer, postId, toUpdate });
 
       if (updatedPost.errorMessage) {
         const body = {
@@ -225,7 +226,7 @@ postRouter.delete(
   ],
   async (req, res, next) => {
     try {
-      const sender = req.currentUserId;
+      const writer = req.currentUserId;
       const postId = req.params.postId;
 
       const deletedPost = await PostService.deletePost({ postId });

@@ -17,7 +17,7 @@ const PostSchema = new Schema(
       type: [String],
       required: true,
     },
-    sender: {
+    writer: {
       type: String,
       required: true,
     },
@@ -38,7 +38,7 @@ const PostSchema = new Schema(
       type: String,
       required: false,
     },
-    condition: {
+    answer: {
       type: Boolean,
       required: false,
     },

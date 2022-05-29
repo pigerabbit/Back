@@ -1,11 +1,12 @@
 import { Post } from "../db/index.js";
 import crypto from "crypto";
+import { getRequiredInfoFromPostData } from "../utils/post";
 
 class PostService {
   /** 글 저장 함수
    *
    * @param {String} type - review / inquiry / groupChat
-   * @param {String} sender - 글 쓰는 사람
+   * @param {String} writer - 글쓴이
    * @param {String} receiver - 글이 남겨지는 곳
    * @param {String} title - 글 제목
    * @param {String} content - 글 내용
@@ -14,7 +15,7 @@ class PostService {
    */
   static async addPost({
     type,
-    sender,
+    writer,
     receiver,
     title,
     content,
@@ -22,11 +23,12 @@ class PostService {
   }) {
     const postId = crypto.randomUUID();
     let authorizedUsers = [];
+    let answer = false;
 
     if (type === "cs") {
-      authorizedUsers = [sender, receiver];
-    } else if (type === "groupChat") {
-      authorizedUsers = [sender]
+      authorizedUsers = [writer, receiver];
+    } else if (type === "groupChat") { // 나중에 group API랑 연동 필요
+      authorizedUsers = [writer]
     } else if (type === "review") {
       authorizedUsers = [];
     } else { 
@@ -38,14 +40,16 @@ class PostService {
       postId,
       type,
       authorizedUsers,
-      sender,
+      writer,
       receiver,
       title,
       content,
       postImg,
+      answer,
     };
     const createdPost = await Post.create({ newPost });
-    return createdPost;
+    const resultPost = getRequiredInfoFromPostData(createdPost);
+    return resultPost;
   }
 
   /** 글 남겨진 곳 검색 함수
@@ -71,7 +75,7 @@ class PostService {
    * @param {String} postId - 글 id
    * @returns {Object} post
    */
-  static async getPost({ postId }) {
+  static async getPost({ postId, userId }) {
     const post = await Post.findPostContent({ postId });
 
     if (!post) {
@@ -84,17 +88,22 @@ class PostService {
       return { errorMessage };
     }
 
+    if (post.type !== "review" && post.authorizedUsers.indexOf(userId) === -1) { 
+      const errorMessage = "글을 볼 수 있는 권한이 없습니다";
+      return { errorMessage };
+    }
+
     return post;
   }
 
   /** 글 수정 함수
    * 
-   * @param {String} sender - 글쓴이
+   * @param {String} writer - 글쓴이
    * @param {String} postId - 글이 남겨지는 곳
    * @param {Object} toUpdate - 글 업데이트 내용이 담긴 오브젝트
    * @returns {Object} updatedPost
    */
-  static async setPost({ sender, postId, toUpdate }) {
+  static async setPost({ writer, postId, toUpdate }) {
     const post = await Post.findPostContent({ postId });
 
     if (!post) {
@@ -102,7 +111,7 @@ class PostService {
       return { errorMessage };
     }
 
-    if (post.sender !== sender) {
+    if (post.writer !== writer) {
       const errorMessage = "글을 쓴 유저만 수정이 가능합니다.";
       return { errorMessage };
     }
