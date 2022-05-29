@@ -14,7 +14,7 @@ const postRouter = Router();
  *        title,
  *        content,
  * file : postImg
-*/
+ */
 postRouter.post(
   "/posts",
   login_required,
@@ -70,7 +70,7 @@ postRouter.post(
 
 /** GET /posts - 전체 글 읽기 API 
  * query : receiver
-*/
+ */
 postRouter.get(
   "/posts",
   [
@@ -153,7 +153,7 @@ postRouter.get(
  * body : title,
  *        content,
  * file : postImg
-*/
+ */
 postRouter.put(
   "/posts/:postId",
   login_required,
@@ -210,7 +210,7 @@ postRouter.put(
 
 /** DELETE /posts/:id - 글 삭제 API 
  * params: id
-*/
+ */
 postRouter.delete(
   "/posts/:postId",
   login_required,

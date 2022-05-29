@@ -56,7 +56,7 @@ class PostService {
    *
    * @param {String} postId - 글 id
    * @returns {Object} post
-  */
+   */
   static async getPost({ postId }) {
     const post = await Post.findPostContent({ postId });
 
@@ -79,7 +79,7 @@ class PostService {
    * @param {String} postId - 글이 남겨지는 곳
    * @param {Object} toUpdate - 글 업데이트 내용이 담긴 오브젝트
    * @returns {Object} updatedPost
-  */
+   */
   static async setPost({ sender, postId, toUpdate }) {
     const post = await Post.findPostContent({ postId });
 
@@ -90,6 +90,11 @@ class PostService {
 
     if (post.sender !== sender) {
       const errorMessage = "글을 쓴 유저만 수정이 가능합니다.";
+      return { errorMessage };
+    }
+
+    if (post.removed === true) { 
+      const errorMessage = "이미 삭제된 글입니다.";
       return { errorMessage };
     }
 
@@ -118,6 +123,11 @@ class PostService {
 
     if (post.postId !== postId) { 
       const errorMessage = "글을 쓴 유저만 삭제가 가능합니다.";
+      return { errorMessage };
+    }
+
+    if (post.removed === true) { 
+      const errorMessage = "이미 삭제된 글입니다.";
       return { errorMessage };
     }
 
