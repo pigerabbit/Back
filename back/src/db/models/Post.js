@@ -4,7 +4,7 @@ class Post {
   /** 글 생성 함수
    *
    * @param {Object} newPost - 생성할 글 데이터가 담긴 오브젝트
-   * @returns {Object}
+   * @returns {Object} createNewPost
    */
   static async create({ newPost }) {
     const createNewPost = await PostModel.create(newPost);
@@ -14,9 +14,9 @@ class Post {
   /** 글 검색 함수
    *
    * @param {String} receiver - 글이 남겨지는 곳
-   * @returns {Object}
+   * @returns {Object} postList
    */
-  static async postList({ receiver }) {
+  static async findPostList({ receiver }) {
     const postList = await PostModel.find(
       { receiver, removed: false },
       { _id: 0, __v: 0, updatedAt: 0 },
@@ -27,11 +27,22 @@ class Post {
     return postList;
   }
 
-  static async findPost({ postId }) { 
+  /** 글이 존재하는지 확인하는 함수
+   * 
+   * @param {String} postId - 글 id  
+   * @returns {Object} post
+   */
+  static async findPostContent({ postId }) { 
     const post = await PostModel.findOne({ postId });
     return post;
   }
 
+  /** 글 수정 함수
+   * 
+   * @param {String} postId - 글 id 
+   * @param {Object} toUpdate - 글 업데이트 내용이 담긴 오브젝트
+   * @returns {Object} updatedPost
+   */
   static async update({ postId, toUpdate }) { 
     const updatedPost = await PostModel.findOneAndUpdate(
       { postId: postId },

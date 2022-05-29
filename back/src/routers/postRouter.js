@@ -18,21 +18,21 @@ const postRouter = Router();
 postRouter.post(
   "/posts",
   login_required,
-  // [
-  //   body("type")
-  //   .exists()
-  //   .withMessage("글 타입을 입력해주세요.")
-  //     .bail(),
-  //   body("receiver")
-  //   .exists()
-  //   .withMessage("receiver를 입력해주세요")
-  //   .bail(),
-  //   body("content")
-  //   .exists()
-  //   .withMessage("content를 입력해주세요")
-  //   .bail(),
-  //   validate,
-  // ],
+  [
+    body("type")
+      .exists()
+      .withMessage("글 타입을 입력해주세요.")
+      .bail(),
+    body("receiver")
+      .exists()
+      .withMessage("receiver를 입력해주세요")
+      .bail(),
+    body("content")
+      .exists()
+      .withMessage("content를 입력해주세요")
+      .bail(),
+    validate,
+  ],
   postImageUpload.single("postImg"),
   async (req, res, next) => {
     try {
@@ -68,7 +68,7 @@ postRouter.post(
 );
 
 
-/** GET /posts - 글 읽기 API 
+/** GET /posts - 전체 글 읽기 API 
  * query : receiver
 */
 postRouter.get(
@@ -83,7 +83,7 @@ postRouter.get(
   async (req, res, next) => {
     try {
       const { receiver } = req.query;
-      const postList = await PostService.listPost({ receiver });
+      const postList = await PostService.getPostList({ receiver });
 
       if (postList.errorMessage) {
         const body = {
@@ -106,6 +106,48 @@ postRouter.get(
   }
 );
 
+/** GET /posts/:postId - 글 하나 읽기 API
+ * params: postId
+ */
+postRouter.get(
+  "/posts/:postId",
+  login_required,
+  [
+    check("postId")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 postId를 입력해주세요.")
+      .bail(),
+    validate,
+  ],
+  async (req, res, next) => { 
+    try {
+      const postId = req.params.postId;
+
+      const post = await PostService.getPost({ postId });
+
+      if (post.errorMessage) { 
+        const body = {
+          success: false,
+          payload: post.errorMessage,
+        }
+
+        return res.status(400).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: post,
+      }
+
+      return res.status(200).send(body);
+    } catch (err) { 
+      next(err);
+    }
+  }
+);
+
 /** PUT /posts/:id - 글 수정 API 
  * params: id
  * body : title,
@@ -115,19 +157,19 @@ postRouter.get(
 postRouter.put(
   "/posts/:postId",
   login_required,
-  // [
-  //   check("postId")
-  //     .trim()
-  //     .isLength()
-  //     .exists()
-  //     .withMessage("parameter 값으로 postId를 입력해주세요.")
-  //     .bail(),
-  //   body("content")
-  //     .exists()
-  //     .withMessage("content를 입력해주세요.")
-  //     .bail(),
-  //   validate,
-  // ],
+  [
+    check("postId")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 postId를 입력해주세요.")
+      .bail(),
+    body("content")
+      .exists()
+      .withMessage("content를 입력해주세요.")
+      .bail(),
+    validate,
+  ],
   postImageUpload.single("postImg"),
   async (req, res, next) => {
     try {
@@ -157,6 +199,49 @@ postRouter.put(
       const body = {
         success: true,
         payload: updatedPost,
+      }
+
+      return res.status(200).send(body);
+    } catch (err) { 
+      next(err);
+    }
+  }
+);
+
+/** DELETE /posts/:id - 글 삭제 API 
+ * params: id
+*/
+postRouter.delete(
+  "/posts/:postId",
+  login_required,
+  [
+    check("postId")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 postId를 입력해주세요.")
+      .bail(),
+    validate,
+  ],
+  async (req, res, next) => {
+    try {
+      const sender = req.currentUserId;
+      const postId = req.params.postId;
+
+      const deletedPost = await PostService.deletePost({ postId });
+
+      if (deletedPost.errorMessage) {
+        const body = {
+          success: false,
+          error: deletedPost.errorMessage,
+        }
+        
+        return res.status(400).send(body);
+      } 
+
+      const body = {
+        success: true,
+        payload: "성공적으로 삭제되었습니다.",
       }
 
       return res.status(200).send(body);
