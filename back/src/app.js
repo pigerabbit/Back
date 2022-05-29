@@ -31,4 +31,12 @@ app.use(postRouter);
 // 순서 중요 (router 에서 next() 시 아래의 에러 핸들링  middleware로 전달됨)
 app.use(errorMiddleware);
 
+// .env가 있는지 확인
+["SERVER_PORT", "MONGODB_URL", "JWT_SECRET_KEY"].forEach((k) => {
+  if (!(k in process.env)) {
+    throw new Error(`.env 파일이 빠진 것 같아요! 체크체크!`);
+  }
+});
+
+
 export { app };
