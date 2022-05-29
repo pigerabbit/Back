@@ -87,7 +87,7 @@ class PostService {
    * @returns {Object} post
    */
   static async getPost({ postId, userId }) {
-    const post = await Post.findPostContent({ postId });
+    let post = await Post.findPostContent({ postId });
 
     if (!post) {
       const errorMessage = "존재하지 않는 글입니다.";
@@ -104,15 +104,15 @@ class PostService {
       return { errorMessage };
     }
 
-    // 댓글이 있는지 확인하는 함수 => 수정!!
+    // 답변이 있는지 확인하는 함수
+    // 있다면 true / 없다면 false
     if (post.type === "cs") {
       const reply = await Post.findPostContent({ postId });
-      console.log("postId", postId);
-      console.log("reply", reply);
-      if (reply.length !== 0) {
-        post['reply'] = true; // Object 추가가 되지 않음
-      } else { 
+
+      if (!reply) {
         post['reply'] = false;
+      } else { 
+        post['reply'] = true;
       }
     }
 

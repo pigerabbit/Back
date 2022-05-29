@@ -36,7 +36,9 @@ class Post {
     const post = await PostModel.findOne(
       { postId },
       { _id: 0, __v: 0, updatedAt: 0 },
-    );
+    )
+      .lean();
+    
     return post;
   }
 
@@ -47,7 +49,7 @@ class Post {
    * @returns 
    */
   static async findPostReply({ postId }) { 
-    const reply = await PostModel.find({ receiver: postId });
+    const reply = await PostModel.find({ receiver: postId }).lean();
     return reply;
   }
 
@@ -65,7 +67,8 @@ class Post {
     )
       .select('-__v')
       .select('-_id')
-      .select('-updatedAt');
+      .select('-updatedAt')
+      .lean();
 
     return updatedPost;
   }
@@ -89,7 +92,8 @@ class Post {
           { "type": option, writer, removed: false },
           { _id: 0, __v: 0, updatedAt: 0 },
         )
-          .sort({ createdAt: -1 });
+          .sort({ createdAt: -1 })
+          .lean();
     }
 
     return postList;
