@@ -261,7 +261,7 @@ postRouter.delete(
   }
 );
 
-/** 내가 쓴 후기 모아보기 함수
+/** 내가 쓴 글 모아보기 함수
  * param: writer, 
  *        option : review / cs / groupChat
  *

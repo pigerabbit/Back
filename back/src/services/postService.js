@@ -189,8 +189,14 @@ class PostService {
    * @param {String} writer - 글쓴이
    */
   static async getPostListByWriter({ userId, writer, option }) { 
+    const optionList = ["review", "cs", "groupChat"];
     if (userId !== writer) { 
       const errorMessage = "글쓴이만 볼 수 있습니다.";
+      return { errorMessage };
+    }
+
+    if (optionList.indexOf(option) === -1) { 
+      const errorMessage = "옵션을 잘못 입력하셨습니다.";
       return { errorMessage };
     }
 
