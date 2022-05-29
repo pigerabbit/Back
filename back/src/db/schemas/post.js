@@ -38,10 +38,6 @@ const PostSchema = new Schema(
       type: String,
       required: false,
     },
-    answer: {
-      type: Boolean,
-      required: false,
-    },
     removed: {
       type: Boolean,
       required: true,

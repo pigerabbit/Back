@@ -40,6 +40,17 @@ class Post {
     return post;
   }
 
+  /** 문의 답변 완료 함수 
+   * 글 id를 receiver로 사용하는 곳이 있다면 문의 답변이 존재
+   * 
+   * @param {String} postId - 글 id 
+   * @returns 
+   */
+  static async findPostReply({ postId }) { 
+    const reply = await PostModel.find({ receiver: postId });
+    return reply;
+  }
+
   /** 글 수정 함수
    * 
    * @param {String} postId - 글 id 
@@ -58,6 +69,20 @@ class Post {
 
     return updatedPost;
   }
+  
+  /** 내가 쓴 후기 모아보기 함수
+   *
+   * @param {String} writer - 글쓴이 
+   * @returns {Object} reviewList
+   */
+  static async findReviewList({ writer }) { 
+    const reviewList = await PostModel.find(
+      { writer, removed: false },
+      { _id: 0, __v: 0, updatedAt: 0 },
+    );
+    return reviewList;
+  }
+
 }
 
 export { Post };

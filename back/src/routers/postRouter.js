@@ -55,6 +55,15 @@ postRouter.post(
         postImg,
       });
 
+      if (createdPost.errorMessage) {
+        const body = {
+          success: false,
+          error:  createdPost.errorMessage,
+        }
+
+        return res.status(400).send(body);
+      }
+
       const body = {
         success: true,
         payload: createdPost,
@@ -247,6 +256,49 @@ postRouter.delete(
 
       return res.status(200).send(body);
     } catch (err) { 
+      next(err);
+    }
+  }
+);
+
+/** 내가 쓴 후기 모아보기 함수
+ * param: writer
+ */
+postRouter.get(
+  "/posts/:writer/review",
+  login_required,
+  [
+    check("writer")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 writer를 입력해주세요.")
+      .bail(),
+    validate,
+  ],
+  async (req, res, next) => {
+    try { 
+      const userId = req.currentUserId;
+      const writer = req.params.writer;
+
+      const reviewList = await PostService.getReviewList({ userId, writer });
+
+      if (reviewList.errorMessage) { 
+        const body = {
+          success: false,
+          error: reviewList.errorMessage,
+        }
+
+        return res.status(403).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: reviewList,
+      }
+
+      return res.status(200).send(body);
+    } catch (err) {
       next(err);
     }
   }

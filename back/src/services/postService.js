@@ -1,11 +1,12 @@
 import { Post } from "../db/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromPostData } from "../utils/post";
+import e from "express";
 
 class PostService {
   /** 글 저장 함수
    *
-   * @param {String} type - review / inquiry / groupChat
+   * @param {String} type - review / cs / groupChat
    * @param {String} writer - 글쓴이
    * @param {String} receiver - 글이 남겨지는 곳
    * @param {String} title - 글 제목
@@ -23,14 +24,25 @@ class PostService {
   }) {
     const postId = crypto.randomUUID();
     let authorizedUsers = [];
-    let answer = false;
+    let post;
 
+    // type마다 볼 수 있는 권한이 다름
+    // cs : 글쓴이, 상품 판매자
+    // groupChat : 그룹 공구에 참여하는 사람
+    // review : 모두
     if (type === "cs") {
       authorizedUsers = [writer, receiver];
     } else if (type === "groupChat") { // 나중에 group API랑 연동 필요
       authorizedUsers = [writer]
     } else if (type === "review") {
       authorizedUsers = [];
+    } else if (type === "comment") { // 댓글일 때 postId가 있는지 확인 => 없다면 에러
+      authorizedUsers = [];
+      post = await Post.findPostContent({ postId: receiver });
+      if (!post) {
+        const errorMessage = "존재하지 않는 글입니다.";
+        return { errorMessage };
+      }
     } else { 
       const errorMessage = "존재하지 않는 type 입니다.";
       return { errorMessage };
@@ -45,7 +57,6 @@ class PostService {
       title,
       content,
       postImg,
-      answer,
     };
     const createdPost = await Post.create({ newPost });
     const resultPost = getRequiredInfoFromPostData(createdPost);
@@ -88,9 +99,20 @@ class PostService {
       return { errorMessage };
     }
 
-    if (post.type !== "review" && post.authorizedUsers.indexOf(userId) === -1) { 
+    if (post.type !== "review" && post.type !== "comment" && post.authorizedUsers.indexOf(userId) === -1) { 
       const errorMessage = "글을 볼 수 있는 권한이 없습니다";
       return { errorMessage };
+    }
+
+    if (post.type === "cs") {
+      const reply = await Post.findPostComment({ postId }) 
+      console.log("postId", postId);
+      console.log("reply", reply);
+      if (reply.length !== 0) {
+        post['reply'] = true; // Object 추가가 되지 않음
+      } else { 
+        post['reply'] = false;
+      }
     }
 
     return post;
@@ -99,7 +121,7 @@ class PostService {
   /** 글 수정 함수
    * 
    * @param {String} writer - 글쓴이
-   * @param {String} postId - 글이 남겨지는 곳
+   * @param {String} postId - 글 id
    * @param {Object} toUpdate - 글 업데이트 내용이 담긴 오브젝트
    * @returns {Object} updatedPost
    */
@@ -158,6 +180,27 @@ class PostService {
     const deletedPost = await Post.update({ postId, toUpdate });
     console.log(deletedPost);
     return deletedPost;
+  }
+
+  /** 내가 쓴 후기 모아보는 함수
+   * 
+   * @param {String} userId - 로그인한 유저 id
+   * @param {String} writer - 글쓴이
+   */
+  static async getReviewList({ userId, writer }) { 
+    if (userId !== writer) { 
+      const errorMessage = "글쓴이만 볼 수 있습니다.";
+      return { errorMessage };
+    }
+
+    const reviewList = await Post.findReviewList({ writer });
+
+    if (reviewList.length === 0) { 
+      const errorMessage = "작성한 후기가 없습니다.";
+      return { errorMessage };
+    }
+
+    return reviewList;
   }
 }
 
