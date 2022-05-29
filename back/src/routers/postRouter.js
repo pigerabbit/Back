@@ -262,10 +262,12 @@ postRouter.delete(
 );
 
 /** 내가 쓴 후기 모아보기 함수
- * param: writer
+ * param: writer, 
+ *        option : review / cs / groupChat
+ *
  */
 postRouter.get(
-  "/posts/:writer/review",
+  "/posts/:writer/:option",
   login_required,
   [
     check("writer")
@@ -274,14 +276,21 @@ postRouter.get(
       .exists()
       .withMessage("parameter 값으로 writer를 입력해주세요.")
       .bail(),
+    check("option")
+      .trim()
+      .isLength()
+      .exists()
+      .withMessage("parameter 값으로 option를 입력해주세요.")
+      .bail(),
     validate,
   ],
   async (req, res, next) => {
     try { 
       const userId = req.currentUserId;
       const writer = req.params.writer;
+      const option = req.params.option;
 
-      const reviewList = await PostService.getReviewList({ userId, writer });
+      const reviewList = await PostService.getPostListByWriter({ userId, writer, option });
 
       if (reviewList.errorMessage) { 
         const body = {
@@ -303,6 +312,7 @@ postRouter.get(
     }
   }
 );
+
 
 export { postRouter };
 

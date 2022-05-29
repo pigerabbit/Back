@@ -73,14 +73,26 @@ class Post {
   /** 내가 쓴 후기 모아보기 함수
    *
    * @param {String} writer - 글쓴이 
-   * @returns {Object} reviewList
+   * @returns {Object} postList
    */
-  static async findReviewList({ writer }) { 
-    const reviewList = await PostModel.find(
-      { writer, removed: false },
-      { _id: 0, __v: 0, updatedAt: 0 },
-    );
-    return reviewList;
+  static async findPostListByWriter({ writer, option }) {
+    let postList = [];
+    switch (option) { 
+      case "review":
+        postList = await PostModel.find(
+          { "type": option, writer, removed: false },
+          { _id: 0, __v: 0, updatedAt: 0 },
+        )
+          .sort({ createdAt: -1 });
+      case "cs":
+        postList = await PostModel.find(
+          { "type": option, writer, removed: false },
+          { _id: 0, __v: 0, updatedAt: 0 },
+        )
+          .sort({ createdAt: -1 });
+    }
+    
+    return postList;
   }
 
 }

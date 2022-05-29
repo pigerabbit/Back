@@ -104,8 +104,9 @@ class PostService {
       return { errorMessage };
     }
 
+    // 댓글이 있는지 확인하는 함수 => 수정!!
     if (post.type === "cs") {
-      const reply = await Post.findPostComment({ postId }) 
+      const reply = await Post.findPostContent({ postId });
       console.log("postId", postId);
       console.log("reply", reply);
       if (reply.length !== 0) {
@@ -187,16 +188,16 @@ class PostService {
    * @param {String} userId - 로그인한 유저 id
    * @param {String} writer - 글쓴이
    */
-  static async getReviewList({ userId, writer }) { 
+  static async getPostListByWriter({ userId, writer, option }) { 
     if (userId !== writer) { 
       const errorMessage = "글쓴이만 볼 수 있습니다.";
       return { errorMessage };
     }
 
-    const reviewList = await Post.findReviewList({ writer });
+    const reviewList = await Post.findPostListByWriter({ writer, option });
 
     if (reviewList.length === 0) { 
-      const errorMessage = "작성한 후기가 없습니다.";
+      const errorMessage = "작성한 후기 / 문의가 없습니다.";
       return { errorMessage };
     }
 
