@@ -14,7 +14,7 @@ const PostSchema = new Schema(
       required: true,
     },
     authorizedUsers: {
-      type: Array,
+      type: [String],
       required: true,
     },
     sender: {

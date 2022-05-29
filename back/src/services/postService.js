@@ -21,9 +21,23 @@ class PostService {
     postImg,
   }) {
     const postId = crypto.randomUUID();
+    let authorizedUsers = [];
+
+    if (type === "cs") {
+      authorizedUsers = [sender, receiver];
+    } else if (type === "groupChat") {
+      authorizedUsers = [sender]
+    } else if (type === "review") {
+      authorizedUsers = [];
+    } else { 
+      const errorMessage = "존재하지 않는 type 입니다.";
+      return { errorMessage };
+    }
+
     const newPost = {
       postId,
       type,
+      authorizedUsers,
       sender,
       receiver,
       title,
