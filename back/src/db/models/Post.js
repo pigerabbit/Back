@@ -11,7 +11,7 @@ class Post {
     return createNewPost;
   }
 
-  /** 글 검색 함수
+  /** 글 남겨진 곳 검색 함수
    *
    * @param {String} receiver - 글이 남겨지는 곳
    * @returns {Object} postList
@@ -33,7 +33,10 @@ class Post {
    * @returns {Object} post
    */
   static async findPostContent({ postId }) { 
-    const post = await PostModel.findOne({ postId });
+    const post = await PostModel.findOne(
+      { postId },
+      { _id: 0, __v: 0, updatedAt: 0 },
+    );
     return post;
   }
 

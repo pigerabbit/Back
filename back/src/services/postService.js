@@ -34,7 +34,7 @@ class PostService {
     return createdPost;
   }
 
-  /** 글 검색 함수
+  /** 글 남겨진 곳 검색 함수
    *
    * @param {String} receiver - 글이 남겨지는 곳
    * @returns {Object} postList
@@ -52,12 +52,33 @@ class PostService {
     return postList;
   }
 
+  /** 글 검색 함수
+   *
+   * @param {String} postId - 글 id
+   * @returns {Object} post
+  */
+  static async getPost({ postId }) {
+    const post = await Post.findPostContent({ postId });
+
+    if (!post) {
+      const errorMessage = "존재하지 않는 글입니다.";
+      return { errorMessage };
+    }
+     
+    if (post.removed === true) { 
+      const errorMessage = "삭제된 글입니다.";
+      return { errorMessage };
+    }
+
+    return post;
+  }
+
   /** 글 수정 함수
    * 
    * @param {String} sender - 글쓴이
    * @param {String} postId - 글이 남겨지는 곳
    * @param {Object} toUpdate - 글 업데이트 내용이 담긴 오브젝트
-   * @returns {Object}
+   * @returns {Object} updatedPost
   */
   static async setPost({ sender, postId, toUpdate }) {
     const post = await Post.findPostContent({ postId });
