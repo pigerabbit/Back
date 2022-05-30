@@ -113,18 +113,6 @@ class PostService {
       };
     }
 
-    // 답변이 있는지 확인하는 부분
-    // 있다면 true / 없다면 false
-    if (post.type === "cs") {
-      const reply = await Post.findPostContent({ postId });
-
-      if (!reply) {
-        post['reply'] = false;
-      } else { 
-        post['reply'] = true;
-      }
-    }
-
     return post;
   }
 
@@ -214,27 +202,36 @@ class PostService {
    * 
    * @param {String} userId - 로그인한 유저 id
    * @param {String} writer - 글쓴이
+   * @param {String} option - 옵션 (review / cs / groupChat / comment)
+   * @returns {Object} postList
    */
   static async getPostListByWriter({ userId, writer, option }) { 
     const optionList = ["review", "cs", "groupChat", "comment"];
-    if (userId !== writer) { 
-      const errorMessage = "글쓴이만 볼 수 있습니다.";
-      return { errorMessage };
-    }
 
     if (optionList.indexOf(option) === -1) { 
       const errorMessage = "옵션을 잘못 입력하셨습니다.";
-      return { errorMessage };
+      return {
+        status: 400,
+        errorMessage,
+      };
     }
 
-    const reviewList = await Post.findPostListByWriter({ writer, option });
-
-    if (reviewList.length === 0) { 
-      const errorMessage = "작성한 후기 / 문의가 없습니다.";
-      return { errorMessage };
+    if (userId !== writer) { 
+      const errorMessage = "글쓴이만 볼 수 있습니다.";
+      return {
+        status: 403,
+        errorMessage,
+      };
     }
 
-    return reviewList;
+    const postList = await Post.findPostListByWriter({ writer, option });
+
+    if (postList.length === 0) { 
+      const payload = "작성한 후기 / 문의가 없습니다.";
+      return { payload };
+    }
+
+    return postList;
   }
 }
 

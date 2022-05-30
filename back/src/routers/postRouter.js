@@ -290,12 +290,12 @@ postRouter.get(
       const writer = req.params.writer;
       const option = req.params.option;
 
-      const reviewList = await PostService.getPostListByWriter({ userId, writer, option });
+      const postList = await PostService.getPostListByWriter({ userId, writer, option });
 
-      if (reviewList.errorMessage) { 
+      if (postList.errorMessage) { 
         const body = {
           success: false,
-          error: reviewList.errorMessage,
+          error: postList.errorMessage,
         }
 
         return res.status(403).send(body);
@@ -303,7 +303,7 @@ postRouter.get(
 
       const body = {
         success: true,
-        payload: reviewList,
+        payload: postList,
       }
 
       return res.status(200).send(body);
