@@ -91,17 +91,26 @@ class PostService {
 
     if (!post) {
       const errorMessage = "존재하지 않는 글입니다.";
-      return { errorMessage };
+      return {
+        status: 400,
+        errorMessage,
+      };
     }
      
     if (post.removed === true) { 
       const errorMessage = "삭제된 글입니다.";
-      return { errorMessage };
+      return {
+        status: 400,
+        errorMessage,
+      };
     }
 
     if (post.type !== "review" && post.type !== "comment" && post.authorizedUsers.indexOf(userId) === -1) { 
       const errorMessage = "글을 볼 수 있는 권한이 없습니다";
-      return { errorMessage };
+      return {
+        status: 403,
+        errorMessage,
+      };
     }
 
     // 답변이 있는지 확인하는 부분
@@ -128,20 +137,29 @@ class PostService {
    */
   static async setPost({ writer, postId, toUpdate }) {
     const post = await Post.findPostContent({ postId });
-
+    
     if (!post) {
       const errorMessage = "게시글이 존재하지 않습니다.";
-      return { errorMessage };
+      return {
+        status: 400,
+        errorMessage,
+      };
     }
 
     if (post.writer !== writer) {
       const errorMessage = "글을 쓴 유저만 수정이 가능합니다.";
-      return { errorMessage };
+      return {
+        status: 403,
+        errorMessage,
+      };
     }
 
     if (post.removed === true) { 
       const errorMessage = "이미 삭제된 글입니다.";
-      return { errorMessage };
+      return {
+        status: 400,
+        errorMessage,
+      };
     }
 
     Object.keys(toUpdate).forEach((key) => {
@@ -156,30 +174,39 @@ class PostService {
 
   /** 글 삭제 함수
    *
+   * @param {String} writer - 글쓴이
    * @param {String} postId - 글 id
    * @returns {Object} deletedPost
    */
-  static async deletePost({ postId }) {
+  static async deletePost({ writer, postId }) {
     const post = await Post.findPostContent({ postId });
 
     if (!post) {
       const errorMessage = "게시글이 존재하지 않습니다.";
-      return { errorMessage };
+      return {
+        status: 400,
+        errorMessage,
+      };
     }
 
-    if (post.postId !== postId) { 
+    if (post.writer !== writer) { 
       const errorMessage = "글을 쓴 유저만 삭제가 가능합니다.";
-      return { errorMessage };
+      return {
+        status: 403,
+        errorMessage,
+      };
     }
 
     if (post.removed === true) { 
       const errorMessage = "이미 삭제된 글입니다.";
-      return { errorMessage };
+      return {
+        status: 400,
+        errorMessage,
+      };
     }
 
     const toUpdate = { removed: true };
     const deletedPost = await Post.update({ postId, toUpdate });
-    console.log(deletedPost);
     return deletedPost;
   }
 

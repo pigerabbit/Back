@@ -115,7 +115,7 @@ postRouter.get(
   }
 );
 
-/** GET /posts/:postId - 글 하나 읽기 API (후기, 문의에서 활용 / 공구는 댓글 전체보기로 가능)
+/** GET /posts/:postId - 글 하나 읽기 API (후기, 문의에서 활용 / 공구는 전체 글 읽기로 가능)
  * params: postId
  */
 postRouter.get(
@@ -143,7 +143,7 @@ postRouter.get(
           payload: post.errorMessage,
         }
 
-        return res.status(400).send(body);
+        return res.status(post.status).send(body);
       }
 
       const body = {
@@ -203,7 +203,7 @@ postRouter.put(
           error: updatedPost.errorMessage,
         }
         
-        return res.status(400).send(body);
+        return res.status(updatedPost.status).send(body);
       } 
 
       const body = {
@@ -238,7 +238,7 @@ postRouter.delete(
       const writer = req.currentUserId;
       const postId = req.params.postId;
 
-      const deletedPost = await PostService.deletePost({ postId });
+      const deletedPost = await PostService.deletePost({ writer, postId });
 
       if (deletedPost.errorMessage) {
         const body = {
@@ -246,7 +246,7 @@ postRouter.delete(
           error: deletedPost.errorMessage,
         }
         
-        return res.status(400).send(body);
+        return res.status(deletedPost.status).send(body);
       } 
 
       const body = {
