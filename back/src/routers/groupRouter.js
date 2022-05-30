@@ -4,35 +4,33 @@ import { groupService } from "../services/groupService";
 
 const groupRouter = Router();
 
-groupRouter.post(
-  "/group/create",
-  login_required,
-  async function (req, res, next) {
-    try {
-      const { groupId, groupType, location, productId, state } = req.body;
+groupRouter.post("/groups", login_required, async function (req, res, next) {
+  try {
+    const userId = req.currentUserId;
+    const { groupType, groupName, location, productId, state } = req.body;
 
-      const newGroup = await groupService.addGroup({
-        groupId,
-        groupType,
-        location,
-        productId,
-        state,
-      });
+    const newGroup = await groupService.addGroup({
+      userId,
+      groupType,
+      groupName,
+      location,
+      productId,
+      state,
+    });
 
-      if (newGroup.errorMessage) {
-        throw new Error(newGroup.errorMessage);
-      }
-
-      const body = {
-        success: true,
-        payload: newGroup,
-      };
-      res.status(200).json(body);
-    } catch (error) {
-      next(error);
+    if (newGroup.errorMessage) {
+      throw new Error(newGroup.errorMessage);
     }
+
+    const body = {
+      success: true,
+      payload: newGroup,
+    };
+    res.status(200).json(body);
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 groupRouter.put(
   "/groups/:groupId/participants",
@@ -151,13 +149,21 @@ groupRouter.put(
     try {
       const groupId = req.params.groupId;
 
-      const groupType = req.body.groupType;
-      const location = req.body.location;
-      const deadline = req.body.deadline;
-      const productId = req.body.productId;
-      const state = req.body.state;
+      const groupType = req.body.groupType ?? null;
+      const groupName = req.body.groupName ?? null;
+      const location = req.body.location ?? null;
+      const deadline = req.body.deadline ?? null;
+      const productId = req.body.productId ?? null;
+      const state = req.body.state ?? null;
 
-      const toUpdate = { groupType, location, deadline, productId, state };
+      const toUpdate = {
+        groupType,
+        groupName,
+        location,
+        deadline,
+        productId,
+        state,
+      };
 
       const updatedGroup = await groupService.setGroup({ groupId, toUpdate });
 
@@ -220,14 +226,15 @@ groupRouter.get(
   }
 );
 
-groupRouter.get("/grouplist", login_required, async function (req, res, next) {
+// 상품별 공동구매 리스트를 반환하는 함수
+groupRouter.get("/groups", login_required, async function (req, res, next) {
   try {
-    // 전체 사용자 목록을 얻음
-    const groups = await groupService.getGroups();
+    const productId = req.body.productId;
+    const groupList = await groupService.getGroupByProductId({ productId });
 
     const body = {
       success: true,
-      payload: groups,
+      payload: groupList,
     };
 
     res.status(200).send(body);

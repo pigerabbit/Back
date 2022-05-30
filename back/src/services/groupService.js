@@ -4,14 +4,27 @@ import { GroupModel } from "../db/schemas/group";
 import { nextThreeDay } from "../utils/date-calculator.js";
 
 export class groupService {
-  static async addGroup({ groupType, location, productId, state }) {
+  static async addGroup({
+    userId,
+    groupType,
+    groupName,
+    location,
+    productId,
+    state,
+  }) {
     const groupId = crypto.randomUUID();
     const deadline = nextThreeDay();
+    let participants = userId;
+    console.log("userId:", userId);
+    console.log("participants:", participants);
+
     const newGroup = {
       groupId,
+      groupName,
       groupType,
       location,
       deadline,
+      participants,
       productId,
       state,
     };
@@ -127,29 +140,8 @@ export class groupService {
     return group;
   }
 
-  /** 공동구매 개수를 기준으로 내림차순 정렬한 상품들 리스트
-   *
-   * @returns productList
-   */
-  static async findProductList() {
-    let productList = await GroupModel.aggregate([
-      {
-        $group: {
-          _id: "$productId",
-          total_pop: { $sum: 1 },
-        },
-      },
-    ]);
-
-    productList = productList.sort((a, b) => {
-      return b.total_pop - a.total_pop;
-    });
-
-    return productList.slice(0, 10);
-  }
-
-  static async getGroups() {
-    const groups = await Group.findAll();
+  static async getGroupByProductId({ productId }) {
+    const groups = await Group.findAll({ productId });
     return groups;
   }
 }

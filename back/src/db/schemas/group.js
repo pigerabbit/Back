@@ -10,6 +10,10 @@ const GroupSchema = new Schema(
       type: String,
       required: true,
     },
+    groupName: {
+      type: String,
+      required: true,
+    },
     location: {
       type: String,
       required: true,
@@ -30,7 +34,7 @@ const GroupSchema = new Schema(
       type: String,
       required: true,
     },
-    state: {
+    state: { // 0 : 공구 진행 완료 1 :  
       type: Number,
       required: true,
     },
