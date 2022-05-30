@@ -237,6 +237,24 @@ class userService {
     const countReport = ReportPeople.length;
     return countReport;
   }
+
+  static async deleteUser({ userId }) {
+    const user = await User.findById({ userId });
+    console.log("user:", user);
+    // db에서 찾지 못한 경우, 에러 메시지 반환
+    if (!user || user === null) {
+      const errorMessage = "해당 유저가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+    if (user.deleted === true) {
+      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
+      return { errorMessage };
+    }
+    const setter = { deleted: true };
+    const deletedUser = await User.updateAll({ userId, setter });
+
+    return deletedUser;
+  }
 }
 
 export { userService };
