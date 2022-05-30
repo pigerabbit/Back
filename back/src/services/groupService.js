@@ -1,13 +1,12 @@
 import { Group } from "../db";
-import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { nextTick } from "process";
 import { GroupModel } from "../db/schemas/group";
+import { nextThreeDay } from "../utils/date-calculator.js";
 
 export class groupService {
-  static async addGroup({ groupType, location, deadline, productId, state }) {
+  static async addGroup({ groupType, location, productId, state }) {
     const groupId = crypto.randomUUID();
-
+    const deadline = nextThreeDay();
     const newGroup = {
       groupId,
       groupType,

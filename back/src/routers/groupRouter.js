@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { login_required } from "../middlewares/login_required";
 import { groupService } from "../services/groupService";
-import { Group } from "../db";
 
 const groupRouter = Router();
 
@@ -10,12 +9,12 @@ groupRouter.post(
   login_required,
   async function (req, res, next) {
     try {
-      const { groupType, location, deadline, productId, state } = req.body;
+      const { groupId, groupType, location, productId, state } = req.body;
 
       const newGroup = await groupService.addGroup({
+        groupId,
         groupType,
         location,
-        deadline,
         productId,
         state,
       });
