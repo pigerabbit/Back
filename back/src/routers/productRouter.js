@@ -307,18 +307,21 @@ productRouter.get(
   "/products",
   [
     query("page")
-      .trim()
-      .isLength()
       .exists()
-      .withMessage("parameter 값으로 page를 입력해주세요.")
+      .withMessage("query에 page 값을 입력해주세요.")
       .bail(),
     query("perPage")
-      .trim()
-      .isLength()
       .exists()
-      .withMessage("parameter 값으로 perPage를 입력해주세요.")
+      .withMessage("query에 perPage 값을 입력해주세요.")
       .bail(),
-    notFoundValidate,
+    query("category")
+      .exists()
+      .withMessage("query에 category 값을 입력해주세요.")
+      .bail(),
+    query("option")
+      .exists()
+      .withMessage("query에 option 값을 입력해주세요.")
+      .bail(),
     validate,
   ],
   async (req, res, next) => {
@@ -369,28 +372,25 @@ productRouter.get(
 // query : page, perPage, search(검색어), option(groups, salePrice, reviews, views)
 productRouter.get(
   "/products/search",
-  // [ express-validator 왜 작동을 안할까,,?
-  //   query("page")
-  //     .trim()
-  //     .isLength()
-  //     .exists()
-  //     .withMessage("query 값으로 page를 입력해주세요.")
-  //     .bail(),
-  //   query("perPage")
-  //     .trim()
-  //     .isLength()
-  //     .exists()
-  //     .withMessage("query 값으로 perPage를 입력해주세요.")
-  //     .bail(),
-  //   query("search")
-  //     .trim()
-  //     .isLength()
-  //     .exists()
-  //     .withMessage("query 값으로 search를 입력해주세요.")
-  //     .bail(),
-  //   notFoundValidate,
-  //   validate,
-  // ],
+  [
+    query("page")
+      .exists()
+      .withMessage("query에 page 값을 입력해주세요.")
+      .bail(),
+    query("perPage")
+      .exists()
+      .withMessage("query에 perPage 값을 입력해주세요.")
+      .bail(),
+    query("option")
+      .exists()
+      .withMessage("query에 option 값을 입력해주세요.")
+      .bail(),
+    query("search")
+      .exists()
+      .withMessage("query에 option 값을 입력해주세요.")
+      .bail(),
+    validate,
+  ],
   async (req, res, next) => {
     try {
       const { page, perPage, option } = req.query;
