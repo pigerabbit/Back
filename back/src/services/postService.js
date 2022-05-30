@@ -137,7 +137,7 @@ class PostService {
    */
   static async setPost({ writer, postId, toUpdate }) {
     const post = await Post.findPostContent({ postId });
-    
+
     if (!post) {
       const errorMessage = "게시글이 존재하지 않습니다.";
       return {
@@ -216,7 +216,7 @@ class PostService {
    * @param {String} writer - 글쓴이
    */
   static async getPostListByWriter({ userId, writer, option }) { 
-    const optionList = ["review", "cs", "groupChat"];
+    const optionList = ["review", "cs", "groupChat", "comment"];
     if (userId !== writer) { 
       const errorMessage = "글쓴이만 볼 수 있습니다.";
       return { errorMessage };

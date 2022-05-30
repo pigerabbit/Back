@@ -94,6 +94,13 @@ class Post {
         )
           .sort({ createdAt: -1 })
           .lean();
+      case "comment":
+        postList = await PostModel.find(
+          { "type": option, writer, removed: false },
+          { _id: 0, __v: 0, updatedAt: 0 },
+        )
+          .sort({ createdAt: -1 })
+          .lean();
     }
 
     return postList;

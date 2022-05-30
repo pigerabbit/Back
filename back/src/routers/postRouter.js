@@ -158,8 +158,8 @@ postRouter.get(
   }
 );
 
-/** PUT /posts/:id - 글 수정 API 
- * params: id
+/** PUT /posts/:postId - 글 수정 API 
+ * params: postId
  * body : title,
  *        content,
  * file : postImg
@@ -218,8 +218,8 @@ postRouter.put(
   }
 );
 
-/** DELETE /posts/:id - 글 삭제 API 
- * params: id
+/** DELETE /posts/:postId - 글 삭제 API 
+ * params: postId
  */
 postRouter.delete(
   "/posts/:postId",
@@ -263,7 +263,7 @@ postRouter.delete(
 
 /** 내가 쓴 글 모아보기 함수
  * param: writer, 
- *        option : review / cs / groupChat
+ *        option : review / cs / groupChat / comment
  *
  */
 postRouter.get(
