@@ -13,12 +13,14 @@ class userAuthService {
       return { errorMessage };
     }
 
+    const imageLink = process.env.initial_image;
+
     // 비밀번호 해쉬화
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // id 는 유니크 값 부여
     const id = uuidv4();
-    const newUser = { id, name, email, password: hashedPassword };
+    const newUser = { id, name, email, password: hashedPassword, imageLink };
 
     // db에 저장
     const createdNewUser = await User.create({ newUser });
@@ -80,38 +82,63 @@ class userAuthService {
 
     // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!user) {
-      const errorMessage =
-        "가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
+      const errorMessage = "가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-
-    // 업데이트 대상에 name이 있다면, 즉 name 값이 null 이 아니라면 업데이트 진행
-    if (toUpdate.name) {
-      const fieldToUpdate = "name";
-      const newValue = toUpdate.name;
-      user = await User.update({ user_id, fieldToUpdate, newValue });
+    if (user.deleted === true) {
+      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
+      return { errorMessage };
     }
+    Object.keys(toUpdate).forEach((key) => {
+      if (toUpdate[key] === undefined || toUpdate[key] === null) {
+        delete toUpdate[key];
+      }
+    });
 
-    if (toUpdate.email) {
-      const fieldToUpdate = "email";
-      const newValue = toUpdate.email;
-      user = await User.update({ user_id, fieldToUpdate, newValue });
-    }
-
-    if (toUpdate.password) {
-      const fieldToUpdate = "password";
-      const newValue = toUpdate.password;
-      user = await User.update({ user_id, fieldToUpdate, newValue });
-    }
-
-    if (toUpdate.description) {
-      const fieldToUpdate = "description";
-      const newValue = toUpdate.description;
-      user = await User.update({ user_id, fieldToUpdate, newValue });
-    }
-
-    return user;
+    const updatedUser = await User.updateAll({ user_id, setter: toUpdate });
+    // const resultUser = getRequiredInfoFromData(updatedUser);
+    // return resultUser;
+    return updatedUser;
   }
+
+  // static async setUser({ user_id, toUpdate }) {
+  //   // 우선 해당 id 의 유저가 db에 존재하는지 여부 확인
+  //   let user = await User.findById({ user_id });
+
+  //   // db에서 찾지 못한 경우, 에러 메시지 반환
+  //   if (!user) {
+  //     const errorMessage =
+  //       "가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
+  //     return { errorMessage };
+  //   }
+
+  //   // 업데이트 대상에 name이 있다면, 즉 name 값이 null 이 아니라면 업데이트 진행
+  //   if (toUpdate.name) {
+  //     const fieldToUpdate = "name";
+  //     const newValue = toUpdate.name;
+  //     user = await User.update({ user_id, fieldToUpdate, newValue });
+  //   }
+
+  //   if (toUpdate.email) {
+  //     const fieldToUpdate = "email";
+  //     const newValue = toUpdate.email;
+  //     user = await User.update({ user_id, fieldToUpdate, newValue });
+  //   }
+
+  //   if (toUpdate.password) {
+  //     const fieldToUpdate = "password";
+  //     const newValue = toUpdate.password;
+  //     user = await User.update({ user_id, fieldToUpdate, newValue });
+  //   }
+
+  //   if (toUpdate.description) {
+  //     const fieldToUpdate = "description";
+  //     const newValue = toUpdate.description;
+  //     user = await User.update({ user_id, fieldToUpdate, newValue });
+  //   }
+
+  //   return user;
+  // }
 
   static async getUserInfo({ user_id }) {
     const user = await User.findById({ user_id });
