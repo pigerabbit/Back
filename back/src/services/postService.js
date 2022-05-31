@@ -171,8 +171,8 @@ class PostService {
    * @returns {Object} deletedPost
    */
   static async deletePost({ writer, postId }) {
-    const post = await Post.findPostContent({ postId });
-
+    let post = await Post.findPostContent({ postId });
+    
     if (!post) {
       const errorMessage = "게시글이 존재하지 않습니다.";
       return {
@@ -197,7 +197,28 @@ class PostService {
       };
     }
 
-    const toUpdate = { removed: true };
+    let toUpdate = {};
+
+    // 만약 댓글이라면
+    // receiver로 가진 post의 commentCount -= 1 해야 함 
+    if (post.type === "comment") {
+      const receiver = post.receiver;
+      post = await Post.findPostContent({ postId: receiver });
+      if (!post) {
+        const errorMessage = "존재하지 않는 글입니다.";
+        return { errorMessage };
+      }
+      const updateId = post.postId;
+      const minusCommentCount = post.commentCount - 1;
+      toUpdate = {
+        commentCount: minusCommentCount,
+      }
+      post = await Post.update({ postId: updateId, toUpdate });
+      toUpdate = { removed: true };
+    } else { 
+      toUpdate = { removed: true };
+    }
+
     const deletedPost = await Post.update({ postId, toUpdate });
     return deletedPost;
   }
