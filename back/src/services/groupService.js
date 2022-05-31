@@ -41,7 +41,7 @@ export class groupService {
     return createdNewGroup;
   }
 
-  static async setParticipants({ groupId, userId, quantity }) {
+  static async setQuantity({ groupId, userId, quantity }) {
     let groupInfo = await Group.findByGroupId({ groupId });
 
     if (!groupInfo) {
@@ -77,7 +77,7 @@ export class groupService {
     return updatedParticipants;
   }
 
-  static async setNotPaid({ groupId, toUpdate }) {
+  static async setPayment({ groupId, userId, payment }) {
     let groupInfo = await Group.findByGroupId({ groupId });
 
     if (!groupInfo) {
@@ -86,24 +86,28 @@ export class groupService {
       return { errorMessage };
     }
 
-    let notPaidInfo = groupInfo.notPaid;
+    let participantsInfo = groupInfo.participants;
     let newValue = {};
 
-    const index = notPaidInfo.findIndex((f) => f === toUpdate.userId);
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
 
     if (index > -1) {
-      notPaidInfo.splice(index, 1);
+      participantsInfo[index]["payment"] = payment;
     } else {
-      notPaidInfo.push(toUpdate.userId);
+      const participantInfo = {
+        ...participantInfo,
+        payment: true,
+      };
+      participantsInfo.push(participant);
     }
-    newValue = notPaidInfo;
-    const updatedNotPaid = await GroupModel.findOneAndUpdate(
+    newValue = participantsInfo;
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { notPaid: newValue } },
+      { $set: { participants: newValue } },
       { returnOriginal: false }
     );
 
-    return updatedNotPaid;
+    return updatedParticipants;
   }
 
   static async getParticipants({ groupId }) {

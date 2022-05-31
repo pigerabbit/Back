@@ -43,7 +43,7 @@ groupRouter.post("/groups", login_required, async function (req, res, next) {
 });
 
 groupRouter.put(
-  "/groups/:groupId/participants",
+  "/groups/:groupId/quantity",
   login_required,
   async function (req, res, next) {
     try {
@@ -51,7 +51,7 @@ groupRouter.put(
       const groupId = req.params.groupId;
       const quantity = req.body.quantity;
 
-      const updatedGroupInfo = await groupService.setParticipants({
+      const updatedGroupInfo = await groupService.setQuantity({
         userId,
         groupId,
         quantity,
@@ -74,17 +74,18 @@ groupRouter.put(
 );
 
 groupRouter.put(
-  "/groups/:groupId/notPaid",
+  "/groups/:groupId/payment",
   login_required,
   async function (req, res, next) {
     try {
-      const userId = req.body.userId;
+      const userId = req.currentUserId;
       const groupId = req.params.groupId;
+      const payment = req.body.payment;
 
-      const toUpdate = { userId };
-      const updatedGroupInfo = await groupService.setNotPaid({
+      const updatedGroupInfo = await groupService.setPayment({
+        userId,
         groupId,
-        toUpdate,
+        payment,
       });
 
       if (updatedGroupInfo.errorMessage) {
@@ -103,55 +104,55 @@ groupRouter.put(
   }
 );
 
-groupRouter.get(
-  "/groups/:groupId/participants",
-  login_required,
-  async function (req, res, next) {
-    try {
-      const groupId = req.params.groupId;
+// groupRouter.get(
+//   "/groups/:groupId/participants",
+//   login_required,
+//   async function (req, res, next) {
+//     try {
+//       const groupId = req.params.groupId;
 
-      const participantsInfo = await groupService.getParticipants({ groupId });
+//       const participantsInfo = await groupService.getParticipants({ groupId });
 
-      if (participantsInfo.errorMessage) {
-        throw new Error(participantsInfo.errorMessage);
-      }
+//       if (participantsInfo.errorMessage) {
+//         throw new Error(participantsInfo.errorMessage);
+//       }
 
-      const body = {
-        success: true,
-        payload: participantsInfo,
-      };
+//       const body = {
+//         success: true,
+//         payload: participantsInfo,
+//       };
 
-      res.status(200).json(body);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+//       res.status(200).json(body);
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
 
-groupRouter.get(
-  "/groups/:groupId/notPaid",
-  login_required,
-  async function (req, res, next) {
-    try {
-      const groupId = req.params.groupId;
+// groupRouter.get(
+//   "/groups/:groupId/notPaid",
+//   login_required,
+//   async function (req, res, next) {
+//     try {
+//       const groupId = req.params.groupId;
 
-      const notPaidInfo = await groupService.getNotPaid({ groupId });
+//       const notPaidInfo = await groupService.getNotPaid({ groupId });
 
-      if (notPaidInfo.errorMessage) {
-        throw new Error(notPaidInfo.errorMessage);
-      }
+//       if (notPaidInfo.errorMessage) {
+//         throw new Error(notPaidInfo.errorMessage);
+//       }
 
-      const body = {
-        success: true,
-        payload: notPaidInfo,
-      };
+//       const body = {
+//         success: true,
+//         payload: notPaidInfo,
+//       };
 
-      res.status(200).json(body);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+//       res.status(200).json(body);
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
 
 groupRouter.put(
   "/groups/:groupId",
