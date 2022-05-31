@@ -1010,7 +1010,7 @@ productRouter.get(
     const userId = req.params.userId;
 
     // 유저가 존재하는지 확인
-    const user = await userService.getUserInfo({ user_id: userId });
+    const user = await userService.getUserInfo({ userId });
 
     // 유저가 존재하지 않는다면 에러
     if (user.errorMessage) { 
