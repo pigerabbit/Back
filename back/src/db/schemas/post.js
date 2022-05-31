@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-const Schema = mongoose.Schema;
-const model = mongoose.model;
+import { Schema, model } from "mongoose";
 
 const PostSchema = new Schema(
   {
@@ -37,6 +36,11 @@ const PostSchema = new Schema(
     postImg: {
       type: String,
       required: false,
+    },
+    commentCount: {
+      type: Number,
+      required: true,
+      default: 0,
     },
     removed: {
       type: Boolean,
