@@ -8,7 +8,6 @@ import bcrypt from "bcrypt";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
 const request = require('request');
-import axios from "axios";
 
 require("dotenv").config();
 
@@ -440,9 +439,9 @@ userRouter.post(
       .exists()
       .withMessage("b_no(사업자 등록 번호)를 입력해주세요.")
       .bail(),
-    body("p_no")
+    body("p_nm")
       .exists()
-      .withMessage("p_no(대표자 성명)를 입력해주세요")
+      .withMessage("p_nm(대표자 성명)를 입력해주세요")
       .bail(),
     body("start_dt")
       .exists()
@@ -455,7 +454,7 @@ userRouter.post(
     const userId = req.currentUserId;
     const id = req.params.id;
 
-    if (userId !== id) { 
+    if (userId !== id) {
       const body = {
         success: false,
         error: "사업자 인증은 로그인한 유저, 본인만 가능합니다.",
@@ -465,29 +464,41 @@ userRouter.post(
     }
 
     const b_no = req.body.b_no;
-    const p_no = req.body.p_no;
+    const p_nm = req.body.p_nm;
     const start_dt = req.body.start_dt;
     const businesses = [{
       "b_no": b_no,
-      "p_no": p_no,
+      "p_nm": p_nm,
       "start_dt": start_dt,
     }];
 
     const options = {
-      uri: myaddr, 
+      uri: myaddr,
       method: 'POST',
       body: {
         businesses: businesses,
       },
-      json:true
+      json: true
     }
-    request.post(options, function (err, httpResponse, body) { 
-      console.log("ok");
-      console.log("httpResponse", httpResponse);
-      console.log("body :", body);
-      return res.status(200).send(httpResponse);
+
+    request.post(options, function (err, httpResponse, body) {
+      if (body.data[0].valid === "01") {
+        const body = {
+          success: true,
+          payload: "사업자 인증을 성공했습니다.",
+        }
+
+        return res.status(200).send(body);
+      } else {
+        const body = {
+          success: false,
+          payload: "사업자 인증에 실패했습니다.",
+        }
+
+        return res.status(400).send(body);
+      }
     })
   }
-)
+);
 
 export { userRouter };
