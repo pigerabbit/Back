@@ -6,11 +6,11 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    email: {
+    name: {
       type: String,
       required: true,
     },
-    name: {
+    email: {
       type: String,
       required: true,
     },
@@ -18,14 +18,47 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    description: {
+    location: {
       type: String,
       required: false,
-      default: "설명이 아직 없습니다. 추가해 주세요.",
+    },
+    distance: {
+      type: Number,
+      required: false,
+    },
+    businessName: {
+      type: String,
+      required: false,
+    },
+    nickname: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: false,
+    },
+    seller: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
     imageLink: {
       type: String,
-      required: true,
+      required: false,
+    },
+    reportedBy: {
+      type: [String],
+      required: false,
+    },
+    deleted: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   {

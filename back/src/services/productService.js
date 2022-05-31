@@ -1,4 +1,5 @@
 import { Product } from "../db/index.js";
+import { User } from "../db/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromProductData } from "../utils/product";
 
@@ -64,7 +65,8 @@ class ProductService {
 
     const product = await Product.create({ newProduct });
     const resultProduct = getRequiredInfoFromProductData(product);
-    return resultProduct;
+
+    return { resultProduct };
   }
 
   /** 상품 정보 수정 함수
@@ -94,7 +96,7 @@ class ProductService {
     const updatedProduct = await Product.update({ id, toUpdate });
     const resultProduct = getRequiredInfoFromProductData(updatedProduct);
 
-    return resultProduct;
+    return { resultProduct };
   }
 
   /** 상품 전체를 반환하는 함수
@@ -125,7 +127,7 @@ class ProductService {
 
     if (option === "groups") {
       const productList = await Product.findProductSortByGroups({ category, page, perPage });
-      if (product)
+      if (productList)
       return productList;
     } else if (option === "reviews") {
       const productList = await Product.findProductSortByReviews({ category, page, perPage });
@@ -174,7 +176,7 @@ class ProductService {
 
     if (option === "groups") {
       const productList = await Product.findProductSearchSortByGroups({ search, page, perPage });
-      if (product)
+      if (productList)
       return productList;
     } else if (option === "reviews") {
       const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
@@ -191,7 +193,7 @@ class ProductService {
     }
   }
 
-  /** 상품 id와 일치하는 상품을 반환하는 함수
+  /** 상품 id와 일치하는 상품을 삭제하는 함수
    * 
    * @param {Strings} id - 상품 id 
    * @returns 상품 Object
@@ -211,7 +213,7 @@ class ProductService {
     const updatedProduct = await Product.update({ id, toUpdate });
     const resultProduct = getRequiredInfoFromProductData(updatedProduct);
 
-    return resultProduct;
+    return { resultProduct };
   }
 
   static async deleteProduct({ userId, id }) { 

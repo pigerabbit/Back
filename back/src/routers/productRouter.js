@@ -3,7 +3,7 @@ import { ProductService } from "../services/productService";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
-import { userAuthService } from "../services/userService";
+import { userService } from "../services/userService";
 
 const { productImgUpload } = require("../utils/s3");
 
@@ -152,6 +152,7 @@ productRouter.post(
   "/products",
   login_required,
   // express-validator로 작동되지 않는,,, => try-catch로 변경
+  // [
   //   body("category")
   //     .exists()
   //     .withMessage("카테고리를 입력해주세요.")
@@ -160,17 +161,21 @@ productRouter.post(
   //     .exists()
   //     .withMessage("상품명을 입력해주세요.")
   //     .bail(),
-  //   body("description")
-  //     .exists()
-  //     .withMessage("설명을 입력해주세요.")
-  //     .bail(),
   //   body("price")
   //     .exists()
-  //     .withMessage("가격을 입력해주세요.")
+  //     .withMessage("원가를 입력해주세요.")
+  //     .bail(),
+  //   body("salePrice")
+  //     .exists()
+  //     .withMessage("판매가격을 입력해주세요.")
+  //     .bail(),
+  //   body("minPurchaseQty")
+  //     .exists()
+  //     .withMessage("최소 수량을 입력해주세요.")
   //     .bail(),
   //   body("maxPurchaseQty")
   //     .exists()
-  //     .withMessage("최소 수량을 입력해주세요.")
+  //     .withMessage("재고를 입력해주세요.")
   //     .bail(),
   //   validate,
   // ],
@@ -307,18 +312,21 @@ productRouter.get(
   "/products",
   [
     query("page")
-      .trim()
-      .isLength()
       .exists()
-      .withMessage("parameter 값으로 page를 입력해주세요.")
+      .withMessage("query에 page 값을 입력해주세요.")
       .bail(),
     query("perPage")
-      .trim()
-      .isLength()
       .exists()
-      .withMessage("parameter 값으로 perPage를 입력해주세요.")
+      .withMessage("query에 perPage 값을 입력해주세요.")
       .bail(),
-    notFoundValidate,
+    query("category")
+      .exists()
+      .withMessage("query에 category 값을 입력해주세요.")
+      .bail(),
+    query("option")
+      .exists()
+      .withMessage("query에 option 값을 입력해주세요.")
+      .bail(),
     validate,
   ],
   async (req, res, next) => {
@@ -369,28 +377,25 @@ productRouter.get(
 // query : page, perPage, search(검색어), option(groups, salePrice, reviews, views)
 productRouter.get(
   "/products/search",
-  // [ express-validator 왜 작동을 안할까,,?
-  //   query("page")
-  //     .trim()
-  //     .isLength()
-  //     .exists()
-  //     .withMessage("query 값으로 page를 입력해주세요.")
-  //     .bail(),
-  //   query("perPage")
-  //     .trim()
-  //     .isLength()
-  //     .exists()
-  //     .withMessage("query 값으로 perPage를 입력해주세요.")
-  //     .bail(),
-  //   query("search")
-  //     .trim()
-  //     .isLength()
-  //     .exists()
-  //     .withMessage("query 값으로 search를 입력해주세요.")
-  //     .bail(),
-  //   notFoundValidate,
-  //   validate,
-  // ],
+  [
+    query("page")
+      .exists()
+      .withMessage("query에 page 값을 입력해주세요.")
+      .bail(),
+    query("perPage")
+      .exists()
+      .withMessage("query에 perPage 값을 입력해주세요.")
+      .bail(),
+    query("option")
+      .exists()
+      .withMessage("query에 option 값을 입력해주세요.")
+      .bail(),
+    query("search")
+      .exists()
+      .withMessage("query에 option 값을 입력해주세요.")
+      .bail(),
+    validate,
+  ],
   async (req, res, next) => {
     try {
       const { page, perPage, option } = req.query;
@@ -1005,7 +1010,7 @@ productRouter.get(
     const userId = req.params.userId;
 
     // 유저가 존재하는지 확인
-    const user = await userAuthService.getUserInfo({ user_id: userId });
+    const user = await userService.getUserInfo({ userId });
 
     // 유저가 존재하지 않는다면 에러
     if (user.errorMessage) { 

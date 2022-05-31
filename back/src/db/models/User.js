@@ -1,47 +1,54 @@
 import { UserModel } from "../schemas/user";
 
-class User {
+export class User {
   static async create({ newUser }) {
     const createdNewUser = await UserModel.create(newUser);
     return createdNewUser;
   }
 
-  static async findByEmail({ email }) {
-    const user = await UserModel.findOne({ email });
-    return user;
+  static async isEmailExists({ email, type }) {
+    return await UserModel.exists({ email, type });
   }
 
-  static async findById({ user_id }) {
-    const user = await UserModel.findOne({ id: user_id }).lean();
+  static async findByEmail({ email, type }) {
+    const user = await UserModel.findOne({ email, type });
     return user;
   }
 
   static async findAll() {
-    const users = await UserModel.find({});
+    //회원탈퇴한 유저는 제외
+    const users = await UserModel.find(
+      { deleted: false },
+      {
+        _id: false,
+        id: true,
+        name: true,
+        email: true,
+        address: true,
+        businessName: true,
+        type: true,
+      }
+    );
     return users;
   }
 
-  static async update({ user_id, fieldToUpdate, newValue }) {
-    const filter = { id: user_id };
-    const update = { [fieldToUpdate]: newValue };
-    const option = { returnOriginal: false };
+  static async findById({ userId }) {
+    const user = await UserModel.findOne({ id: userId }).lean();
 
-    const updatedUser = await UserModel.findOneAndUpdate(
-      filter,
-      update,
-      option
-    );
-    return updatedUser;
+    return user;
   }
 
-  static async updateAll({ user_id, setter }) {
+  static async updateAll({ userId, setter }) {
     const updatedUser = await UserModel.findOneAndUpdate(
-      { id: user_id },
+      { id: userId },
       { $set: setter },
       { returnOriginal: false }
     );
     return updatedUser;
   }
-}
 
-export { User };
+  static async findByName({ name }) {
+    const user = await UserModel.findOne({ name });
+    return user;
+  }
+}
