@@ -75,11 +75,15 @@ businessAuthRouter.post(
       json: true
     }
 
-    request.post(options, function (err, httpResponse, body) {
+    request.post(options, async function (err, httpResponse, body) {
       if (body.data[0].valid === "01") {
+        const toUpdate = { seller: true };
+        const newUser = await userService.setUser({ userId, toUpdate });
+
         const body = {
           success: true,
-          payload: "사업자 인증에 성공했습니다.",
+          payload: newUser,
+          message: "사업자 인증에 성공했습니다.",
         }
 
         return res.status(200).send(body);
