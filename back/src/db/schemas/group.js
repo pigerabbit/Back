@@ -26,6 +26,10 @@ const GroupSchema = new Schema(
       type: [String],
       required: false,
     },
+    dateList: {
+      type: [String],
+      required: false,
+    },
     notPaid: {
       type: [String],
       required: false,
@@ -34,7 +38,8 @@ const GroupSchema = new Schema(
       type: String,
       required: true,
     },
-    state: { // 0 : 공구 진행 완료 1 :  
+    state: {
+      // 0 : 공구 진행 완료 1 :
       type: Number,
       required: true,
     },
