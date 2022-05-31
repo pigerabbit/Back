@@ -255,4 +255,24 @@ groupRouter.get("/grouplist", login_required, async function (req, res, next) {
   }
 });
 
+groupRouter.get(
+  "/groups/:groupId/numberInfo",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const groupId = req.params.groupId;
+      const numberInfo = await groupService.getNumberInfoByGroupId({ groupId });
+
+      const body = {
+        success: true,
+        payload: numberInfo,
+      };
+
+      res.status(200).send(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export { groupRouter };
