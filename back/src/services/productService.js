@@ -174,7 +174,7 @@ class ProductService {
 
     if (option === "groups") {
       const productList = await Product.findProductSearchSortByGroups({ search, page, perPage });
-      if (product)
+      if (productList)
       return productList;
     } else if (option === "reviews") {
       const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
