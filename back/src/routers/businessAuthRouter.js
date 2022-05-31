@@ -13,6 +13,7 @@ const businessAuthRouter = Router();
 /** 사업자 인증 API
  * 
  * body
+ *    businessName : 상점 이름
  *    b_no : 사업자 등록 번호
  *    p_no : 대표자 성명
  *    start_dt : 개업 일자
@@ -27,6 +28,11 @@ businessAuthRouter.post(
       .isLength()
       .exists()
       .withMessage("parameter 값으로 유저의 아이디를 입력해주세요.")
+      .bail(),
+    body("businessName")
+      .exists()
+      .isLength()
+      .withMessage("businessName을 입력해주세요.")
       .bail(),
     body("b_no")
       .exists()
@@ -57,6 +63,7 @@ businessAuthRouter.post(
       return res.status(403).send(body);
     }
 
+    const businessName = req.body.businessName;
     const b_no = req.body.b_no;
     const p_nm = req.body.p_nm;
     const start_dt = req.body.start_dt;
@@ -77,20 +84,23 @@ businessAuthRouter.post(
 
     request.post(options, async function (err, httpResponse, body) {
       if (body.data[0].valid === "01") {
-        const toUpdate = { seller: true };
+        const toUpdate = {
+          businessName,
+          seller: true,
+        };
         const newUser = await userService.setUser({ userId, toUpdate });
 
         const body = {
           success: true,
-          payload: newUser,
           message: "사업자 인증에 성공했습니다.",
+          payload: newUser,
         }
 
         return res.status(200).send(body);
       } else {
         const body = {
           success: false,
-          payload: "사업자 인증에 실패했습니다.",
+          error: "사업자 인증에 실패했습니다.",
         }
 
         return res.status(400).send(body);
