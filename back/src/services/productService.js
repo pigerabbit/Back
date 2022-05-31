@@ -65,8 +65,8 @@ class ProductService {
 
     const product = await Product.create({ newProduct });
     const resultProduct = getRequiredInfoFromProductData(product);
-    const user = await User.findById({ userId });
-    return { resultProduct, user };
+
+    return { resultProduct };
   }
 
   /** 상품 정보 수정 함수
@@ -95,8 +95,8 @@ class ProductService {
     
     const updatedProduct = await Product.update({ id, toUpdate });
     const resultProduct = getRequiredInfoFromProductData(updatedProduct);
-    const user = await User.findById({ userId });
-    return { resultProduct, user };
+
+    return { resultProduct };
   }
 
   /** 상품 전체를 반환하는 함수
@@ -212,8 +212,8 @@ class ProductService {
 
     const updatedProduct = await Product.update({ id, toUpdate });
     const resultProduct = getRequiredInfoFromProductData(updatedProduct);
-    const user = await User.findById({ userId: updatedProduct.userId });
-    return { resultProduct, user };
+
+    return { resultProduct };
   }
 
   static async deleteProduct({ userId, id }) { 
