@@ -30,6 +30,7 @@ businessAuthRouter.post(
       .bail(),
     body("b_no")
       .exists()
+      .isLength(10)
       .withMessage("b_no(사업자 등록 번호)를 입력해주세요.")
       .bail(),
     body("p_nm")
@@ -78,7 +79,7 @@ businessAuthRouter.post(
       if (body.data[0].valid === "01") {
         const body = {
           success: true,
-          payload: "사업자 인증을 성공했습니다.",
+          payload: "사업자 인증에 성공했습니다.",
         }
 
         return res.status(200).send(body);
