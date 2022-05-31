@@ -7,8 +7,8 @@ class Group {
   }
 
   static async findByGroupId({ groupId }) {
-    const GroupInfo = await GroupModel.findOne({ groupId });
-    return GroupInfo;
+    const groupInfo = await GroupModel.findOne({ groupId });
+    return groupInfo;
   }
 
   static async updateAll({ groupId, setter }) {
@@ -25,7 +25,6 @@ class Group {
     return groups;
   }
 
-
   /** 공동구매 개수를 기준으로 내림차순 정렬한 상품들 리스트
    *
    * @returns productList
@@ -36,7 +35,7 @@ class Group {
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean();
-    
+
     productList = await GroupModel.aggregate([
       {
         $group: {
