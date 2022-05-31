@@ -30,6 +30,10 @@ const UserSchema = new Schema(
       type: String,
       required: false,
     },
+    nickname: {
+      type: String,
+      required: true,
+    },
     address: {
       type: String,
       required: true,
@@ -37,6 +41,11 @@ const UserSchema = new Schema(
     type: {
       type: String,
       required: false,
+    },
+    seller: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
     imageLink: {
       type: String,
