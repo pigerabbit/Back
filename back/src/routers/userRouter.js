@@ -5,6 +5,7 @@ import { userService } from "../services/userService";
 import generateRandomPassword from "../utils/generate-random-password";
 import { User } from "../db";
 import bcrypt from "bcrypt";
+
 const { userImageUpload } = require("../utils/s3");
 
 const userRouter = Router();
@@ -87,7 +88,7 @@ userRouter.post("/users", async function (req, res, next) {
     const email = req.body.email;
     const password = req.body.password;
     const address = req.body.address;
-    const businessName = req.body.businessName;
+    const nickname = req.body.nickname;
     const type = "sogongx2";
 
     // 위 데이터를 유저 db에 추가하기
@@ -96,7 +97,7 @@ userRouter.post("/users", async function (req, res, next) {
       email,
       password,
       address,
-      businessName,
+      nickname,
       type,
     });
 
