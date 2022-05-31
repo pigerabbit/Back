@@ -227,7 +227,7 @@ groupRouter.get(
 );
 
 // 상품별 공동구매 리스트를 반환하는 함수
-groupRouter.get("/groups", login_required, async function (req, res, next) {
+groupRouter.get("/grouplist", login_required, async function (req, res, next) {
   try {
     const productId = req.body.productId;
     const groupList = await groupService.getGroupByProductId({ productId });
