@@ -51,10 +51,6 @@ const UserSchema = new Schema(
       required: false,
       default: false,
     },
-    imageLink: {
-      type: String,
-      required: true,
-    },
   },
   {
     timestamps: true,
