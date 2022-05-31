@@ -193,7 +193,7 @@ class ProductService {
     }
   }
 
-  /** 상품 id와 일치하는 상품을 삭제하는 함수
+  /** 상품 id와 일치하는 상품을 조회하는 함수
    * 
    * @param {Strings} id - 상품 id 
    * @returns 상품 Object
@@ -216,6 +216,11 @@ class ProductService {
     return { resultProduct };
   }
 
+  /** 상품 id와 일치하는 상품을 삭제하는 함수
+   * 
+   * @param {Strings} id - 상품 id 
+   * @returns 상품 Object
+   */
   static async deleteProduct({ userId, id }) { 
     const product = await Product.findProduct({ id });
 
