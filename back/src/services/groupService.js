@@ -11,12 +11,19 @@ export class groupService {
     location,
     productId,
     state,
+    deadline,
+    quantity,
   }) {
     const groupId = crypto.randomUUID();
-    const deadline = nextThreeDay();
-    const participants = userId;
-    const notPaid = userId;
-    const dateList = nowDay();
+    const participantId = crypto.randomUUID();
+    const participants = {
+      participantId: participantId,
+      userId: userId,
+      participantDate: nowDay(),
+      quantity: quantity,
+      payment: false,
+      complete: false,
+    };
 
     const newGroup = {
       groupId,
@@ -27,8 +34,6 @@ export class groupService {
       participants,
       productId,
       state,
-      dateList,
-      notPaid,
     };
 
     const createdNewGroup = await Group.create({ newGroup });
@@ -36,9 +41,9 @@ export class groupService {
     return createdNewGroup;
   }
 
-  static async setParticipants({ groupId, toUpdate }) {
+  static async setParticipants({ groupId, userId, quantity }) {
     let groupInfo = await Group.findByGroupId({ groupId });
-    console.log("groupInfo:", groupInfo);
+
     if (!groupInfo) {
       const errorMessage =
         "정보가 없습니다. groupId 값을 다시 한 번 확인해 주세요.";
@@ -48,12 +53,19 @@ export class groupService {
     let participantsInfo = groupInfo.participants;
     let newValue = {};
 
-    const index = participantsInfo.findIndex((f) => f === toUpdate.userId);
-    console.log("index:", index);
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
     if (index > -1) {
-      participantsInfo.splice(index, 1);
+      participantsInfo[index]["quantity"] = quantity;
     } else {
-      participantsInfo.push(toUpdate.userId);
+      const participant = {
+        userId: userId,
+        participantDate: nowDay(),
+        quantity: quantity,
+        payment: false,
+        complete: false,
+      };
+      participantsInfo.push(participant);
     }
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(

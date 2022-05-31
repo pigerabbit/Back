@@ -1,5 +1,28 @@
 import { Schema, model } from "mongoose";
 
+const ParticipantSchema = new Schema({
+  userId: {
+    type: String,
+    required: true,
+  },
+  participantDate: {
+    type: String,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  payment: {
+    type: Boolean,
+    required: true,
+  },
+  complete: {
+    type: Boolean,
+    required: true,
+  },
+});
+
 const GroupSchema = new Schema(
   {
     groupId: {
@@ -14,35 +37,23 @@ const GroupSchema = new Schema(
       type: String,
       required: true,
     },
-    location: {
+    productId: {
       type: String,
       required: true,
+    },
+    location: {
+      type: String,
+      required: false,
     },
     deadline: {
       type: String,
       required: true,
     },
-    participants: {
-      type: [String],
-      required: false,
-    },
-    dateList: {
-      type: [String],
-      required: false,
-    },
-    notPaid: {
-      type: [String],
-      required: false,
-    },
-    productId: {
-      type: String,
-      required: true,
-    },
     state: {
-      // 0 : 공구 진행 완료 1 :
       type: Number,
       required: true,
     },
+    participants: [ParticipantSchema],
   },
   {
     timestamps: true,

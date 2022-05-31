@@ -7,7 +7,15 @@ const groupRouter = Router();
 groupRouter.post("/groups", login_required, async function (req, res, next) {
   try {
     const userId = req.currentUserId;
-    const { groupType, groupName, location, productId, state } = req.body;
+    const {
+      groupType,
+      groupName,
+      location,
+      productId,
+      state,
+      deadline,
+      quantity,
+    } = req.body;
 
     const newGroup = await groupService.addGroup({
       userId,
@@ -16,6 +24,8 @@ groupRouter.post("/groups", login_required, async function (req, res, next) {
       location,
       productId,
       state,
+      deadline,
+      quantity,
     });
 
     if (newGroup.errorMessage) {
@@ -37,13 +47,14 @@ groupRouter.put(
   login_required,
   async function (req, res, next) {
     try {
-      const userId = req.body.userId;
+      const userId = req.currentUserId;
       const groupId = req.params.groupId;
+      const quantity = req.body.quantity;
 
-      const toUpdate = { userId };
       const updatedGroupInfo = await groupService.setParticipants({
+        userId,
         groupId,
-        toUpdate,
+        quantity,
       });
 
       if (updatedGroupInfo.errorMessage) {
@@ -227,44 +238,20 @@ groupRouter.get(
 );
 
 // 상품별 공동구매 리스트를 반환하는 함수
-groupRouter.get(
-  "/grouplist/:productId",
-  login_required,
-  async function (req, res, next) {
-    try {
-      const productId = req.params.productId;
-      const groupList = await groupService.getGroupByProductId({ productId });
+groupRouter.get("/grouplist", login_required, async function (req, res, next) {
+  try {
+    const productId = req.body.productId;
+    const groupList = await groupService.getGroupByProductId({ productId });
 
-      const body = {
-        success: true,
-        payload: groupList,
-      };
+    const body = {
+      success: true,
+      payload: groupList,
+    };
 
-      res.status(200).send(body);
-    } catch (error) {
-      next(error);
-    }
+    res.status(200).send(body);
+  } catch (error) {
+    next(error);
   }
-);
-
-groupRouter.get(
-  "/groups/:groupId/numberInfo",
-  login_required,
-  async function (req, res, next) {
-    try {
-      const groupId = req.params.groupId;
-      const numberInfo = await groupService.getNumberInfoByGroupId({ groupId });
-
-      const body = {
-        success: true,
-        payload: numberInfo,
-      };
-
-      res.status(200).send(body);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+});
 
 export { groupRouter };
