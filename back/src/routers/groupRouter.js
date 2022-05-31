@@ -219,41 +219,45 @@ groupRouter.get(
   }
 );
 
+// groupRouter.get(
+//   "/groups/chuchun/descending",
+//   login_required,
+//   async function (req, res, next) {
+//     try {
+//       const sortedList = await groupService.findProductList();
+
+//       const body = {
+//         success: true,
+//         payload: sortedList,
+//       };
+
+//       res.status(200).json(body);
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
+
+// 상품별 공동구매 리스트를 반환하는 함수
 groupRouter.get(
-  "/groups/chuchun/descending",
+  "/grouplist/:productId",
   login_required,
   async function (req, res, next) {
     try {
-      const sortedList = await groupService.findProductList();
+      const productId = req.params.productId;
+      const groupList = await groupService.getGroupByProductId({ productId });
 
       const body = {
         success: true,
-        payload: sortedList,
+        payload: groupList,
       };
 
-      res.status(200).json(body);
+      res.status(200).send(body);
     } catch (error) {
       next(error);
     }
   }
 );
-
-// 상품별 공동구매 리스트를 반환하는 함수
-groupRouter.get("/grouplist", login_required, async function (req, res, next) {
-  try {
-    const productId = req.body.productId;
-    const groupList = await groupService.getGroupByProductId({ productId });
-
-    const body = {
-      success: true,
-      payload: groupList,
-    };
-
-    res.status(200).send(body);
-  } catch (error) {
-    next(error);
-  }
-});
 
 groupRouter.get(
   "/groups/:groupId/numberInfo",
