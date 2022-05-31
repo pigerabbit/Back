@@ -43,7 +43,7 @@ class PostService {
         const errorMessage = "존재하지 않는 글입니다.";
         return { errorMessage };
       }
-      updateId = post.postId;
+      const updateId = post.postId;
       const addCommentCount = post.commentCount + 1;
       const toUpdate = { commentCount: addCommentCount };
       post = await Post.update({ postId: updateId, toUpdate });

@@ -8,7 +8,7 @@ export function getRequiredInfoFromPostData(data) {
     title: data.title,
     content: data.content,
     postImg: data.postImg,
-    answer: data.answer,
+    commentCount: data.commentCount,
     removed: data.removed,
     createdAt: data.createdAt,
   };
