@@ -1,7 +1,7 @@
 import { Group } from "../db";
 import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
-import { nextThreeDay } from "../utils/date-calculator.js";
+import { nextThreeDay, nowDay } from "../utils/date-calculator.js";
 
 export class groupService {
   static async addGroup({
@@ -14,9 +14,9 @@ export class groupService {
   }) {
     const groupId = crypto.randomUUID();
     const deadline = nextThreeDay();
-    let participants = userId;
-    console.log("userId:", userId);
-    console.log("participants:", participants);
+    const participants = userId;
+    const notPaid = userId;
+    const dateList = nowDay();
 
     const newGroup = {
       groupId,
@@ -27,6 +27,8 @@ export class groupService {
       participants,
       productId,
       state,
+      dateList,
+      notPaid,
     };
 
     const createdNewGroup = await Group.create({ newGroup });
