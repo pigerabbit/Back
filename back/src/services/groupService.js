@@ -59,14 +59,9 @@ export class groupService {
     if (index > -1) {
       participantsInfo[index]["quantity"] = quantity;
     } else {
-      const participant = {
-        userId: userId,
-        participantDate: nowDay(),
-        quantity: quantity,
-        payment: false,
-        complete: false,
-      };
-      participantsInfo.push(participant);
+      const errorMessage =
+        "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
     }
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(
@@ -95,11 +90,9 @@ export class groupService {
     if (index > -1) {
       participantsInfo[index]["payment"] = payment;
     } else {
-      const participantInfo = {
-        ...participantInfo,
-        payment: true,
-      };
-      participantsInfo.push(participant);
+      const errorMessage =
+        "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
     }
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(
