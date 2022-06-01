@@ -43,10 +43,12 @@ class ProductService {
   }) { 
     const id = crypto.randomUUID();
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
+    const { businessName } = await User.findById({ userId });
     
     const newProduct = {
       id,
       userId,
+      businessName,
       images,
       category,
       name,

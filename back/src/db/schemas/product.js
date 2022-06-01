@@ -6,6 +6,10 @@ const ProductSchema = new Schema(
       type: String,
       required: true,
     }, 
+    businessName: {
+      type: String,
+      required: true,
+    }, 
     id: {
       type: String,
       required: true,
