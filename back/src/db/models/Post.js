@@ -111,7 +111,7 @@ class Post {
    * 
    */
   static async findProductSortByReviews() { 
-    const reviewList = await PostModel.aggregate([
+    let reviewList = await PostModel.aggregate([
       {
         $match:
           { type: 'review' },
@@ -123,6 +123,10 @@ class Post {
         },
       },
     ]);
+
+    reviewList = reviewList.sort((a, b) => {
+      return b.total_pop - a.total_pop;
+    });
 
     return reviewList;
   }
