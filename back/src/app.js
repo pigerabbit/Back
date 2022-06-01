@@ -3,6 +3,7 @@ import express from "express";
 const bodyParser = require("body-parser");
 import { errorMiddleware } from "./middlewares/errorMiddleware";
 import { userRouter } from "./routers/userRouter";
+import { groupRouter } from "./routers/groupRouter";
 import { productRouter } from "./routers/productRouter";
 import { postRouter } from "./routers/postRouter";
 import { businessAuthRouter } from "./routers/businessAuthRouter";
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 
 // router, service 구현 (userAuthRouter는 맨 위에 있어야 함.)
 app.use(userRouter);
+app.use(groupRouter);
 app.use(productRouter);
 app.use(postRouter);
 app.use(businessAuthRouter);

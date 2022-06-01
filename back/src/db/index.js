@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { User } from "./models/User";
+import { Group } from "./models/Group";
 import { Product } from "./models/Product";
 import { Post } from "./models/Post";
 
@@ -17,4 +18,4 @@ db.on("error", (error) =>
   console.error("MongoDB 연결에 실패하였습니다...\n" + DB_URL + "\n" + error)
 );
 
-export { User, Product, Post };
+export { User, Group, Product, Post };
