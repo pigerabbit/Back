@@ -29,10 +29,12 @@ const UserSchema = new Schema(
     businessName: {
       type: String,
       required: false,
+      unique: true,
     },
     nickname: {
       type: String,
       required: true,
+      unique: true,
     },
     address: {
       type: String,
@@ -50,6 +52,8 @@ const UserSchema = new Schema(
     imageLink: {
       type: String,
       required: false,
+      default:
+        "https://bobpullbucket.s3.ap-northeast-2.amazonaws.com/default-rabbit.jpg",
     },
     reportedBy: {
       type: [String],
