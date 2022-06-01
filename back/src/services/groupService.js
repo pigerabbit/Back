@@ -264,4 +264,28 @@ export class groupService {
 
     return updatedParticipants;
   }
+
+  static async getStateInfo({ groupId, userId }) {
+    const groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    let participantsInfo = groupInfo.participants;
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
+    let stateInfo = {};
+    if (index > -1) {
+      stateInfo = {
+        state: groupInfo.state,
+        payment: participantsInfo[index].payment,
+      };
+    } else {
+      stateInfo = { state: -1 };
+    }
+
+    return stateInfo;
+  }
 }

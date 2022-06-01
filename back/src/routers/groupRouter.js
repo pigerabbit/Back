@@ -273,6 +273,7 @@ groupRouter.put(
   }
 );
 
+// 공동구매 나가기
 groupRouter.put(
   "/groups/:groupId/participate/out",
   login_required,
@@ -294,6 +295,32 @@ groupRouter.put(
         success: true,
         payload: UpdatedGroup,
       };
+      res.status(200).json(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 공동구매 아이디를 통해 공동구매 검색
+groupRouter.get(
+  "/groups/:groupId/stateInfo",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+      const groupId = req.params.groupId;
+      const stateInfo = await groupService.getStateInfo({ groupId, userId });
+
+      if (stateInfo.errorMessage) {
+        throw new Error(stateInfo.errorMessage);
+      }
+
+      const body = {
+        success: true,
+        payload: stateInfo,
+      };
+
       res.status(200).json(body);
     } catch (error) {
       next(error);
