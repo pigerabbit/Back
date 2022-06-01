@@ -134,10 +134,10 @@ class ProductService {
       return productList;
     } else if (option === "reviews") {
       const reviewList = await Post.findProductSortByReviews();
-      const productList = await Product.findProductSortByGroups({ category, page, perPage });
+      const productList = await Product.findProductSortByReviews({ category, page, perPage });
       const resultList = [];
 
-      for (let i = 0; i < reviewListKey.length; i++) {
+      for (let i = 0; i < reviewList.length; i++) {
         for (let j = 0; j < productList.productList.length; j++) { 
           if (reviewList[i]._id ===  productList.productList[j].id) { 
             resultList.push(productList.productList[j]);
