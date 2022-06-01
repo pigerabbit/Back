@@ -1,6 +1,7 @@
 import { Product } from "../db/index.js";
 import { User } from "../db/index.js";
 import { Post } from "../db/index.js";
+import { Group } from "../db/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromProductData } from "../utils/product";
 
@@ -107,8 +108,8 @@ class ProductService {
    * @returns 상품 전체 Object List
    */
   static async getProductList({ page, perPage }) { 
-    const productList = await Product.findProductList({ page, perPage });
-    return productList;
+    const resultList = await Product.findProductList({ page, perPage });
+    return resultList;
   }
 
   /** 카테고리별 상품을 반환하는 함수
@@ -129,9 +130,29 @@ class ProductService {
     }
 
     if (option === "groups") {
-      const productList = await Product.findProductSortByGroups({ category, page, perPage });
-      if (productList)
-      return productList;
+      const groupList = await Group.findProductSortByGroups();
+      const productList = await Product.findProductSortByReviews({ category, page, perPage });
+      const resultList = [];
+
+      for (let i = 0; i < groupList.length; i++) {
+        for (let j = 0; j < productList.productList.length; j++) { 
+          if (groupList[i]._id ===  productList.productList[j].id) { 
+            resultList.push(productList.productList[j]);
+            delete productList.productList[j];
+          }
+        }
+      }
+
+      for (let i = 0; i < productList.productList.length; i++) {
+        if (productList.productList[i] !== undefined) {
+          resultList.push(productList.productList[i]);
+        }
+      }
+
+      const totalPage = productList.totalPage;
+      const len = productList.len;
+
+      return { resultList, totalPage, len };
     } else if (option === "reviews") {
       const reviewList = await Post.findProductSortByReviews();
       const productList = await Product.findProductSortByReviews({ category, page, perPage });
@@ -151,14 +172,16 @@ class ProductService {
           resultList.push(productList.productList[i]);
         }
       }
+      const totalPage = productList.totalPage;
+      const len = productList.len;
 
-      return resultList;
+      return { resultList, totalPage, len };
     } else if (option === "views") {
-      const productList = await Product.findProductSortByViews({ category, page, perPage });
-      return productList;
+      const resultList = await Product.findProductSortByViews({ category, page, perPage });
+      return resultList;
     } else if (option === "salePrice") {
-      const productList = await Product.findProductSortByPrice({ category, page, perPage });
-      return productList;
+      const resultList = await Product.findProductSortByPrice({ category, page, perPage });
+      return resultList;
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
@@ -196,12 +219,8 @@ class ProductService {
     }
 
     if (option === "groups") {
+      const reviewList = await Group.findProductSortByGroups();
       const productList = await Product.findProductSearchSortByGroups({ search, page, perPage });
-      if (productList)
-      return productList;
-    } else if (option === "reviews") {
-      const reviewList = await Post.findProductSortByReviews();
-      const productList = await Product.findProductSearchSortByReviews({ category, page, perPage });
       const resultList = [];
 
       for (let i = 0; i < reviewListKey.length; i++) {
@@ -219,7 +238,34 @@ class ProductService {
         }
       }
 
-      return resultList;
+      const totalPage = productList.totalPage;
+      const len = productList.len;
+
+      return { resultList, totalPage, len };
+    } else if (option === "reviews") {
+      const reviewList = await Post.findProductSortByReviews();
+      const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
+      const resultList = [];
+
+      for (let i = 0; i < reviewListKey.length; i++) {
+        for (let j = 0; j < productList.productList.length; j++) { 
+          if (reviewList[i]._id ===  productList.productList[j].id) { 
+            resultList.push(productList.productList[j]);
+            delete productList.productList[j];
+          }
+        }
+      }
+
+      for (let i = 0; i < productList.productList.length; i++) {
+        if (productList.productList[i] !== undefined) {
+          resultList.push(productList.productList[i]);
+        }
+      }
+
+      const totalPage = productList.totalPage;
+      const len = productList.len;
+
+      return { resultList, totalPage, len };
     } else if (option === "views") {
       const productList = await Product.findProductSearchSortByViews({ search, page, perPage });
       return productList;
