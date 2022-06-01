@@ -107,6 +107,25 @@ class Post {
     return postList;
   }
 
+  /** 리뷰 많은 순 정렬 함수
+   * 
+   */
+  static async findProductSortByReviews() { 
+    const reviewList = await PostModel.aggregate([
+      {
+        $match:
+          { type: 'review' },
+      },
+      {
+        $group: {
+          _id: "$receiver",
+          total_pop: { $sum: 1 },
+        },
+      },
+    ]);
+
+    return reviewList;
+  }
 }
 
 export { Post };

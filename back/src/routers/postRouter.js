@@ -313,6 +313,14 @@ postRouter.get(
   }
 );
 
+postRouter.get(
+  "/review",
+  async (req, res, next) => { 
+    const reviewList = await PostService.getReviewList();
+    return res.status(200).send(reviewList);
+  }
+)
+
 
 export { postRouter };
 

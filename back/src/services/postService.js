@@ -258,6 +258,14 @@ class PostService {
 
     return postList;
   }
+
+  /** 리뷰 많은순 정렬 함수 
+   * 
+   */
+  static async getReviewList() { 
+    const reviewList = await Post.findProductSortByReviews();
+    return reviewList;
+  }
 }
 
 export { PostService };
