@@ -13,7 +13,7 @@ class userService {
     email,
     password,
     address,
-    businessName,
+    nickname,
     type,
   }) {
     //일반회원가입일때
@@ -43,7 +43,7 @@ class userService {
       email,
       password: hashedPassword,
       address,
-      businessName,
+      nickname,
       type,
       imageLink,
     };
