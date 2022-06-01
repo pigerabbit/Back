@@ -21,6 +21,10 @@ const ParticipantSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  manager: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const GroupSchema = new Schema(

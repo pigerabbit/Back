@@ -52,6 +52,15 @@ class Group {
 
     return productList;
   }
+
+  static async findAllbyBoolean({ userId, boolean }) {
+    const listWhenOwner = await GroupModel.find({
+      participants: {
+        $elemMatch: { userId: userId, manager: boolean },
+      },
+    });
+    return listWhenOwner;
+  }
 }
 
 export { Group };

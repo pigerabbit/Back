@@ -23,6 +23,7 @@ export class groupService {
       quantity: quantity,
       payment: false,
       complete: false,
+      manager: true,
     };
 
     const newGroup = {
@@ -193,5 +194,55 @@ export class groupService {
     };
 
     return info;
+  }
+
+  static async getListbyBoolean({ userId, boolean }) {
+    const list = await Group.findAllbyBoolean({ userId, boolean });
+
+    if (!list) {
+      const errorMessage = "아이디를 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+    return list;
+  }
+
+  static async addParticipants({ userId, groupId, quantity, payment }) {
+    const groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    let participantsInfo = groupInfo.participants;
+    let newValue = {};
+
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
+    if (index > -1) {
+      const errorMessage = "이미 공동구매에 참여하고 있는 상태입니다.";
+      return { errorMessage };
+    } else {
+      const participantId = crypto.randomUUID();
+      const participant = {
+        participantId: participantId,
+        userId: userId,
+        participantDate: nowDay(),
+        quantity: quantity,
+        payment: false,
+        complete: false,
+        manager: false,
+      };
+
+      participantsInfo.push(participant);
+    }
+    newValue = participantsInfo;
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedParticipants;
   }
 }
