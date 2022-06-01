@@ -52,6 +52,12 @@ groupRouter.put(
       const groupId = req.params.groupId;
       const quantity = req.body.quantity;
 
+      const checkState = await groupService.checkState({ groupId });
+      if (checkState === -1) {
+        const errorMessage = "가뭄이 들은 당근밭입니다.";
+        throw new Error(errorMessage);
+      }
+
       const updatedGroupInfo = await groupService.setQuantity({
         userId,
         groupId,
@@ -83,6 +89,12 @@ groupRouter.put(
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
       const payment = req.body.payment;
+
+      const checkState = await groupService.checkState({ groupId });
+      if (checkState === -1) {
+        const errorMessage = "가뭄이 들은 당근밭입니다.";
+        throw new Error(errorMessage);
+      }
 
       const updatedGroupInfo = await groupService.setPayment({
         userId,
@@ -120,6 +132,12 @@ groupRouter.put(
       const deadline = req.body.deadline ?? null;
       const productId = req.body.productId ?? null;
       const state = req.body.state ?? null;
+
+      const checkState = await groupService.checkState({ groupId });
+      if (checkState === -1) {
+        const errorMessage = "가뭄이 들은 당근밭입니다.";
+        throw new Error(errorMessage);
+      }
 
       const toUpdate = {
         groupType,
@@ -251,6 +269,12 @@ groupRouter.put(
       const groupId = req.params.groupId;
       const { quantity, payment } = req.body;
 
+      const checkState = await groupService.checkState({ groupId });
+      if (checkState === -1) {
+        const errorMessage = "가뭄이 들은 당근밭입니다.";
+        throw new Error(errorMessage);
+      }
+
       const UpdatedGroup = await groupService.addParticipants({
         userId,
         groupId,
@@ -281,6 +305,12 @@ groupRouter.put(
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
+
+      const checkState = await groupService.checkState({ groupId });
+      if (checkState === -1) {
+        const errorMessage = "가뭄이 들은 당근밭입니다.";
+        throw new Error(errorMessage);
+      }
 
       const UpdatedGroup = await groupService.deleteParticipant({
         userId,

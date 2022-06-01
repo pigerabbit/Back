@@ -250,6 +250,14 @@ export class groupService {
 
     if (index > -1) {
       // 배열에서 index의 원소를 제거
+      if (participantsInfo[index].manager === true) {
+        await GroupModel.findOneAndUpdate(
+          { groupId },
+          { $set: { state: "-1" } },
+          { returnOriginal: false }
+        );
+      }
+
       participantsInfo.splice(index, 1);
     } else {
       const errorMessage = "이미 공동구매 참여자가 아닙니다.";
@@ -287,5 +295,18 @@ export class groupService {
     }
 
     return stateInfo;
+  }
+
+  static async checkState({ groupId }) {
+    const groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    const checkState = groupInfo.state;
+
+    return checkState;
   }
 }
