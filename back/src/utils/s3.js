@@ -60,5 +60,19 @@ let userImageUpload = multer({
   fileFilter: fileFilter,
 });
 
+let postImageUpload = multer({
+  storage: multerS3({
+    s3: userS3,
+    bucket: process.env.IMAGE_BUCKET,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    acl: "public-read",
+    key: (req, file, cb) => {
+      cb(null, `users/${Date.now()}_${uuidv4()}`);
+    },
+  }),
+  fileFilter: fileFilter,
+});
+
 exports.userImageUpload = multer(userImageUpload);
 exports.productImgUpload = multer(productImgUpload);
+exports.postImageUpload = multer(postImageUpload);
