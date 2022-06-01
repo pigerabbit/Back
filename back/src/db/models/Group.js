@@ -29,14 +29,11 @@ class Group {
    *
    * @returns productList
    */
-  static async findProductSearchSortByGroups({ search, page, perPage }) {
-    const productList = await ProductModel.find({ name: { $regex: search } })
-      .sort({ groups: -1 })
-      .skip((page - 1) * perPage)
-      .limit(perPage)
-      .lean();
-
-    productList = await GroupModel.aggregate([
+  static async findProductSortByGroups() {
+    const productList = await GroupModel.aggregate([
+      {
+        $match: { state: 0 },
+      },
       {
         $group: {
           _id: "$productId",
