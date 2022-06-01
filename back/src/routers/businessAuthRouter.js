@@ -89,6 +89,15 @@ businessAuthRouter.post(
           seller: true,
         };
         const newUser = await userService.setUser({ userId, toUpdate });
+        
+        if (newUser.errorMessage) { 
+          const body = {
+            success: false,
+            errorMessage: newUser.errorMessage,
+          };
+
+          return res.status(400).send(body);
+        }
 
         const body = {
           success: true,
