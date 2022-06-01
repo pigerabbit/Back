@@ -175,17 +175,13 @@ export class groupService {
     }
 
     const productId = group.productId;
-    console.log("productId:", productId);
+
     const product = await Product.findProduct({ id: productId });
-    console.log("product:", product);
 
     const participants = group.participants;
     const numberOfParticipants = participants.length;
     const minPurchaseQty = product.minPurchaseQty;
     const maxPurchaseQty = product.maxPurchaseQty;
-
-    console.log("numberOfParticipants:", numberOfParticipants);
-    console.log("minPurchaseQty:", minPurchaseQty);
 
     const info = {
       numberOfParticipants,
@@ -235,6 +231,36 @@ export class groupService {
       };
 
       participantsInfo.push(participant);
+    }
+    newValue = participantsInfo;
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedParticipants;
+  }
+
+  static async deleteParticipant({ userId, groupId }) {
+    const groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    let participantsInfo = groupInfo.participants;
+    let newValue = {};
+
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
+    if (index > -1) {
+      // 배열에서 index의 원소를 제거
+      participantsInfo.splice(index, 1);
+    } else {
+      const errorMessage = "이미 공동구매 참여자가 아닙니다.";
+      return { errorMessage };
     }
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(

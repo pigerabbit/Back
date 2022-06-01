@@ -201,7 +201,7 @@ groupRouter.get(
   async function (req, res, next) {
     try {
       const groupId = req.params.groupId;
-      console.log("268 groupId:", groupId);
+
       const numberInfo = await groupService.getNumberInfoByGroupId({ groupId });
 
       const body = {
@@ -256,6 +256,34 @@ groupRouter.put(
         groupId,
         quantity,
         payment,
+      });
+
+      if (UpdatedGroup.errorMessage) {
+        throw new Error(UpdatedGroup.errorMessage);
+      }
+
+      const body = {
+        success: true,
+        payload: UpdatedGroup,
+      };
+      res.status(200).json(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+groupRouter.put(
+  "/groups/:groupId/participate/out",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+      const groupId = req.params.groupId;
+
+      const UpdatedGroup = await groupService.deleteParticipant({
+        userId,
+        groupId,
       });
 
       if (UpdatedGroup.errorMessage) {
