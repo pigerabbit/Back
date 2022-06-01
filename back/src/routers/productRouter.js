@@ -319,10 +319,6 @@ productRouter.get(
       .exists()
       .withMessage("query에 perPage 값을 입력해주세요.")
       .bail(),
-    query("category")
-      .exists()
-      .withMessage("query에 category 값을 입력해주세요.")
-      .bail(),
     query("option")
       .exists()
       .withMessage("query에 option 값을 입력해주세요.")
@@ -330,6 +326,7 @@ productRouter.get(
     validate,
   ],
   async (req, res, next) => {
+    const userId = req.currentUserId;
     const { page, perPage, category, option } = req.query;
 
     if (page <= 0 || perPage <= 0) { 
@@ -344,6 +341,7 @@ productRouter.get(
     // 카테고리 쿼리가 존재한다면 카테고리별 상품 조회
     if (category !== undefined) { 
       const productList = await ProductService.getProductCategoryList({
+        userId,
         category,
         option,
         page,

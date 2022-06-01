@@ -1,5 +1,6 @@
 import { Product } from "../db/index.js";
 import { User } from "../db/index.js";
+import { Post } from "../db/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromProductData } from "../utils/product";
 
@@ -74,7 +75,7 @@ class ProductService {
    * @param {Object} toUpdate - 수정할 상품 내용
    * @return {Object} 수정된 상품 정보
    */
-  static async setProduct({ userId, id, toUpdate }) { 
+  static async setProduct({ userId, id, toUpdate }) {
     let product = await Product.findProduct({ id });
 
     if (!product) {
@@ -130,8 +131,26 @@ class ProductService {
       if (productList)
       return productList;
     } else if (option === "reviews") {
-      const productList = await Product.findProductSortByReviews({ category, page, perPage });
-      return productList;
+      const reviewList = await Post.findProductSortByReviews();
+      const productList = await Product.findProductSortByGroups({ category, page, perPage });
+      const resultList = [];
+
+      for (let i = 0; i < reviewListKey.length; i++) {
+        for (let j = 0; j < productList.productList.length; j++) { 
+          if (reviewList[i]._id ===  productList.productList[j].id) { 
+            resultList.push(productList.productList[j]);
+            delete productList.productList[j];
+          }
+        }
+      }
+
+      for (let i = 0; i < productList.productList.length; i++) {
+        if (productList.productList[i] !== undefined) {
+          resultList.push(productList.productList[i]);
+        }
+      }
+
+      return resultList;
     } else if (option === "views") {
       const productList = await Product.findProductSortByViews({ category, page, perPage });
       return productList;
@@ -179,8 +198,26 @@ class ProductService {
       if (productList)
       return productList;
     } else if (option === "reviews") {
-      const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
-      return productList;
+      const reviewList = await Post.findProductSortByReviews();
+      const productList = await Product.findProductSearchSortByReviews({ category, page, perPage });
+      const resultList = [];
+
+      for (let i = 0; i < reviewListKey.length; i++) {
+        for (let j = 0; j < productList.productList.length; j++) { 
+          if (reviewList[i]._id ===  productList.productList[j].id) { 
+            resultList.push(productList.productList[j]);
+            delete productList.productList[j];
+          }
+        }
+      }
+
+      for (let i = 0; i < productList.productList.length; i++) {
+        if (productList.productList[i] !== undefined) {
+          resultList.push(productList.productList[i]);
+        }
+      }
+
+      return resultList;
     } else if (option === "views") {
       const productList = await Product.findProductSearchSortByViews({ search, page, perPage });
       return productList;
@@ -193,7 +230,7 @@ class ProductService {
     }
   }
 
-  /** 상품 id와 일치하는 상품을 삭제하는 함수
+  /** 상품 id와 일치하는 상품을 조회하는 함수
    * 
    * @param {Strings} id - 상품 id 
    * @returns 상품 Object
@@ -216,6 +253,11 @@ class ProductService {
     return { resultProduct };
   }
 
+  /** 상품 id와 일치하는 상품을 삭제하는 함수
+   * 
+   * @param {Strings} id - 상품 id 
+   * @returns 상품 Object
+   */
   static async deleteProduct({ userId, id }) { 
     const product = await Product.findProduct({ id });
 
@@ -228,7 +270,6 @@ class ProductService {
 
     return product;
   }
-  
   
   /** 유저가 파는 상품 리스트 반환하는 함수
    * 
