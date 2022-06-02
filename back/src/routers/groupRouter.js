@@ -267,13 +267,13 @@ groupRouter.put(
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
-      const { quantity, payment } = req.body;
+      const { quantity } = req.body;
 
-      const checkState = await groupService.checkState({ groupId });
-      if (checkState === -1) {
-        const errorMessage = "가뭄이 들은 당근밭입니다.";
-        throw new Error(errorMessage);
-      }
+      // const checkState = await groupService.checkState({ groupId });
+      // if (checkState === -1) {
+      //   const errorMessage = "가뭄이 들은 당근밭입니다.";
+      //   throw new Error(errorMessage);
+      // }
 
       const UpdatedGroup = await groupService.addParticipants({
         userId,
@@ -305,11 +305,11 @@ groupRouter.put(
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
 
-      const checkState = await groupService.checkState({ groupId });
-      if (checkState === -1) {
-        const errorMessage = "가뭄이 들은 당근밭입니다.";
-        throw new Error(errorMessage);
-      }
+      // const checkState = await groupService.checkState({ groupId });
+      // if (checkState === -1) {
+      //   const errorMessage = "가뭄이 들은 당근밭입니다.";
+      //   throw new Error(errorMessage);
+      // }
 
       const UpdatedGroup = await groupService.deleteParticipant({
         userId,

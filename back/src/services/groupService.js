@@ -232,12 +232,6 @@ export class groupService {
     let participantsInfo = groupInfo.participants;
     let newValue = {};
 
-    const updatedRemainedPersonnel = groupInfo.remainedPersonnel + 1 - quantity;
-    if (updatedRemainedPersonnel < 0) {
-      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
-      return { errorMessage };
-    }
-
     const index = participantsInfo.findIndex((f) => f.userId === userId);
 
     if (index > -1) {
@@ -257,10 +251,23 @@ export class groupService {
 
       participantsInfo.push(participant);
     }
+
+    const updatedRemainedPersonnel = groupInfo.remainedPersonnel - quantity;
+
+    if (updatedRemainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
+
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { participants: newValue } },
+      {
+        $set: {
+          participants: newValue,
+          remainedPersonnel: updatedRemainedPersonnel,
+        },
+      },
       { returnOriginal: false }
     );
 
@@ -277,7 +284,7 @@ export class groupService {
 
     let participantsInfo = groupInfo.participants;
     let newValue = {};
-
+    let updatedRemainedPersonnel;
     const index = participantsInfo.findIndex((f) => f.userId === userId);
 
     if (index > -1) {
@@ -289,16 +296,29 @@ export class groupService {
           { returnOriginal: false }
         );
       }
+      updatedRemainedPersonnel =
+        groupInfo.remainedPersonnel + participantsInfo[index].quantity;
 
       participantsInfo.splice(index, 1);
     } else {
       const errorMessage = "이미 공동구매 참여자가 아닙니다.";
       return { errorMessage };
     }
+
+    if (updatedRemainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
+
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { participants: newValue } },
+      {
+        $set: {
+          participants: newValue,
+          remainedPersonnel: updatedRemainedPersonnel,
+        },
+      },
       { returnOriginal: false }
     );
 
