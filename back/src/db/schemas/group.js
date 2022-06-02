@@ -45,6 +45,11 @@ const GroupSchema = new Schema(
       type: String,
       required: true,
     },
+    remainedPersonnel: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     location: {
       type: String,
       required: false,

@@ -1,4 +1,5 @@
 import { GroupModel } from "../schemas/group";
+import { nextOneDay, nowDate } from "../../utils/date-calculator.js";
 
 class Group {
   static async create({ newGroup }) {
@@ -25,12 +26,41 @@ class Group {
     return groups;
   }
 
+  static async findSortedGroupsByRemainedTimeInfo() {
+    const groups = await GroupModel.find({
+      $and: [
+        {},
+        {
+          deadline: {
+            $gte: nowDate(),
+            $lte: nextOneDay(),
+          },
+        },
+      ],
+    }).sort({ deadline: 1 });
+
+    return groups;
+  }
+
+  static async findSortedGroupsByRemainedPersonnelInfo() {
+    const groups = await GroupModel.find({
+      $and: [
+        {},
+        {
+          state: 0,
+        },
+      ],
+    }).sort({ remainedPersonnel: 1 });
+
+    return groups;
+  }
+
   /** 공동구매 개수를 기준으로 내림차순 정렬한 상품들 리스트
    *
    * @returns productList
    */
   static async findProductSortByGroups() {
-    const productList = await GroupModel.aggregate([
+    let productList = await GroupModel.aggregate([
       {
         $match: { state: 0 },
       },
@@ -57,6 +87,23 @@ class Group {
       },
     });
     return listWhenOwner;
+  }
+
+  static async findParticipantsByGroupId({ groupId }) {
+    const groupList = await GroupModel.find(
+      { groupId: groupId },
+      "participants"
+    );
+
+    const participantsList = groupList.map((v) => {
+      const firstList = v.participants;
+      const secondList = firstList.map((v) => {
+        const userId = v.userId;
+        return userId;
+      });
+      return secondList;
+    });
+    return participantsList[0];
   }
 }
 

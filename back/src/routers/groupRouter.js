@@ -267,19 +267,18 @@ groupRouter.put(
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
-      const { quantity, payment } = req.body;
+      const { quantity } = req.body;
 
-      const checkState = await groupService.checkState({ groupId });
-      if (checkState === -1) {
-        const errorMessage = "가뭄이 들은 당근밭입니다.";
-        throw new Error(errorMessage);
-      }
+      // const checkState = await groupService.checkState({ groupId });
+      // if (checkState === -1) {
+      //   const errorMessage = "가뭄이 들은 당근밭입니다.";
+      //   throw new Error(errorMessage);
+      // }
 
       const UpdatedGroup = await groupService.addParticipants({
         userId,
         groupId,
         quantity,
-        payment,
       });
 
       if (UpdatedGroup.errorMessage) {
@@ -306,11 +305,11 @@ groupRouter.put(
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
 
-      const checkState = await groupService.checkState({ groupId });
-      if (checkState === -1) {
-        const errorMessage = "가뭄이 들은 당근밭입니다.";
-        throw new Error(errorMessage);
-      }
+      // const checkState = await groupService.checkState({ groupId });
+      // if (checkState === -1) {
+      //   const errorMessage = "가뭄이 들은 당근밭입니다.";
+      //   throw new Error(errorMessage);
+      // }
 
       const UpdatedGroup = await groupService.deleteParticipant({
         userId,
@@ -352,6 +351,47 @@ groupRouter.get(
       };
 
       res.status(200).json(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 마감 기한이 1일 이내인 리스트 오름차순 정렬
+groupRouter.get(
+  "/groups/sort/remainedTime",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const groupList = await groupService.getSortedGroupsByRemainedTimeInfo();
+
+      const body = {
+        success: true,
+        payload: groupList,
+      };
+
+      res.status(200).send(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 모집 인원이 적게 남은 순으로 오름차순 정렬
+groupRouter.get(
+  "/groups/sort/remainedPersonnel",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const groupList =
+        await groupService.getSortedGroupsByRemainedPersonnelInfo();
+      console.log("groupList:", groupList);
+      const body = {
+        success: true,
+        payload: groupList,
+      };
+
+      res.status(200).send(body);
     } catch (error) {
       next(error);
     }

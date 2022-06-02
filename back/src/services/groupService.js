@@ -1,7 +1,7 @@
 import { Group, Product } from "../db";
 import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
-import { nextThreeDay, nowDay } from "../utils/date-calculator.js";
+import { nowDate } from "../utils/date-calculator.js";
 
 export class groupService {
   static async addGroup({
@@ -16,10 +16,18 @@ export class groupService {
   }) {
     const groupId = crypto.randomUUID();
     const participantId = crypto.randomUUID();
+    const { minPurchaseQty } = await Product.findProduct({ id: productId });
+    const remainedPersonnel = minPurchaseQty - quantity;
+
+    if (remainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
+
     const participants = {
       participantId: participantId,
       userId: userId,
-      participantDate: nowDay(),
+      participantDate: nowDate(),
       quantity: quantity,
       payment: false,
       complete: false,
@@ -35,13 +43,14 @@ export class groupService {
       participants,
       productId,
       state,
+      remainedPersonnel,
     };
 
     const createdNewGroup = await Group.create({ newGroup });
 
     return createdNewGroup;
   }
-
+  /// 여기서부터
   static async setQuantity({ groupId, userId, quantity }) {
     let groupInfo = await Group.findByGroupId({ groupId });
 
@@ -53,20 +62,37 @@ export class groupService {
 
     let participantsInfo = groupInfo.participants;
     let newValue = {};
+    let priorQuantity = 0;
 
     const index = participantsInfo.findIndex((f) => f.userId === userId);
 
     if (index > -1) {
+      priorQuantity = participantsInfo[index].quantity;
       participantsInfo[index]["quantity"] = quantity;
     } else {
       const errorMessage =
         "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
+
+    const updatedRemainedPersonnel =
+      groupInfo.remainedPersonnel + priorQuantity - quantity;
+
+    if (updatedRemainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
+
     newValue = participantsInfo;
+
     const updatedParticipants = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { participants: newValue } },
+      {
+        $set: {
+          participants: newValue,
+          remainedPersonnel: updatedRemainedPersonnel,
+        },
+      },
       { returnOriginal: false }
     );
 
@@ -195,9 +221,9 @@ export class groupService {
     return list;
   }
 
-  static async addParticipants({ userId, groupId, quantity, payment }) {
+  static async addParticipants({ userId, groupId, quantity }) {
     const groupInfo = await Group.findByGroupId({ groupId });
-
+    console.log("userId:", userId);
     if (!groupInfo) {
       const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
       return { errorMessage };
@@ -216,7 +242,7 @@ export class groupService {
       const participant = {
         participantId: participantId,
         userId: userId,
-        participantDate: nowDay(),
+        participantDate: nowDate(),
         quantity: quantity,
         payment: false,
         complete: false,
@@ -225,10 +251,23 @@ export class groupService {
 
       participantsInfo.push(participant);
     }
+
+    const updatedRemainedPersonnel = groupInfo.remainedPersonnel - quantity;
+
+    if (updatedRemainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
+
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { participants: newValue } },
+      {
+        $set: {
+          participants: newValue,
+          remainedPersonnel: updatedRemainedPersonnel,
+        },
+      },
       { returnOriginal: false }
     );
 
@@ -245,7 +284,7 @@ export class groupService {
 
     let participantsInfo = groupInfo.participants;
     let newValue = {};
-
+    let updatedRemainedPersonnel;
     const index = participantsInfo.findIndex((f) => f.userId === userId);
 
     if (index > -1) {
@@ -257,16 +296,29 @@ export class groupService {
           { returnOriginal: false }
         );
       }
+      updatedRemainedPersonnel =
+        groupInfo.remainedPersonnel + participantsInfo[index].quantity;
 
       participantsInfo.splice(index, 1);
     } else {
       const errorMessage = "이미 공동구매 참여자가 아닙니다.";
       return { errorMessage };
     }
+
+    if (updatedRemainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
+
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { participants: newValue } },
+      {
+        $set: {
+          participants: newValue,
+          remainedPersonnel: updatedRemainedPersonnel,
+        },
+      },
       { returnOriginal: false }
     );
 
@@ -308,5 +360,16 @@ export class groupService {
     const checkState = groupInfo.state;
 
     return checkState;
+  }
+
+  static async getSortedGroupsByRemainedTimeInfo() {
+    const groups = await Group.findSortedGroupsByRemainedTimeInfo();
+    return groups;
+  }
+
+  static async getSortedGroupsByRemainedPersonnelInfo() {
+    const groups = await Group.findSortedGroupsByRemainedPersonnelInfo();
+    console.log("groups:", groups);
+    return groups;
   }
 }
