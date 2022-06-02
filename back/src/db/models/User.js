@@ -51,4 +51,56 @@ export class User {
     const user = await UserModel.findOne({ name });
     return user;
   }
+
+  /** 유저의 alert 목록을 보는 함수
+   * 
+   * @param {String} userId - 유저 id 
+   * @returns alertList
+   */
+  static async getAlertList({ userId }) {
+    const alertList = await UserModel.find(
+      { deleted: false },
+      { userId },
+    )
+      .select('alertList')
+      .lean();
+    
+    return alertList;
+  }
+
+  /** 알림 삭제 함수
+   * 
+   * @param {String} sendId - 알림을 보낸 위치 
+   * @returns deleteAlert
+   */
+  static async deleteAlertList({ sendId }) {
+    const deleteAlert = await UserModel.updateOne(
+      { 'alertList.sendId': sendId },
+      { $set: { 'alertList.$.removed': true } },
+    );
+
+    return deleteAlert;
+  }
+
+  /** 알림 업데이트 함수 
+   * 
+   * @param {String} userId - 알림을 업데이트할 유저 id
+   * @param {String} from - post / product / group 
+   * @param {String} sendId - 알림을 보낸 위치
+   * @param {String} content - 알림 내용
+   */
+  static async updateAlert({ userId, from, sendId, content }) { 
+    const newAlert = {
+      from,
+      sendId,
+      content,
+      removed: false,
+    }
+    const updateAlert = await UserModel.findOneAndUpdate(
+      { 'id': userId },
+      { $push: { alertList: newAlert } },
+    );
+
+    return updateAlert;
+  }
 }

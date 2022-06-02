@@ -88,7 +88,6 @@ userRouter.post("/users", async function (req, res, next) {
     const email = req.body.email;
     const password = req.body.password;
     const address = req.body.address;
-    const nickname = req.body.nickname;
     const type = "sogongx2";
 
     // 위 데이터를 유저 db에 추가하기
@@ -97,7 +96,6 @@ userRouter.post("/users", async function (req, res, next) {
       email,
       password,
       address,
-      nickname,
       type,
     });
 
@@ -427,5 +425,6 @@ userRouter.get(
     }
   }
 );
+
 
 export { userRouter };

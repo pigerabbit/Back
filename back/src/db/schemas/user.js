@@ -1,5 +1,25 @@
 import { Schema, model } from "mongoose";
 
+const alertSchema = new Schema({
+  from: {
+    type: String,
+    required: true,
+  },
+  sendId: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  removed: {
+    type: Boolean,
+    required: true, 
+    default: false,
+  },
+});
+
 const UserSchema = new Schema(
   {
     id: {
@@ -9,6 +29,7 @@ const UserSchema = new Schema(
     name: {
       type: String,
       required: true,
+      unique: true,
     },
     email: {
       type: String,
@@ -29,11 +50,6 @@ const UserSchema = new Schema(
     businessName: {
       type: String,
       required: false,
-      unique: true,
-    },
-    nickname: {
-      type: String,
-      required: true,
       unique: true,
     },
     address: {
@@ -64,6 +80,7 @@ const UserSchema = new Schema(
       required: false,
       default: false,
     },
+    alertList: [alertSchema],
   },
   {
     timestamps: true,

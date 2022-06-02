@@ -55,6 +55,20 @@ class Product {
     return { productList, totalPage, len };
   }
 
+  /** 전체 상품 반환 함수 pagination 없는 버전
+  *
+  * @returns productList
+  */
+  static async findProductListNoPage() { 
+    const productList = await ProductModel.find()
+      .sort({ createdAt: -1 })
+      .select('-_id')
+      .select('-__v')
+      .lean();
+    
+    return productList;
+  }
+
   /** 카테고리별 상품 반환 함수
    * @param {String} category - 카테고리
    * @param {Number} page - 현재 페이지
