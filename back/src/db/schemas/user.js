@@ -1,5 +1,25 @@
 import { Schema, model } from "mongoose";
 
+const alertSchema = new Schema({
+  from: {
+    type: String,
+    required: true,
+  },
+  sendId: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  removed: {
+    type: Boolean,
+    required: true, 
+    default: false,
+  },
+});
+
 const UserSchema = new Schema(
   {
     id: {
@@ -60,6 +80,7 @@ const UserSchema = new Schema(
       required: false,
       default: false,
     },
+    alert: [alertSchema],
   },
   {
     timestamps: true,

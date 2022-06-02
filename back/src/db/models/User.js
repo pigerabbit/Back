@@ -51,4 +51,11 @@ export class User {
     const user = await UserModel.findOne({ name });
     return user;
   }
+
+  static async getAlertList({ userId }) {
+    const alertList = await UserModel.find({ userId })
+      .select('alert');
+    
+    return alertList;
+  }
 }

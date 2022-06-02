@@ -253,6 +253,27 @@ class userService {
 
     return deletedUser;
   }
+ 
+  static async getAlertList({ currentUserId, userId }) { 
+    if (currentUserId !== userId) { 
+      const errorMessage = "본인의 알림만 볼 수 있습니다."
+      return { errorMessage };
+    }
+
+    const user = await User.findById({ userId });
+    if (!user || user === null) {
+      const errorMessage = "해당 유저가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    if (user.deleted === true) {
+      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
+      return { errorMessage };
+    }
+
+    const alertList = await User.getAlertList({ userId });
+    return alertList;
+  }
 }
 
 export { userService };
