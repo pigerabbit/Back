@@ -342,6 +342,14 @@ class ProductService {
     
     await Product.deleteProduct({ id });
 
+    //! 공동 구매 참여자로 변경하기
+    await User.updateAlert({
+      userId,
+      from: "product",
+      sendId: product.id,
+      content: `${product.name} 상품이 삭제되었습니다.`,
+    });
+
     return product;
   }
   
