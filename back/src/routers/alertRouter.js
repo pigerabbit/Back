@@ -2,6 +2,8 @@ import { Router } from "express";
 import { login_required } from "../middlewares/login_required";
 import { userService } from "../services/userService";
 
+const alertRouter = Router();
+
 /** user 알림 전체 보여주기 함수
  * 
  * param : id
