@@ -50,7 +50,7 @@ class Group {
           state: 0,
         },
       ],
-    }).sort({ updatedRemainedPersonnel: 1 });
+    }).sort({ remainedPersonnel: 1 });
 
     return groups;
   }
@@ -87,6 +87,30 @@ class Group {
       },
     });
     return listWhenOwner;
+  }
+
+  static async findParticipantsByGroupId({ groupId }) {
+    const groupList = await GroupModel.find(
+      { groupId: groupId },
+      "participants"
+    );
+    console.log("groupList:", groupList);
+    console.log("groupList[0]:", groupList[0]);
+    console.log("groupList[0].participants:", groupList[0].participants);
+    console.log("groupList[0].participants[0]:", groupList[0].participants[0]);
+    console.log(
+      "groupList[0].participants[0].userId:",
+      groupList[0].participants[0].userId
+    );
+    const participantsList = groupList.map((v) => {
+      const firstList = v.participants;
+      const secondList = firstList.map((v) => {
+        const userId = v.userId;
+        return userId;
+      });
+      return secondList;
+    });
+    return participantsList[0];
   }
 }
 
