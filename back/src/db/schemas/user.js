@@ -9,6 +9,7 @@ const UserSchema = new Schema(
     name: {
       type: String,
       required: true,
+      unique: true,
     },
     email: {
       type: String,
@@ -29,11 +30,6 @@ const UserSchema = new Schema(
     businessName: {
       type: String,
       required: false,
-      unique: true,
-    },
-    nickname: {
-      type: String,
-      required: true,
       unique: true,
     },
     address: {
