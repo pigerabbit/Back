@@ -16,6 +16,14 @@ export class groupService {
   }) {
     const groupId = crypto.randomUUID();
     const participantId = crypto.randomUUID();
+    const { minPurchaseQty } = await Product.findProduct({ id: productId });
+    const remainedPersonnel = minPurchaseQty - quantity;
+
+    if (remainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
+
     const participants = {
       participantId: participantId,
       userId: userId,
@@ -35,13 +43,14 @@ export class groupService {
       participants,
       productId,
       state,
+      remainedPersonnel,
     };
 
     const createdNewGroup = await Group.create({ newGroup });
 
     return createdNewGroup;
   }
-
+  /// 여기서부터
   static async setQuantity({ groupId, userId, quantity }) {
     let groupInfo = await Group.findByGroupId({ groupId });
 
@@ -53,20 +62,37 @@ export class groupService {
 
     let participantsInfo = groupInfo.participants;
     let newValue = {};
+    let priorQuantity = 0;
 
     const index = participantsInfo.findIndex((f) => f.userId === userId);
 
     if (index > -1) {
+      priorQuantity = participantsInfo[index].quantity;
       participantsInfo[index]["quantity"] = quantity;
     } else {
       const errorMessage =
         "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
+
+    const updatedRemainedPersonnel =
+      groupInfo.remainedPersonnel + priorQuantity - quantity;
+
+    if (updatedRemainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
+
     newValue = participantsInfo;
+
     const updatedParticipants = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { participants: newValue } },
+      {
+        $set: {
+          participants: newValue,
+          remainedPersonnel: updatedRemainedPersonnel,
+        },
+      },
       { returnOriginal: false }
     );
 
@@ -195,7 +221,7 @@ export class groupService {
     return list;
   }
 
-  static async addParticipants({ userId, groupId, quantity, payment }) {
+  static async addParticipants({ userId, groupId, quantity }) {
     const groupInfo = await Group.findByGroupId({ groupId });
 
     if (!groupInfo) {
@@ -205,6 +231,12 @@ export class groupService {
 
     let participantsInfo = groupInfo.participants;
     let newValue = {};
+
+    const updatedRemainedPersonnel = groupInfo.remainedPersonnel + 1 - quantity;
+    if (updatedRemainedPersonnel < 0) {
+      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
+      return { errorMessage };
+    }
 
     const index = participantsInfo.findIndex((f) => f.userId === userId);
 
@@ -310,8 +342,13 @@ export class groupService {
     return checkState;
   }
 
-  static async getRemainedTimeInfoByGroupId() {
-    const groups = await Group.findAllGroups();
+  static async getSortedGroupsByRemainedTimeInfo() {
+    const groups = await Group.findSortedGroupsByRemainedTimeInfo();
+    return groups;
+  }
+
+  static async getSortedGroupsByRemainedPersonnelInfo() {
+    const groups = await Group.findSortedGroupsByRemainedPersonnelInfo();
     return groups;
   }
 }

@@ -26,7 +26,7 @@ class Group {
     return groups;
   }
 
-  static async findAllGroups() {
+  static async findSortedGroupsByRemainedTimeInfo() {
     const groups = await GroupModel.find({
       $and: [
         {},
@@ -37,8 +37,15 @@ class Group {
           },
         },
       ],
-    }).sort({ deadline: -1 });
+    }).sort({ deadline: 1 });
+
     return groups;
+  }
+
+  static async findSortedGroupsByRemainedPersonnelInfo() {
+    const groups = await GroupModel.find({
+      $and: [{}, {}],
+    });
   }
 
   /** 공동구매 개수를 기준으로 내림차순 정렬한 상품들 리스트

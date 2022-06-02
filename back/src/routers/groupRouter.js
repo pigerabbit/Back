@@ -279,7 +279,6 @@ groupRouter.put(
         userId,
         groupId,
         quantity,
-        payment,
       });
 
       if (UpdatedGroup.errorMessage) {
@@ -358,17 +357,38 @@ groupRouter.get(
   }
 );
 
+// 마감 기한이 1일 이내인 리스트 오름차순 정렬
 groupRouter.get(
   "/groups/sort/remainedTime",
   login_required,
   async function (req, res, next) {
     try {
-      const remainedTimeInfo =
-        await groupService.getRemainedTimeInfoByGroupId();
+      const groupList = await groupService.getSortedGroupsByRemainedTimeInfo();
 
       const body = {
         success: true,
-        payload: remainedTimeInfo,
+        payload: groupList,
+      };
+
+      res.status(200).send(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 모집 인원이 적게 남은 순으로 오름차순 정렬
+groupRouter.get(
+  "/groups/sort/remainedPersonnel",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const groupList =
+        await groupService.getSortedGroupsByRemainedPersonnelInfo();
+
+      const body = {
+        success: true,
+        payload: groupList,
       };
 
       res.status(200).send(body);
