@@ -358,4 +358,24 @@ groupRouter.get(
   }
 );
 
+groupRouter.get(
+  "/groups/sort/remainedTime",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const remainedTimeInfo =
+        await groupService.getRemainedTimeInfoByGroupId();
+
+      const body = {
+        success: true,
+        payload: remainedTimeInfo,
+      };
+
+      res.status(200).send(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export { groupRouter };

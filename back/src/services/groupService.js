@@ -1,7 +1,7 @@
 import { Group, Product } from "../db";
 import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
-import { nextThreeDay, nowDay } from "../utils/date-calculator.js";
+import { nowDate } from "../utils/date-calculator.js";
 
 export class groupService {
   static async addGroup({
@@ -19,7 +19,7 @@ export class groupService {
     const participants = {
       participantId: participantId,
       userId: userId,
-      participantDate: nowDay(),
+      participantDate: nowDate(),
       quantity: quantity,
       payment: false,
       complete: false,
@@ -216,7 +216,7 @@ export class groupService {
       const participant = {
         participantId: participantId,
         userId: userId,
-        participantDate: nowDay(),
+        participantDate: nowDate(),
         quantity: quantity,
         payment: false,
         complete: false,
@@ -308,5 +308,10 @@ export class groupService {
     const checkState = groupInfo.state;
 
     return checkState;
+  }
+
+  static async getRemainedTimeInfoByGroupId() {
+    const groups = await Group.findAllGroups();
+    return groups;
   }
 }

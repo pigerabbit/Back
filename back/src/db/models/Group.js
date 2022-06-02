@@ -1,4 +1,5 @@
 import { GroupModel } from "../schemas/group";
+import { nextOneDay, nowDate } from "../../utils/date-calculator.js";
 
 class Group {
   static async create({ newGroup }) {
@@ -22,6 +23,21 @@ class Group {
 
   static async findAll({ productId }) {
     const groups = await GroupModel.find({ productId });
+    return groups;
+  }
+
+  static async findAllGroups() {
+    const groups = await GroupModel.find({
+      $and: [
+        {},
+        {
+          deadline: {
+            $gte: nowDate(),
+            $lte: nextOneDay(),
+          },
+        },
+      ],
+    }).sort({ deadline: -1 });
     return groups;
   }
 
