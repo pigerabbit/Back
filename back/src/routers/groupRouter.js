@@ -385,7 +385,7 @@ groupRouter.get(
     try {
       const groupList =
         await groupService.getSortedGroupsByRemainedPersonnelInfo();
-
+      console.log("groupList:", groupList);
       const body = {
         success: true,
         payload: groupList,

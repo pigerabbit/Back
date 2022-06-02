@@ -44,8 +44,15 @@ class Group {
 
   static async findSortedGroupsByRemainedPersonnelInfo() {
     const groups = await GroupModel.find({
-      $and: [{}, {}],
-    });
+      $and: [
+        {},
+        {
+          state: 0,
+        },
+      ],
+    }).sort({ updatedRemainedPersonnel: 1 });
+
+    return groups;
   }
 
   /** 공동구매 개수를 기준으로 내림차순 정렬한 상품들 리스트
