@@ -80,7 +80,7 @@ const UserSchema = new Schema(
       required: false,
       default: false,
     },
-    alert: [alertSchema],
+    alertList: [alertSchema],
   },
   {
     timestamps: true,

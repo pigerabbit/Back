@@ -12,6 +12,6 @@ export function getRequiredInfoFromData(data) {
     type: data.type,
     imageLink: data.imageLink,
     reportedBy: data.reportedBy,
-    alert: data.alert,
+    alertList: data.alertList,
   };
 }

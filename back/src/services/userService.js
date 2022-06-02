@@ -253,7 +253,13 @@ class userService {
 
     return deletedUser;
   }
- 
+
+  /** 유저 alert 전부 보는 함수
+   * 
+   * @param {String} currentUserID - 현재 로그인된 아이디
+   * @param {String} userId - param으로 받은 유저 아이디
+   * @returns alertList
+   */
   static async getAlertList({ currentUserId, userId }) { 
     if (currentUserId !== userId) { 
       const errorMessage = "본인의 알림만 볼 수 있습니다."
@@ -272,6 +278,28 @@ class userService {
     }
 
     const alertList = await User.getAlertList({ userId });
+    return alertList;
+  }
+
+  /** 유저 alert 삭제 함수
+   * 
+   * @param {String} currentUserID - 현재 로그인된 아이디
+   * @param {String} userId - param으로 받은 유저 아이디
+   * @returns alertList
+   */
+  static async deleteAlertList({ userId, sendId }) { 
+    const user = await User.findById({ userId });
+    if (!user || user === null) {
+      const errorMessage = "해당 유저가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    if (user.deleted === true) {
+      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
+      return { errorMessage };
+    }
+
+    const alertList = await User.deleteAlertList({ sendId });
     return alertList;
   }
 }

@@ -426,29 +426,5 @@ userRouter.get(
   }
 );
 
-/** user 알림 함수
- * 
- * param : id
- */
-userRouter.get(
-  "/users/:id/alert",
-  login_required,
-  async function (req, res, next) {
-    try {
-      const currentUserId = req.currentUserId;
-      const userId = req.params.id;
-      const alertList = await userService.getAlertList({ currentUserId, userId });
-
-      const body = {
-        success: true,
-        payload: alertList,
-      };
-
-      return res.status(200).json(body);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
 
 export { userRouter };

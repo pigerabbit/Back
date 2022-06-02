@@ -53,9 +53,22 @@ export class User {
   }
 
   static async getAlertList({ userId }) {
-    const alertList = await UserModel.find({ userId })
-      .select('alert');
+    const alertList = await UserModel.find(
+      { deleted: false },
+      { userId },
+    )
+      .select('alertList')
+      .lean();
     
     return alertList;
+  }
+
+  static async deleteAlertList({ sendId }) {
+    const deleteAlert = await UserModel.updateOne(
+      { 'alertList.sendId': sendId },
+      { $set: { 'alertList.$.removed': true } },
+    );
+
+    return deleteAlert;
   }
 }
