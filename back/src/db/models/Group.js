@@ -94,14 +94,7 @@ class Group {
       { groupId: groupId },
       "participants"
     );
-    console.log("groupList:", groupList);
-    console.log("groupList[0]:", groupList[0]);
-    console.log("groupList[0].participants:", groupList[0].participants);
-    console.log("groupList[0].participants[0]:", groupList[0].participants[0]);
-    console.log(
-      "groupList[0].participants[0].userId:",
-      groupList[0].participants[0].userId
-    );
+
     const participantsList = groupList.map((v) => {
       const firstList = v.participants;
       const secondList = firstList.map((v) => {
