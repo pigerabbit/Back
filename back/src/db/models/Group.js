@@ -46,7 +46,7 @@ class Group {
    * @returns productList
    */
   static async findProductSortByGroups() {
-    const productList = await GroupModel.aggregate([
+    let productList = await GroupModel.aggregate([
       {
         $match: { state: 0 },
       },
