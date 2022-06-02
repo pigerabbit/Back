@@ -442,6 +442,20 @@ productRouter.get(
   }
 );
 
+productRouter.get(
+  "/products/main/top",
+  async (req, res, next) => { 
+    const productList = await ProductService.getProductTopList();
+
+    const body = {
+      success: true,
+      payload: productList,
+    };
+
+    return res.status(200).send(body);
+  }
+);
+
 /**
  * @swagger
  * /products:

@@ -112,6 +112,32 @@ class ProductService {
     return resultList;
   }
 
+  /** 공구 상품 top 10을 반환하는 함수
+   * 
+   * @returns 상품 전체 Object List
+   */
+  static async getProductTopList() { 
+    const top = 10;
+    const groupList = await Group.findProductSortByGroups();
+    const productList = await Product.findProductListNoPage();
+    let resultList = [];
+    
+    for (let i = 0; i < groupList.length; i++) {
+      for (let j = 0; j < productList.length; j++) { 
+        if (groupList[i]._id ===  productList[j].id) { 
+          resultList.push(productList[j]);
+          delete productList[j];
+        }
+      }
+    }
+
+    for (let i = 0; i < productList.length; i++) {
+      resultList.push(productList[i]);
+    }
+
+    return resultList.slice(0, top);
+  }
+
   /** 카테고리별 상품을 반환하는 함수
    * 
    * @returns 카테고리별 상품 Object List
