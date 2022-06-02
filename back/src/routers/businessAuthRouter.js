@@ -15,7 +15,7 @@ const businessAuthRouter = Router();
  * body
  *    businessName : 상점 이름
  *    b_no : 사업자 등록 번호
- *    p_no : 대표자 성명
+ *    p_nm : 대표자 성명
  *    start_dt : 개업 일자
  *    
 */
