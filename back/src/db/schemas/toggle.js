@@ -15,6 +15,10 @@ const ToggleSchema = new Schema({
   products: {
     type: [String],
   },
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const ToggleModel = model("Toggle", ToggleSchema);
