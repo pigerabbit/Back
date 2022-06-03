@@ -92,7 +92,7 @@ class Group {
   static async findParticipantsByGroupId({ groupId }) {
     const groupInfo = await GroupModel.find(
       { groupId: groupId },
-      "participants groupName"
+      "participants"
     ).lean();
 
     const participantsList = groupInfo.map((v) => {
@@ -103,12 +103,8 @@ class Group {
       });
       return secondList;
     });
-    console.log("groupName:", groupInfo);
-    const body = {
-      groupName: groupInfo[0].groupName,
-      participants: participantsList[0],
-    };
-    return body;
+
+    return participantsList[0];
   }
 }
 
