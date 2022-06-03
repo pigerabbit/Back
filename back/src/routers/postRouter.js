@@ -125,7 +125,9 @@ postRouter.post(
 );
 
 /** GET /posts - 전체 글 읽기 API (후기, 문의, 공구에서 활용)
- * query : receiver
+ * query : 
+ *      receiver
+ *      type : review / cs / groupChat
  */
 postRouter.get(
   "/posts",
@@ -134,12 +136,16 @@ postRouter.get(
       .exists()
       .withMessage("query에 receiver를 입력해주세요.")
       .bail(),
+    query("type")
+      .exists()
+      .withMessage("query에 type을 입력해주세요.")
+      .bail(),
     validate,
   ],
   async (req, res, next) => {
     try {
-      const { receiver } = req.query;
-      const postList = await PostService.getPostList({ receiver });
+      const { receiver, type } = req.query;
+      const postList = await PostService.getPostList({ receiver, type });
 
       if (postList.errorMessage) {
         const body = {
@@ -154,7 +160,7 @@ postRouter.get(
         success: true,
         payload: postList,
       };
-
+``
       return res.status(200).json(body);
     } catch (err) {
       next(err);

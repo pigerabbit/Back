@@ -14,11 +14,12 @@ class Post {
   /** 글 남겨진 곳 검색 함수
    *
    * @param {String} receiver - 글이 남겨지는 곳
+   * @param {String} type - review / cs
    * @returns {Object} postList
    */
-  static async findPostList({ receiver }) {
+  static async findPostList({ receiver, type }) {
     const postList = await PostModel.find(
-      { receiver, removed: false },
+      { receiver, type, removed: false },
       { _id: 0, __v: 0, updatedAt: 0 },
     )
       .sort({ createdAt: -1 })

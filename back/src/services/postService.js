@@ -113,20 +113,16 @@ class PostService {
    * @param {String} receiver - 글이 남겨지는 곳
    * @returns {Object} postList
    */
-  static async getPostList({ receiver }) {
+  static async getPostList({ receiver, type }) {
     const postList = await Post.findPostList({
-      receiver
+      receiver,
+      type,
     });
-
-    if (postList.length === 0) {
-      const errorMessage = "잘못된 receiver 입니다.";
-      return { errorMessage };
-    }
 
     return postList;
   }
 
-  /** 글 검색 함수
+  /** 글 한 개 검색 함수
    *
    * @param {String} postId - 글 id
    * @returns {Object} post
