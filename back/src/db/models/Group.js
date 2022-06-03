@@ -90,12 +90,12 @@ class Group {
   }
 
   static async findParticipantsByGroupId({ groupId }) {
-    const groupList = await GroupModel.find(
+    const groupInfo = await GroupModel.find(
       { groupId: groupId },
       "participants"
     );
 
-    const participantsList = groupList.map((v) => {
+    const participantsList = groupInfo.map((v) => {
       const firstList = v.participants;
       const secondList = firstList.map((v) => {
         const userId = v.userId;
@@ -103,7 +103,11 @@ class Group {
       });
       return secondList;
     });
-    return participantsList[0];
+    const body = {
+      groupId: groupId,
+      participants: participantsList[0],
+    };
+    return body;
   }
 }
 
