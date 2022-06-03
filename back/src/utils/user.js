@@ -6,12 +6,11 @@ export function getRequiredInfoFromData(data) {
     address: data.address,
     nickname: data.nickname,
     seller: data.seller,
-    businessName: data.businessName,
+    business: data.business,
     location: data.location,
     distance: data.distance,
     type: data.type,
     imageLink: data.imageLink,
     reportedBy: data.reportedBy,
-    alertList: data.alertList,
   };
 }

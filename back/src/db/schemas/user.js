@@ -20,6 +20,22 @@ const alertSchema = new Schema({
   },
 });
 
+const businessSchema = new Schema({
+  businessName: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  ownerName: {
+    type: String,
+    required: true,
+  },
+  businessLocation: {
+    type: String,
+    required: true,
+  }
+})
+
 const UserSchema = new Schema(
   {
     id: {
@@ -47,11 +63,6 @@ const UserSchema = new Schema(
       type: Number,
       required: false,
     },
-    businessName: {
-      type: String,
-      required: false,
-      unique: true,
-    },
     address: {
       type: String,
       required: true,
@@ -65,6 +76,7 @@ const UserSchema = new Schema(
       required: true,
       default: false,
     },
+    business: [businessSchema],
     imageLink: {
       type: String,
       required: false,

@@ -137,16 +137,28 @@ class userService {
       }
     });
     
-    if (toUpdate.businessName) { 
+    let business = {};
+    if (toUpdate.businessName && toUpdate.businessLocation || toUpdate.businessName) {
       const businessNameList = await User.findByBusinessName({
         businessName: toUpdate.businessName
       });
 
-      if (businessNameList.length !== 0) { 
+      if (businessNameList.length !== 0) {
         const errorMessage = "이미 존재하는 상호명입니다. 다른 상호명을 입력해주십시오.";
         return { errorMessage };
       }
+
+      business = {
+        businessName: toUpdate.businessName,
+        businessLocation: toUpdate.businessLocation,
+      };
+    } else { 
+      business = {
+        businessLocation: toUpdate.businessLocation,
+      }
     }
+
+    toUpdate["business"] = business;
 
     const updatedUser = await User.updateAll({ userId, setter: toUpdate });
     const resultUser = getRequiredInfoFromData(updatedUser);
