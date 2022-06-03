@@ -288,12 +288,6 @@ class PostService {
     }
 
     const postList = await Post.findPostListByWriter({ writer, option });
-
-    if (postList.length === 0) { 
-      const payload = "작성한 후기 / 문의가 없습니다.";
-      return { payload };
-    }
-
     return postList;
   }
 
