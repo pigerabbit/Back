@@ -18,22 +18,21 @@ const postRouter = Router();
 postRouter.post(
   "/posts",
   login_required,
-  // [
-  //   body("type")
-  //     .exists()
-  //     .withMessage("글 타입을 입력해주세요.")
-  //     .bail(),
-  //   body("receiver")
-  //     .exists()
-  //     .withMessage("receiver를 입력해주세요")
-  //     .bail(),
-  //   body("content")
-  //     .exists()
-  //     .withMessage("content를 입력해주세요")
-  //     .bail(),
-  //   validate,
-  // ],
-  postImageUpload.single("postImg"),
+  [
+    body("type")
+      .exists()
+      .withMessage("글 타입을 입력해주세요.")
+      .bail(),
+    body("receiver")
+      .exists()
+      .withMessage("receiver를 입력해주세요")
+      .bail(),
+    body("content")
+      .exists()
+      .withMessage("content를 입력해주세요")
+      .bail(),
+    validate,
+  ],
   async (req, res, next) => {
     try {
       const writer = req.currentUserId;
@@ -44,15 +43,12 @@ postRouter.post(
         content,
       } = req.body;
 
-      const postImg = req.file?.location ?? null;
-
       const createdPost = await PostService.addPost({
         type,
         writer,
         receiver,
         title,
         content,
-        postImg,
       });
 
       if (createdPost.errorMessage) {
@@ -76,6 +72,57 @@ postRouter.post(
   }
 );
 
+/** POST /posts/:postId/img - 사진 넣는 API 
+ * body : type,
+ *        receiver,
+ *        title,
+ *        content,
+ * file : postImg
+ */
+postRouter.post(
+  "/posts/:postId/img",
+  login_required,
+  postImageUpload.single("postImg"),
+  async (req, res, next) => {
+    try {
+      const writer = req.currentUserId;
+      const postId = req.params.postId;
+      const title = null;
+      const content = null;
+      const postImg = req.file?.location ?? null;
+
+      const toUpdate = {
+        title,
+        content,
+        postImg,
+      };
+      console.log(toUpdate);
+      const updatedPost = await PostService.setPost({
+        writer,
+        postId,
+        toUpdate,
+      });
+
+      if (updatedPost.errorMessage) {
+        const body = {
+          success: false,
+          error: updatedPost.errorMessage,
+        };
+
+        return res.status(updatedPost.status).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedPost,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 /** GET /posts - 전체 글 읽기 API (후기, 문의, 공구에서 활용)
  * query : receiver

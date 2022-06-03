@@ -22,7 +22,6 @@ class PostService {
     receiver,
     title,
     content,
-    postImg,
   }) {
     const postId = crypto.randomUUID();
     let authorizedUsers = [];
@@ -100,7 +99,6 @@ class PostService {
       receiver,
       title,
       content,
-      postImg,
     };
     const createdPost = await Post.create({ newPost });
     const resultPost = getRequiredInfoFromPostData(createdPost);
