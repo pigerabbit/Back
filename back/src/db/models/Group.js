@@ -106,6 +106,27 @@ class Group {
 
     return participantsList[0];
   }
+
+  static async findParticipantsByProductId({ productId }) {
+    const groupInfo = await GroupModel.find(
+      { productId: productId },
+      "participants"
+    )
+      .select("-_id")
+      .lean();
+
+    let participantsList = [];
+    participantsList.push(groupInfo.map((v) => {
+      const firstList = v.participants;
+      const secondList = firstList.map((v) => {
+        const userId = v.userId;
+        return userId;
+      });
+      return secondList;
+    }));
+
+    return participantsList[0];
+  }
 }
 
 export { Group };
