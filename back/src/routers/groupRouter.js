@@ -398,4 +398,22 @@ groupRouter.get(
   }
 );
 
+// import { Group } from "../db/models/Group.js";
+
+// groupRouter.get("/groups/test/:groupId", async function (req, res, next) {
+//   try {
+//     const groupId = req.params.groupId;
+//     const participants = await Group.findParticipantsByGroupId({ groupId });
+//     console.log("participants:", participants);
+//     const body = {
+//       success: true,
+//       payload: participants,
+//     };
+
+//     res.status(200).send(body);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
 export { groupRouter };
