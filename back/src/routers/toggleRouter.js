@@ -71,4 +71,24 @@ toggleRouter.put(
   }
 );
 
+toggleRouter.get(
+  "/toggle/groups",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+
+      const toggleInfo = await toggleService.getToggleGroup({ userId });
+
+      if (toggleInfo.errorMessage) {
+        throw new Error(toggleInfo.errorMessage);
+      }
+
+      res.status(200).json(toggleInfo);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export { toggleRouter };
