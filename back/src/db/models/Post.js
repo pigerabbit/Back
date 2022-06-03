@@ -41,18 +41,7 @@ class Post {
     
     return post;
   }
-
-  /** 문의 답변 완료 함수 
-   * 글 id를 receiver로 사용하는 곳이 있다면 문의 답변이 존재
-   * 
-   * @param {String} postId - 글 id 
-   * @returns 
-   */
-  static async findPostReply({ postId }) { 
-    const reply = await PostModel.find({ receiver: postId }).lean();
-    return reply;
-  }
-
+  
   /** 글 수정 함수
    * 
    * @param {String} postId - 글 id 
