@@ -21,4 +21,29 @@ toggleRouter.post("/toggles", async function (req, res, next) {
   }
 });
 
+toggleRouter.put(
+  "/toggle/group/:groupId",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+      const groupId = req.params.groupId;
+
+      const toUpdate = { groupId };
+      const updatedLikeInfo = await toggleService.setToggleGroup({
+        userId,
+        toUpdate,
+      });
+
+      if (updatedLikeInfo.errorMessage) {
+        throw new Error(updatedLikeInfo.errorMessage);
+      }
+
+      res.status(200).json(updatedLikeInfo);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export { toggleRouter };
