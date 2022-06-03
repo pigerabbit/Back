@@ -18,6 +18,8 @@ export class groupService {
     const participantId = crypto.randomUUID();
     const { minPurchaseQty } = await Product.findProduct({ id: productId });
     const remainedPersonnel = minPurchaseQty - quantity;
+    const product = await Product.findProduct({ id: productId });
+    const productInfo = product._id;
 
     if (remainedPersonnel < 0) {
       const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
@@ -36,6 +38,7 @@ export class groupService {
     };
 
     const newGroup = {
+      productInfo,
       groupId,
       groupName,
       groupType,

@@ -8,7 +8,9 @@ class Group {
   }
 
   static async findByGroupId({ groupId }) {
-    const groupInfo = await GroupModel.findOne({ groupId });
+    const groupInfo = await GroupModel.findOne({ groupId }).populate(
+      "productInfo"
+    );
     return groupInfo;
   }
 
@@ -22,7 +24,7 @@ class Group {
   }
 
   static async findAll({ productId }) {
-    const groups = await GroupModel.find({ productId });
+    const groups = await GroupModel.find({ productId }).populate("productInfo");
     return groups;
   }
 
@@ -37,7 +39,9 @@ class Group {
           },
         },
       ],
-    }).sort({ deadline: 1 });
+    })
+      .populate("productInfo")
+      .sort({ deadline: 1 });
 
     return groups;
   }
@@ -50,7 +54,9 @@ class Group {
           state: 0,
         },
       ],
-    }).sort({ remainedPersonnel: 1 });
+    })
+      .populate("productInfo")
+      .sort({ remainedPersonnel: 1 });
 
     return groups;
   }
@@ -85,7 +91,7 @@ class Group {
       participants: {
         $elemMatch: { userId: userId, manager: boolean },
       },
-    });
+    }).populate("productInfo");
     return listWhenOwner;
   }
 
