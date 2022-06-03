@@ -8,6 +8,7 @@ import { groupRouter } from "./routers/groupRouter";
 import { productRouter } from "./routers/productRouter";
 import { postRouter } from "./routers/postRouter";
 import { businessAuthRouter } from "./routers/businessAuthRouter";
+import { toggleRouter } from "./routers/toggleRouter";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use(groupRouter);
 app.use(productRouter);
 app.use(postRouter);
 app.use(businessAuthRouter);
+app.use(toggleRouter);
 
 // 순서 중요 (router 에서 next() 시 아래의 에러 핸들링  middleware로 전달됨)
 app.use(errorMiddleware);
@@ -43,6 +45,5 @@ app.use(errorMiddleware);
     throw new Error(`.env 파일이 빠진 것 같아요! 체크체크!`);
   }
 });
-
 
 export { app };
