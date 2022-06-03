@@ -1,38 +1,106 @@
 import { UserModel } from "../schemas/user";
 
-class User {
+export class User {
   static async create({ newUser }) {
     const createdNewUser = await UserModel.create(newUser);
     return createdNewUser;
   }
 
-  static async findByEmail({ email }) {
-    const user = await UserModel.findOne({ email });
-    return user;
+  static async isEmailExists({ email, type }) {
+    return await UserModel.exists({ email, type });
   }
 
-  static async findById({ user_id }) {
-    const user = await UserModel.findOne({ id: user_id });
+  static async findByEmail({ email, type }) {
+    const user = await UserModel.findOne({ email, type });
     return user;
   }
 
   static async findAll() {
-    const users = await UserModel.find({});
+    //회원탈퇴한 유저는 제외
+    const users = await UserModel.find(
+      { deleted: false },
+      {
+        _id: false,
+        id: true,
+        name: true,
+        email: true,
+        address: true,
+        businessName: true,
+        type: true,
+      }
+    );
     return users;
   }
 
-  static async update({ user_id, fieldToUpdate, newValue }) {
-    const filter = { id: user_id };
-    const update = { [fieldToUpdate]: newValue };
-    const option = { returnOriginal: false };
+  static async findById({ userId }) {
+    const user = await UserModel.findOne({ id: userId }).lean();
 
+    return user;
+  }
+
+  static async updateAll({ userId, setter }) {
     const updatedUser = await UserModel.findOneAndUpdate(
-      filter,
-      update,
-      option
+      { id: userId },
+      { $set: setter },
+      { returnOriginal: false }
     );
     return updatedUser;
   }
-}
 
-export { User };
+  static async findByName({ name }) {
+    const user = await UserModel.findOne({ name });
+    return user;
+  }
+
+  /** 유저의 alert 목록을 보는 함수
+   * 
+   * @param {String} userId - 유저 id 
+   * @returns alertList
+   */
+  static async getAlertList({ userId }) {
+    const alertList = await UserModel.find(
+      { deleted: false },
+      { userId },
+    )
+      .select('alertList')
+      .lean();
+    
+    return alertList;
+  }
+
+  /** 알림 삭제 함수
+   * 
+   * @param {String} sendId - 알림을 보낸 위치 
+   * @returns deleteAlert
+   */
+  static async deleteAlertList({ sendId }) {
+    const deleteAlert = await UserModel.updateOne(
+      { 'alertList.sendId': sendId },
+      { $set: { 'alertList.$.removed': true } },
+    );
+
+    return deleteAlert;
+  }
+
+  /** 알림 업데이트 함수 
+   * 
+   * @param {String} userId - 알림을 업데이트할 유저 id
+   * @param {String} from - post / product / group 
+   * @param {String} sendId - 알림을 보낸 위치
+   * @param {String} content - 알림 내용
+   */
+  static async updateAlert({ userId, from, sendId, content }) { 
+    const newAlert = {
+      from,
+      sendId,
+      content,
+      removed: false,
+    }
+    const updateAlert = await UserModel.findOneAndUpdate(
+      { 'id': userId },
+      { $push: { alertList: newAlert } },
+    );
+
+    return updateAlert;
+  }
+}
