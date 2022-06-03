@@ -1,5 +1,6 @@
 import { UserModel } from "../db/schemas/user";
 import { User } from "../db";
+import { getRequiredInfoFromData } from "../utils/user";
 
 class businessAuthService {
   static async setBusiness({ userId, toUpdate }) {
@@ -30,7 +31,8 @@ class businessAuthService {
       { returnOriginal: false }
     );
 
-    return updatedBusiness;
+    const resultBusiness = getRequiredInfoFromData(updatedBusiness);
+    return resultBusiness;
   }
 }
 
