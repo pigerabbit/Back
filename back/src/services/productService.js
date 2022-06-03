@@ -44,12 +44,13 @@ class ProductService {
   }) { 
     const id = crypto.randomUUID();
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
-    const { businessName } = await User.findById({ userId });
-    
+    const user = await User.findById({ userId });
+    const userInfo = user._id;
+
     const newProduct = {
       id,
       userId,
-      businessName,
+      userInfo,
       images,
       category,
       name,
@@ -310,7 +311,7 @@ class ProductService {
    * @returns 상품 Object
    */
   static async getProduct({ id }) { 
-    const product = await Product.findProduct({ id });
+    let product = await Product.findProduct({ id });
 
     if (!product) {
       const errorMessage = "해당 상품이 존재하지 않습니다.";
@@ -321,10 +322,11 @@ class ProductService {
       views: product.views + 1,
     };
 
-    const updatedProduct = await Product.update({ id, toUpdate });
-    const resultProduct = getRequiredInfoFromProductData(updatedProduct);
+    await Product.update({ id, toUpdate });
+    product = await Product.findProduct({ id });
+    const resultProduct = getRequiredInfoFromProductData(product);
 
-    return { resultProduct };
+    return resultProduct;
   }
 
   /** 상품 id와 일치하는 상품을 삭제하는 함수
@@ -380,5 +382,6 @@ class ProductService {
     return product;
   }
 }
+
 
 export { ProductService };
