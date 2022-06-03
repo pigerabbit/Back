@@ -25,6 +25,10 @@ const ParticipantSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  review: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const GroupSchema = new Schema(

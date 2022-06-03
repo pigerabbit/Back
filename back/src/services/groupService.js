@@ -32,6 +32,7 @@ export class groupService {
       payment: false,
       complete: false,
       manager: true,
+      review: false,
     };
 
     const newGroup = {
