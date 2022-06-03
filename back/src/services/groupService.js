@@ -224,7 +224,7 @@ export class groupService {
 
   static async addParticipants({ userId, groupId, quantity }) {
     const groupInfo = await Group.findByGroupId({ groupId });
-    console.log("userId:", userId);
+
     if (!groupInfo) {
       const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
       return { errorMessage };
@@ -248,6 +248,7 @@ export class groupService {
         payment: false,
         complete: false,
         manager: false,
+        review: false,
       };
 
       participantsInfo.push(participant);
@@ -370,7 +371,7 @@ export class groupService {
 
   static async getSortedGroupsByRemainedPersonnelInfo() {
     const groups = await Group.findSortedGroupsByRemainedPersonnelInfo();
-    console.log("groups:", groups);
+
     return groups;
   }
 }
