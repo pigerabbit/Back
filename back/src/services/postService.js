@@ -1,7 +1,9 @@
 import { Post } from "../db/index.js";
+import { User } from "../db/index.js";
+import { Product } from "../db/index.js";
+import { Group } from "../db/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromPostData } from "../utils/post";
-import e from "express";
 
 class PostService {
   /** 글 저장 함수
@@ -31,11 +33,40 @@ class PostService {
     // groupChat : 그룹 공구에 참여하는 사람
     // review : 모두
     if (type === "cs") {
-      authorizedUsers = [writer, receiver];
-    } else if (type === "groupChat") { // 나중에 group API랑 연동 필요
-      authorizedUsers = [writer]
+      const { userId, name } = await Product.findProduct({ id: receiver });
+      authorizedUsers = [writer, userId];
+      
+      // 문의가 달렸다면 상품 판매자에게 알림
+      await User.updateAlert({
+        userId: userId,
+        from: type,
+        sendId: receiver, // productId
+        content: `'${name}' 상품에 문의가 생성되었습니다.`,
+      });
+      
+    } else if (type === "groupChat") { 
+      authorizedUsers = await Group.findParticipantsByGroupId({ groupId: receiver });
+      const { groupName } = await Group.findByGroupId({ groupId: receiver });
+
+      // 공동 구매 댓글이 달렸다면 공동구매 참여자 전원에게 알림
+      authorizedUsers.map(async (v) => await User.updateAlert({
+        userId: v,
+        from: type,
+        sendId: receiver, // groupId
+        content: `'${groupName}'에 공동 구매 댓글이 생성되었습니다.`,
+      }));
     } else if (type === "review") {
       authorizedUsers = [];
+
+      // 후기가 달렸다면 상품 판매자에게 알림
+      const { userId, name } = await Product.findProduct({ id: receiver });
+      await User.updateAlert({
+        userId: userId,
+        from: type,
+        sendId: receiver, // productId
+        content: `'${name}' 상품에 후기가 생성되었습니다.`,
+      });
+
     } else if (type === "comment") { // 댓글일 때 postId가 있는지 확인 => 없다면 에러
       authorizedUsers = [];
       post = await Post.findPostContent({ postId: receiver });
@@ -47,6 +78,15 @@ class PostService {
       const addCommentCount = post.commentCount + 1;
       const toUpdate = { commentCount: addCommentCount };
       post = await Post.update({ postId: updateId, toUpdate });
+
+      // 댓글이 추가되었다면 글 쓴 유저에게 알림
+      await User.updateAlert({
+        userId: post.writer,
+        from: type,
+        sendId: post.postId,
+        content: `'${post.title}' 글에 댓글이 생성되었습니다.`,
+      });
+
     } else { 
       const errorMessage = "존재하지 않는 type 입니다.";
       return { errorMessage };

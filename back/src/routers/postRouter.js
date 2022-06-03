@@ -18,21 +18,21 @@ const postRouter = Router();
 postRouter.post(
   "/posts",
   login_required,
-  [
-    body("type")
-      .exists()
-      .withMessage("글 타입을 입력해주세요.")
-      .bail(),
-    body("receiver")
-      .exists()
-      .withMessage("receiver를 입력해주세요")
-      .bail(),
-    body("content")
-      .exists()
-      .withMessage("content를 입력해주세요")
-      .bail(),
-    validate,
-  ],
+  // [
+  //   body("type")
+  //     .exists()
+  //     .withMessage("글 타입을 입력해주세요.")
+  //     .bail(),
+  //   body("receiver")
+  //     .exists()
+  //     .withMessage("receiver를 입력해주세요")
+  //     .bail(),
+  //   body("content")
+  //     .exists()
+  //     .withMessage("content를 입력해주세요")
+  //     .bail(),
+  //   validate,
+  // ],
   postImageUpload.single("postImg"),
   async (req, res, next) => {
     try {
