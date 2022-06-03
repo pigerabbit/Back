@@ -44,6 +44,33 @@ class toggleService {
 
     return updatedToggle;
   }
+
+  static async setToggleProduct({ userId, toUpdate }) {
+    let toggleInfo = await Toggle.findByUserId({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "정보가 없습니다. user_id 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let productsInfo = toggleInfo.products;
+    let newValue = {};
+    const index = productsInfo.findIndex((f) => f === toUpdate.productId);
+    if (index > -1) {
+      productsInfo.splice(index, 1);
+    } else {
+      productsInfo.push(toUpdate.productId);
+    }
+    newValue = productsInfo;
+    const updatedToggle = await ToggleModel.findOneAndUpdate(
+      { userId },
+      { $set: { products: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedToggle;
+  }
 }
 
 export { toggleService };

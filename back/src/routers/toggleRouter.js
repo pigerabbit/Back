@@ -30,16 +30,41 @@ toggleRouter.put(
       const groupId = req.params.groupId;
 
       const toUpdate = { groupId };
-      const updatedLikeInfo = await toggleService.setToggleGroup({
+      const updatedGroupInfo = await toggleService.setToggleGroup({
         userId,
         toUpdate,
       });
 
-      if (updatedLikeInfo.errorMessage) {
-        throw new Error(updatedLikeInfo.errorMessage);
+      if (updatedGroupInfo.errorMessage) {
+        throw new Error(updatedGroupInfo.errorMessage);
       }
 
-      res.status(200).json(updatedLikeInfo);
+      res.status(200).json(updatedGroupInfo);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+toggleRouter.put(
+  "/toggle/product/:productId",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+      const productId = req.params.productId;
+
+      const toUpdate = { productId };
+      const updatedProductInfo = await toggleService.setToggleProduct({
+        userId,
+        toUpdate,
+      });
+
+      if (updatedProductInfo.errorMessage) {
+        throw new Error(updatedProductInfo.errorMessage);
+      }
+
+      res.status(200).json(updatedProductInfo);
     } catch (error) {
       next(error);
     }
