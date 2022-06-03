@@ -52,6 +52,11 @@ export class User {
     return user;
   }
 
+  static async findByBusinessName({ businessName }) {
+    const businessNameList = await UserModel.find({ businessName });
+    return businessNameList;
+  }
+
   /** 유저의 alert 목록을 보는 함수
    * 
    * @param {String} userId - 유저 id 

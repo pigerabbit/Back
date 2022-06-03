@@ -120,7 +120,7 @@ class userService {
   static async setUser({ userId, toUpdate }) {
     // 우선 해당 id 의 유저가 db에 존재하는지 여부 확인
     let user = await User.findById({ userId });
-
+    
     // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!user) {
       const errorMessage = "가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
@@ -130,11 +130,23 @@ class userService {
       const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
       return { errorMessage };
     }
+
     Object.keys(toUpdate).forEach((key) => {
       if (toUpdate[key] === undefined || toUpdate[key] === null) {
         delete toUpdate[key];
       }
     });
+    
+    if (toUpdate.businessName) { 
+      const businessNameList = await User.findByBusinessName({
+        businessName: toUpdate.businessName
+      });
+
+      if (businessNameList.length !== 0) { 
+        const errorMessage = "이미 존재하는 상호명입니다. 다른 상호명을 입력해주십시오.";
+        return { errorMessage };
+      }
+    }
 
     const updatedUser = await User.updateAll({ userId, setter: toUpdate });
     const resultUser = getRequiredInfoFromData(updatedUser);
