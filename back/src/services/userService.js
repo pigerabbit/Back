@@ -5,16 +5,10 @@ import jwt from "jsonwebtoken";
 import sendMail from "../utils/send-mail";
 import { getRequiredInfoFromData } from "../utils/user";
 import { UserModel } from "../db/schemas/user";
+import { toggleService } from "../services/toggleService";
 
 class userService {
-  static async addUser({
-    id,
-    name,
-    email,
-    password,
-    address,
-    type,
-  }) {
+  static async addUser({ id, name, email, password, address, type }) {
     //일반회원가입일때
     if (type === "sogongx2") {
       const emailExits = await User.isEmailExists({ email, type });
@@ -36,6 +30,16 @@ class userService {
     if (!id) {
       id = crypto.randomUUID();
     }
+
+    const userId = id;
+    const newToggle = await toggleService.addToggle({
+      userId,
+    });
+
+    if (newToggle.errorMessage) {
+      throw new Error(newToggle.errorMessage);
+    }
+
     const newUser = {
       id,
       name,
@@ -120,7 +124,7 @@ class userService {
   static async setUser({ userId, toUpdate }) {
     // 우선 해당 id 의 유저가 db에 존재하는지 여부 확인
     let user = await User.findById({ userId });
-    
+
     // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!user) {
       const errorMessage = "가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
@@ -136,15 +140,19 @@ class userService {
         delete toUpdate[key];
       }
     });
-    
+
     let business = {};
-    if (toUpdate.businessName && toUpdate.businessLocation || toUpdate.businessName) {
+    if (
+      (toUpdate.businessName && toUpdate.businessLocation) ||
+      toUpdate.businessName
+    ) {
       const businessNameList = await User.findByBusinessName({
-        businessName: toUpdate.businessName
+        businessName: toUpdate.businessName,
       });
 
       if (businessNameList.length !== 0) {
-        const errorMessage = "이미 존재하는 상호명입니다. 다른 상호명을 입력해주십시오.";
+        const errorMessage =
+          "이미 존재하는 상호명입니다. 다른 상호명을 입력해주십시오.";
         return { errorMessage };
       }
 
@@ -152,10 +160,10 @@ class userService {
         businessName: toUpdate.businessName,
         businessLocation: toUpdate.businessLocation,
       };
-    } else { 
+    } else {
       business = {
         businessLocation: toUpdate.businessLocation,
-      }
+      };
     }
 
     toUpdate["business"] = business;
@@ -279,14 +287,14 @@ class userService {
   }
 
   /** 유저 alert 전부 보는 함수
-   * 
+   *
    * @param {String} currentUserID - 현재 로그인된 아이디
    * @param {String} userId - param으로 받은 유저 아이디
    * @returns alertList
    */
-  static async getAlertList({ currentUserId, userId }) { 
-    if (currentUserId !== userId) { 
-      const errorMessage = "본인의 알림만 볼 수 있습니다."
+  static async getAlertList({ currentUserId, userId }) {
+    if (currentUserId !== userId) {
+      const errorMessage = "본인의 알림만 볼 수 있습니다.";
       return { errorMessage };
     }
 
@@ -306,12 +314,12 @@ class userService {
   }
 
   /** 유저 alert 삭제 함수
-   * 
+   *
    * @param {String} currentUserID - 현재 로그인된 아이디
    * @param {String} userId - param으로 받은 유저 아이디
    * @returns alertList
    */
-  static async deleteAlertList({ userId, sendId }) { 
+  static async deleteAlertList({ userId, sendId }) {
     const user = await User.findById({ userId });
     if (!user || user === null) {
       const errorMessage = "해당 유저가 존재하지 않습니다.";
