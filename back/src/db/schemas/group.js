@@ -1,5 +1,4 @@
-import { Schema, model, Mongoose } from "mongoose";
-import { Product } from "../models/Product";
+import { Schema, model } from "mongoose";
 
 const ParticipantSchema = new Schema({
   userId: {

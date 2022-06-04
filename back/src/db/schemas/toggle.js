@@ -15,9 +15,13 @@ const ToggleSchema = new Schema({
   products: {
     type: [String],
   },
-  viewedProducts: {
-    type: [String],
-  },
+  viewedProducts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: false,
+    },
+  ],
   searchWords: {
     type: [String],
   },

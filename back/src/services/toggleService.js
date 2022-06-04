@@ -163,6 +163,18 @@ class toggleService {
 
     return toggleSearchWords;
   }
+
+  static async getToggleViewedProducts({ userId }) {
+    const veiwedProductsInfo = await Toggle.findVeiwedProductsInfoByUserId({
+      userId,
+    });
+    if (!veiwedProductsInfo) {
+      const errorMessage = "userId에 대한 toggleInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    return veiwedProductsInfo;
+  }
 }
 
 export { toggleService };

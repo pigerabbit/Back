@@ -1,3 +1,4 @@
+import { ProductModel } from "../schemas/product.js";
 import { ToggleModel } from "../schemas/toggle.js";
 
 class Toggle {
@@ -8,6 +9,13 @@ class Toggle {
 
   static async create({ newUser }) {
     const toggleInfo = await ToggleModel.create(newUser);
+    return toggleInfo;
+  }
+
+  static async findVeiwedProductsInfoByUserId({ userId }) {
+    const toggleInfo = await ToggleModel.findOne({
+      userId,
+    }).populate("viewedProducts");
     return toggleInfo;
   }
 }
