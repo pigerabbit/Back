@@ -790,6 +790,8 @@ productRouter.get(
       return res.status(400).send(body);
     }
 
+    console.log("라우터", product);
+
     const body = {
       success: true,
       payload: product,

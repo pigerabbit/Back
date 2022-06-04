@@ -16,8 +16,10 @@ class Product {
    * @param {uuid} id - 상품 id 
    * @returns 
    */
-   static async findProduct({ id }) { 
-    const product = await ProductModel.findOne({ id });
+  static async findProduct({ id }) { 
+    const product = await ProductModel.findOne({ id })
+      .populate('userInfo', 'business');
+    console.log("상품 :", product);
     return product;
   }
 
@@ -45,6 +47,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const productList = await ProductModel.find()
+      .populate('userId', 'business')
       .sort({ createdAt: -1 })
       .select('-_id')
       .select('-__v')
@@ -61,6 +64,7 @@ class Product {
   */
   static async findProductListNoPage() { 
     const productList = await ProductModel.find()
+      .populate('userId', 'business')
       .sort({ createdAt: -1 })
       .select('-_id')
       .select('-__v')
@@ -80,6 +84,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const productList = await ProductModel.find({ category })
+      .populate('userId', 'business')
       .sort({ createdAt: -1 })
       .select('-_id')
       .select('-__v')
@@ -104,6 +109,7 @@ class Product {
     const productList = await ProductModel.find({
       category: { $regex: category },
     })
+      .populate('userId', 'business')
       .sort({ groups: -1 })
       .select('-_id')
       .select('-__v')
@@ -128,6 +134,7 @@ class Product {
     const productList = await ProductModel.find({
       category: { $regex: category },
     })
+      .populate('userId', 'business')
       .sort({ reviews: -1 })
       .select('-_id')
       .select('-__v')
@@ -152,6 +159,7 @@ class Product {
     const productList = await ProductModel.find({
       category: { $regex: category },
     })
+      .populate('userId', 'business')
       .sort({ views: -1 })
       .select('-_id')
       .select('-__v')
@@ -176,6 +184,7 @@ class Product {
     const productList = await ProductModel.find({
       category: { $regex: category },
     })
+      .populate('userId', 'business')
       .sort({ salePrice: 1 })
       .select('-_id')
       .select('-__v')
@@ -215,6 +224,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const productList = await ProductModel.find({ name: { $regex: search } })
+      .populate('userId', 'business')
       .sort({ createdAt: -1 })
       .select('-_id')
       .select('-__v')
@@ -234,6 +244,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const productList = await ProductModel.find({ name: { $regex: search } })
+      .populate('userId', 'business')
       .sort({ groups: -1 })
       .select('-_id')
       .select('-__v')
@@ -253,6 +264,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const productList = await ProductModel.find({ name: { $regex: search } })
+      .populate('userId', 'business')
       .sort({ salePrice: 1 })
       .select('-_id')
       .select('-__v')
@@ -272,6 +284,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const productList = await ProductModel.find({ name: { $regex: search } })
+      .populate('userId', 'business')
       .sort({ reviews: -1 })
       .select('-_id')
       .select('-__v')
@@ -291,6 +304,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const productList = await ProductModel.find({ name: { $regex: search } })
+      .populate('userId', 'business')
       .sort({ views: -1 })
       .select('-_id')
       .select('-__v')
@@ -312,9 +326,11 @@ class Product {
    * @returns productList
    */
   static async findUserProduct({ userId }) { 
-    const productList = await ProductModel.find({ userId: userId });
+    const productList = await ProductModel.find({ userId: userId })
+      .populate('userId', 'business');
     return productList;
   }
 }
+
 
 export { Product };

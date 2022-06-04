@@ -5,11 +5,12 @@ const ProductSchema = new Schema(
     userId: {
       type: String,
       required: true,
-    }, 
-    businessName: {
-      type: String,
+    },
+    userInfo: {
+      type: Schema.Types.ObjectId,
       required: true,
-    }, 
+      ref: "User",
+    },
     id: {
       type: String,
       required: true,
@@ -82,5 +83,6 @@ const ProductSchema = new Schema(
 );
 
 const ProductModel = model("Product", ProductSchema);
+
 
 export { ProductModel };
