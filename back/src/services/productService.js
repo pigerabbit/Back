@@ -374,8 +374,8 @@ class ProductService {
   static async getUserProduct({ userId }) { 
     const product = await Product.findUserProduct({ userId });
     return product;
-  }
-} 
+  }   
+}   
 
 
 export { ProductService }; 
