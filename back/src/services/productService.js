@@ -120,7 +120,7 @@ class ProductService {
   static async getProductTopList() { 
     const top = 10;
     const groupList = await Group.findProductSortByGroups();
-    const z = await Product.findProductListNoPage();
+    const products = await Product.findProductListNoPage();
     let resultList = [];
     console.log("groupList :", groupList)
     for (let i = 0; i < groupList.length; i++) {

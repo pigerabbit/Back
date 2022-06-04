@@ -340,7 +340,7 @@ productRouter.get(
 
     // 카테고리 쿼리가 존재한다면 카테고리별 상품 조회
     if (category !== undefined) { 
-      const productList = await ProductService.getProductCategoryList({
+      const resultList = await ProductService.getProductCategoryList({
         userId,
         category,
         option,
@@ -349,26 +349,32 @@ productRouter.get(
       });
 
     // 카테고리 이름이 존재하지 않는다면
-    if (productList.errorMessage) { 
+    if (resultList.errorMessage) { 
       const body = {
         success: false,
-        error: productList.errorMessage,
+        error: resultList.errorMessage,
       }
 
       return res.status(400).send(body);
     }
 
-      // const body = {
-      //   success: true,
-      //   productList,
-      // };
+      const body = {
+        success: true,
+        payload: resultList,
+      };
       
-      return res.status(200).send(productList);
+      return res.status(200).send(body);
     } 
 
     // 카테고리 쿼리가 없다면 전체 상품 조회
-    const productList = await ProductService.getProductList({ page, perPage });
-    return res.status(200).send(productList);
+    const resultList = await ProductService.getProductList({ page, perPage });
+
+    const body = {
+      success: true,
+      payload: resultList,
+    }
+
+    return res.status(200).send(body);
   }
 );
 
@@ -419,22 +425,32 @@ productRouter.get(
 
       // option 쿼리가 존재한다면 옵션에 맞게 상품 조회
       if (option !== undefined) {
-        const productList = await ProductService.getProductSearchSortByOption({ search, option, page, perPage });
+        const resultList = await ProductService.getProductSearchSortByOption({ search, option, page, perPage });
         
         // 맞지 않는 option이 들어왔다면
-        if (productList.errorMessage) {
+        if (resultList.errorMessage) {
           const body = {
             success: false,
-            errorMessage: productList.errorMessage,
+            errorMessage: resultList.errorMessage,
           }
     
           return res.status(400).send(body);
         }
 
-        return res.status(200).send(productList);
+        const body = {
+          success: true,
+          payload: resultList,
+        }
+
+        return res.status(200).send(body);
       } else { // 아니라면 최신순 정렬
-        const productList = await ProductService.getProductSearch({ search, page, perPage });
-        return res.status(200).send(productList);
+        const resultList = await ProductService.getProductSearch({ search, page, perPage });
+        const body = {
+          success: true,
+          payload: resultList,
+        }
+
+        return res.status(200).send(body);
       }
     } catch (err) {
       next(err);
@@ -445,11 +461,11 @@ productRouter.get(
 productRouter.get(
   "/products/main/top",
   async (req, res, next) => { 
-    const productList = await ProductService.getProductTopList();
+    const resultList = await ProductService.getProductTopList();
 
     const body = {
       success: true,
-      payload: productList,
+      payload: resultList,
     };
 
     return res.status(200).send(body);
@@ -1038,11 +1054,11 @@ productRouter.get(
 
     // 존재한다면 유저가 판매하는 상품 목록 조회
     // 유저가 판매하는 상품이 없을 때는 에러메시지로 "해당 유저의 상품이 존재하지 않습니다"를 전달
-    const productList = await ProductService.getUserProduct({ userId });
+    const resultList = await ProductService.getUserProduct({ userId });
 
     const body = {
       success: true,
-      payload: productList,
+      payload: resultList,
     };
 
     return res.status(200).send(body);
