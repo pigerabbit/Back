@@ -1,7 +1,7 @@
 export function getRequiredInfoFromProductData(data) {
   return {
     userId: data.userId,
-    businessName: data.businessName,
+    userInfo: data.userInfo,
     id: data.id,
     images: data.images,
     category: data.category,
