@@ -86,6 +86,7 @@ class toggleService {
     const index = searchWordsInfo.findIndex((f) => f === toUpdate.searchWord);
     if (index > -1) {
       searchWordsInfo.splice(index, 1);
+      searchWordsInfo.push(toUpdate.searchWord);
     } else {
       searchWordsInfo.push(toUpdate.searchWord);
     }
