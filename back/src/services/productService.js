@@ -120,23 +120,25 @@ class ProductService {
   static async getProductTopList() { 
     const top = 10;
     const groupList = await Group.findProductSortByGroups();
-    const productList = await Product.findProductListNoPage();
+    const z = await Product.findProductListNoPage();
     let resultList = [];
     console.log("groupList :", groupList)
     for (let i = 0; i < groupList.length; i++) {
-      for (let j = 0; j < productList.length; j++) { 
-        if (groupList[i].id ===  productList[j].id) { 
-          resultList.push(productList[j]);
-          delete productList[j];
+      for (let j = 0; j < products.length; j++) { 
+        if (groupList[i].id ===  products[j].id) { 
+          resultList.push(products[j]);
+          delete products[j];
         }
       }
     }
 
-    for (let i = 0; i < productList.length; i++) {
-      resultList.push(productList[i]);
+    for (let i = 0; i < products.length; i++) {
+      resultList.push(products[i]);
     }
 
-    return resultList.slice(0, top);
+    resultList = resultList.slice(0, top);
+
+    return resultList;
   }
 
   /** 카테고리별 상품을 반환하는 함수
@@ -220,14 +222,14 @@ class ProductService {
    * @returns 검색어 상품 Object List
    */
   static async getProductSearch({ search, page, perPage }) { 
-    const productList = await Product.findProductSearch({ search, page, perPage });
+    const resultList = await Product.findProductSearch({ search, page, perPage });
   
-    if (productList.len === 0) { 
+    if (resultList.len === 0) { 
       const errorMessage = "검색한 상품이 존재하지 않습니다";
       return { errorMessage };
     }
   
-    return productList;
+    return resultList;
   }
 
   /** 검색어 + 옵션별로 상품을 반환하는 함수
@@ -294,11 +296,11 @@ class ProductService {
 
       return { resultList, totalPage, len };
     } else if (option === "views") {
-      const productList = await Product.findProductSearchSortByViews({ search, page, perPage });
-      return productList;
+      const resultList = await Product.findProductSearchSortByViews({ search, page, perPage });
+      return resultList;
     } else if (option === "salePrice") {
-      const productList = await Product.findProductSearchSortByPrice({ search, page, perPage });
-      return productList;
+      const resultList = await Product.findProductSearchSortByPrice({ search, page, perPage });
+      return resultList;
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
@@ -372,8 +374,8 @@ class ProductService {
    * @returns 상품 Object
    */
   static async getUserProduct({ userId }) { 
-    const product = await Product.findUserProduct({ userId });
-    return product;
+    const resultList = await Product.findUserProduct({ userId });
+    return resultList;
   }   
 }     
 
