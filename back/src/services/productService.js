@@ -122,10 +122,10 @@ class ProductService {
     const groupList = await Group.findProductSortByGroups();
     const productList = await Product.findProductListNoPage();
     let resultList = [];
-    
+    console.log("groupList :", groupList)
     for (let i = 0; i < groupList.length; i++) {
       for (let j = 0; j < productList.length; j++) { 
-        if (groupList[i]._id ===  productList[j].id) { 
+        if (groupList[i].id ===  productList[j].id) { 
           resultList.push(productList[j]);
           delete productList[j];
         }
@@ -163,7 +163,7 @@ class ProductService {
 
       for (let i = 0; i < groupList.length; i++) {
         for (let j = 0; j < productList.productList.length; j++) { 
-          if (groupList[i]._id ===  productList.productList[j].id) { 
+          if (groupList[i].id ===  productList.productList[j].id) { 
             resultList.push(productList.productList[j]);
             delete productList.productList[j];
           }
@@ -187,7 +187,7 @@ class ProductService {
 
       for (let i = 0; i < reviewList.length; i++) {
         for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i]._id ===  productList.productList[j].id) { 
+          if (reviewList[i].id ===  productList.productList[j].id) { 
             resultList.push(productList.productList[j]);
             delete productList.productList[j];
           }
@@ -252,7 +252,7 @@ class ProductService {
 
       for (let i = 0; i < reviewListKey.length; i++) {
         for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i]._id ===  productList.productList[j].id) { 
+          if (reviewList[i].id ===  productList.productList[j].id) { 
             resultList.push(productList.productList[j]);
             delete productList.productList[j];
           }
@@ -276,7 +276,7 @@ class ProductService {
 
       for (let i = 0; i < reviewListKey.length; i++) {
         for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i]._id ===  productList.productList[j].id) { 
+          if (reviewList[i].id ===  productList.productList[j].id) { 
             resultList.push(productList.productList[j]);
             delete productList.productList[j];
           }
