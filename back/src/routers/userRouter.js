@@ -5,6 +5,7 @@ import { userService } from "../services/userService";
 import generateRandomPassword from "../utils/generate-random-password";
 import { User } from "../db";
 import bcrypt from "bcrypt";
+import { toggleService } from "../services/toggleService";
 
 const { userImageUpload } = require("../utils/s3");
 
@@ -425,6 +426,5 @@ userRouter.get(
     }
   }
 );
-
 
 export { userRouter };
