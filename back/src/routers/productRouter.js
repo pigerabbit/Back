@@ -358,17 +358,23 @@ productRouter.get(
       return res.status(400).send(body);
     }
 
-      // const body = {
-      //   success: true,
-      //   resultList,
-      // };
+      const body = {
+        success: true,
+        payload: resultList,
+      };
       
-      return res.status(200).send(resultList);
+      return res.status(200).send(body);
     } 
 
     // 카테고리 쿼리가 없다면 전체 상품 조회
-    const resultList = await ProductService.getresultList({ page, perPage });
-    return res.status(200).send(resultList);
+    const resultList = await ProductService.getProductList({ page, perPage });
+
+    const body = {
+      success: true,
+      payload: resultList,
+    }
+
+    return res.status(200).send(body);
   }
 );
 
@@ -431,10 +437,20 @@ productRouter.get(
           return res.status(400).send(body);
         }
 
-        return res.status(200).send(resultList);
+        const body = {
+          success: true,
+          payload: resultList,
+        }
+
+        return res.status(200).send(body);
       } else { // 아니라면 최신순 정렬
         const resultList = await ProductService.getProductSearch({ search, page, perPage });
-        return res.status(200).send(resultList);
+        const body = {
+          success: true,
+          payload: resultList,
+        }
+
+        return res.status(200).send(body);
       }
     } catch (err) {
       next(err);
