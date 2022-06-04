@@ -42,6 +42,11 @@ const PostSchema = new Schema(
       required: true,
       default: 0,
     },
+    reply: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     removed: {
       type: Boolean,
       required: true,

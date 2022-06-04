@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { login_required } from "../middlewares/login_required";
-import { userService } from "../services/userService";
+import { businessAuthService } from "../services/businessAuthservice";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
 const request = require('request');
@@ -32,7 +32,12 @@ businessAuthRouter.post(
     body("businessName")
       .exists()
       .isLength()
-      .withMessage("businessName을 입력해주세요.")
+      .withMessage("판매 상점 이름을 입력해주세요.")
+      .bail(),
+    body("businessLocation")
+      .exists()
+      .isLength()
+      .withMessage("사업장 주소를 입력해주세요.")
       .bail(),
     body("b_no")
       .exists()
@@ -64,6 +69,7 @@ businessAuthRouter.post(
     }
 
     const businessName = req.body.businessName;
+    const businessLocation = req.body.businessLocation;
     const b_no = req.body.b_no;
     const p_nm = req.body.p_nm;
     const start_dt = req.body.start_dt;
@@ -85,10 +91,11 @@ businessAuthRouter.post(
     request.post(options, async function (err, httpResponse, body) {
       if (body.data[0].valid === "01") {
         const toUpdate = {
+          ownerName: p_nm,
           businessName,
-          seller: true,
+          businessLocation,
         };
-        const newUser = await userService.setUser({ userId, toUpdate });
+        const newUser = await businessAuthService.setBusiness({ userId, toUpdate });
         
         if (newUser.errorMessage) { 
           const body = {

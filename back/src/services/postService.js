@@ -35,7 +35,7 @@ class PostService {
       const { userId, name } = await Product.findProduct({ id: receiver });
       authorizedUsers = [writer, userId];
       
-      // 문의가 달렸다면 상품 판매자에게 알림
+      // 문의글이 생겼다면 상품 판매자에게 알림
       await User.updateAlert({
         userId: userId,
         from: type,
@@ -47,7 +47,7 @@ class PostService {
       authorizedUsers = await Group.findParticipantsByGroupId({ groupId: receiver });
       const { groupName } = await Group.findByGroupId({ groupId: receiver });
 
-      // 공동 구매 댓글이 달렸다면 공동구매 참여자 전원에게 알림
+      // 공동 구매 댓글이 생겼다면 공동구매 참여자 전원에게 알림
       authorizedUsers.map(async (v) => await User.updateAlert({
         userId: v,
         from: type,
@@ -57,7 +57,7 @@ class PostService {
     } else if (type === "review") {
       authorizedUsers = [];
 
-      // 후기가 달렸다면 상품 판매자에게 알림
+      // 후기가 생겼다면 상품 판매자에게 알림
       const { userId, name } = await Product.findProduct({ id: receiver });
       await User.updateAlert({
         userId: userId,
@@ -79,13 +79,16 @@ class PostService {
       post = await Post.update({ postId: updateId, toUpdate });
 
       // 댓글이 추가되었다면 글 쓴 유저에게 알림
-      await User.updateAlert({
-        userId: post.writer,
-        from: type,
-        sendId: post.postId,
-        content: `'${post.title}' 글에 댓글이 생성되었습니다.`,
-      });
-
+      if (writer !== post.writer) {
+        const toUpdate = { reply: true };
+        await Post.update({ postId: updateId, toUpdate });
+        await User.updateAlert({
+          userId: post.writer,
+          from: type,
+          sendId: post.postId,
+          content: `'${post.title}' 글에 댓글이 생성되었습니다.`,
+        });
+      }
     } else { 
       const errorMessage = "존재하지 않는 type 입니다.";
       return { errorMessage };
@@ -110,20 +113,16 @@ class PostService {
    * @param {String} receiver - 글이 남겨지는 곳
    * @returns {Object} postList
    */
-  static async getPostList({ receiver }) {
+  static async getPostList({ receiver, type }) {
     const postList = await Post.findPostList({
-      receiver
+      receiver,
+      type,
     });
-
-    if (postList.length === 0) {
-      const errorMessage = "잘못된 receiver 입니다.";
-      return { errorMessage };
-    }
 
     return postList;
   }
 
-  /** 글 검색 함수
+  /** 글 한 개 검색 함수
    *
    * @param {String} postId - 글 id
    * @returns {Object} post
@@ -153,6 +152,11 @@ class PostService {
         status: 403,
         errorMessage,
       };
+    }
+
+    if (post.type === "review" || post.type === "cs") { 
+      const commentList = await Post.findPostList({ receiver: postId });
+      return { post, commentList };
     }
 
     return post;
@@ -199,6 +203,12 @@ class PostService {
     });
 
     const updatedPost = await Post.update({ postId, toUpdate });
+
+    if (post.type === "review" || post.type === "cs") { 
+      const commentList = await Post.findPostList({ receiver: postId });
+      return { updatedPost, commentList };
+    }
+
     return updatedPost;
   }
 
@@ -287,13 +297,9 @@ class PostService {
       };
     }
 
-    const postList = await Post.findPostListByWriter({ writer, option });
+    let postList;
 
-    if (postList.length === 0) { 
-      const payload = "작성한 후기 / 문의가 없습니다.";
-      return { payload };
-    }
-
+    postList = await Post.findPostListByWriter({ writer, option });
     return postList;
   }
 

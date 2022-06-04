@@ -53,7 +53,14 @@ export class User {
   }
 
   static async findByBusinessName({ businessName }) {
-    const businessNameList = await UserModel.find({ businessName });
+    const businessNameList = await UserModel.find({
+      business: {
+        $elemMatch: {
+          "businessName": businessName,
+        }
+      }
+    });
+
     return businessNameList;
   }
 
@@ -61,13 +68,20 @@ export class User {
    * 
    * @param {String} userId - 유저 id 
    * @returns alertList
+   * db.articles.find( { $and : [ { title : A }, { writer : "Alpha" } ] } )
    */
   static async getAlertList({ userId }) {
     const alertList = await UserModel.find(
-      { deleted: false },
-      { userId },
+      {
+        id: userId,
+        alertList: {
+          $elemMatch: { 
+            removed: false,
+          }
+        }
+      },
+      { alertList: 1, _id: 0 },
     )
-      .select('alertList')
       .lean();
     
     return alertList;

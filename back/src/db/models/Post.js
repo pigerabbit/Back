@@ -14,11 +14,12 @@ class Post {
   /** 글 남겨진 곳 검색 함수
    *
    * @param {String} receiver - 글이 남겨지는 곳
+   * @param {String} type - review / cs
    * @returns {Object} postList
    */
-  static async findPostList({ receiver }) {
+  static async findPostList({ receiver, type }) {
     const postList = await PostModel.find(
-      { receiver, removed: false },
+      { receiver, type, removed: false },
       { _id: 0, __v: 0, updatedAt: 0 },
     )
       .sort({ createdAt: -1 })
@@ -41,18 +42,7 @@ class Post {
     
     return post;
   }
-
-  /** 문의 답변 완료 함수 
-   * 글 id를 receiver로 사용하는 곳이 있다면 문의 답변이 존재
-   * 
-   * @param {String} postId - 글 id 
-   * @returns 
-   */
-  static async findPostReply({ postId }) { 
-    const reply = await PostModel.find({ receiver: postId }).lean();
-    return reply;
-  }
-
+  
   /** 글 수정 함수
    * 
    * @param {String} postId - 글 id 
