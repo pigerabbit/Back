@@ -71,6 +71,31 @@ toggleRouter.put(
   }
 );
 
+toggleRouter.put(
+  "/toggle/searchWord/:searchWord",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+      const searchWord = req.params.searchWord;
+
+      const toUpdate = { searchWord };
+      const updatedSearchWordInfo = await toggleService.setToggleSearchWord({
+        userId,
+        toUpdate,
+      });
+
+      if (updatedSearchWordInfo.errorMessage) {
+        throw new Error(updatedSearchWordInfo.errorMessage);
+      }
+
+      res.status(200).json(updatedSearchWordInfo);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 toggleRouter.get(
   "/toggle/groups",
   login_required,
@@ -99,6 +124,26 @@ toggleRouter.get(
       const userId = req.currentUserId;
 
       const toggleInfo = await toggleService.getToggleProduct({ userId });
+
+      if (toggleInfo.errorMessage) {
+        throw new Error(toggleInfo.errorMessage);
+      }
+
+      res.status(200).json(toggleInfo);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+toggleRouter.get(
+  "/toggle/searchWords",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+
+      const toggleInfo = await toggleService.getToggleSearchWords({ userId });
 
       if (toggleInfo.errorMessage) {
         throw new Error(toggleInfo.errorMessage);
