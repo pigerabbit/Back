@@ -129,7 +129,7 @@ class toggleService {
   }
 
   static async getToggleGroup({ userId }) {
-    const toggleInfo = await Toggle.findByUserId({ userId });
+    const toggleInfo = await Toggle.findByUserIdWithPopulate({ userId });
     if (!toggleInfo) {
       const errorMessage = "userId에 대한 toggleInfo가 존재하지 않습니다.";
       return { errorMessage };

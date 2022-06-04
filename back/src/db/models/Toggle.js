@@ -18,6 +18,11 @@ class Toggle {
     const viewedProducts = list.viewedProducts.reverse();
     return viewedProducts;
   }
+
+  static async findByUserIdWithPopulate({ userId }) {
+    const toggleInfo = await ToggleModel.findOne({ userId }).populate("groups");
+    return toggleInfo;
+  }
 }
 
 export { Toggle };
