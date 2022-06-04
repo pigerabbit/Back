@@ -250,7 +250,7 @@ class ProductService {
       const productList = await Product.findProductSearchSortByGroups({ search, page, perPage });
       const resultList = [];
 
-      for (let i = 0; i < reviewListKey.length; i++) {
+      for (let i = 0; i < reviewList.length; i++) {
         for (let j = 0; j < productList.productList.length; j++) { 
           if (reviewList[i].id ===  productList.productList[j].id) { 
             resultList.push(productList.productList[j]);
@@ -274,7 +274,7 @@ class ProductService {
       const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
       const resultList = [];
 
-      for (let i = 0; i < reviewListKey.length; i++) {
+      for (let i = 0; i < reviewList.length; i++) {
         for (let j = 0; j < productList.productList.length; j++) { 
           if (reviewList[i].id ===  productList.productList[j].id) { 
             resultList.push(productList.productList[j]);
