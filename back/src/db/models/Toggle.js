@@ -19,8 +19,15 @@ class Toggle {
     return viewedProducts;
   }
 
-  static async findByUserIdWithPopulate({ userId }) {
+  static async findByUserIdWithPopulateGroup({ userId }) {
     const toggleInfo = await ToggleModel.findOne({ userId }).populate("groups");
+    return toggleInfo;
+  }
+
+  static async findByUserIdWithPopulateProduct({ userId }) {
+    const toggleInfo = await ToggleModel.findOne({ userId }).populate(
+      "products"
+    );
     return toggleInfo;
   }
 }

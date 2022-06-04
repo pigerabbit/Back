@@ -56,11 +56,11 @@ class toggleService {
 
     let productsInfo = toggleInfo.products;
     let newValue = {};
-    const index = productsInfo.findIndex((f) => f === toUpdate.productId);
+    const index = productsInfo.findIndex((f) => f === toUpdate.objectId);
     if (index > -1) {
       productsInfo.splice(index, 1);
     } else {
-      productsInfo.push(toUpdate.productId);
+      productsInfo.push(toUpdate.objectId);
     }
     newValue = productsInfo;
     const updatedToggle = await ToggleModel.findOneAndUpdate(
@@ -129,7 +129,7 @@ class toggleService {
   }
 
   static async getToggleGroup({ userId }) {
-    const toggleInfo = await Toggle.findByUserIdWithPopulate({ userId });
+    const toggleInfo = await Toggle.findByUserIdWithPopulateGroup({ userId });
     if (!toggleInfo) {
       const errorMessage = "userId에 대한 toggleInfo가 존재하지 않습니다.";
       return { errorMessage };
@@ -141,7 +141,7 @@ class toggleService {
   }
 
   static async getToggleProduct({ userId }) {
-    const toggleInfo = await Toggle.findByUserId({ userId });
+    const toggleInfo = await Toggle.findByUserIdWithPopulateProduct({ userId });
     if (!toggleInfo) {
       const errorMessage = "userId에 대한 toggleInfo가 존재하지 않습니다.";
       return { errorMessage };

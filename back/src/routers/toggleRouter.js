@@ -47,14 +47,14 @@ toggleRouter.put(
 );
 
 toggleRouter.put(
-  "/toggle/product/:productId",
+  "/toggle/product/:objectId",
   login_required,
   async function (req, res, next) {
     try {
       const userId = req.currentUserId;
-      const productId = req.params.productId;
+      const objectId = req.params.objectId;
 
-      const toUpdate = { productId };
+      const toUpdate = { objectId };
       const updatedProductInfo = await toggleService.setToggleProduct({
         userId,
         toUpdate,
