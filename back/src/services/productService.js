@@ -164,17 +164,17 @@ class ProductService {
       const resultList = [];
 
       for (let i = 0; i < groupList.length; i++) {
-        for (let j = 0; j < productList.productList.length; j++) { 
-          if (groupList[i].id ===  productList.productList[j].id) { 
-            resultList.push(productList.productList[j]);
-            delete productList.productList[j];
+        for (let j = 0; j < productList.resultList.length; j++) { 
+          if (groupList[i].id ===  productList.resultList[j].id) { 
+            resultList.push(productList.resultList[j]);
+            delete productList.resultList[j];
           }
         }
       }
 
-      for (let i = 0; i < productList.productList.length; i++) {
-        if (productList.productList[i] !== undefined) {
-          resultList.push(productList.productList[i]);
+      for (let i = 0; i < productList.resultList.length; i++) {
+        if (productList.resultList[i] !== undefined) {
+          resultList.push(productList.resultList[i]);
         }
       }
 
@@ -188,17 +188,17 @@ class ProductService {
       const resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
-        for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i].id ===  productList.productList[j].id) { 
-            resultList.push(productList.productList[j]);
-            delete productList.productList[j];
+        for (let j = 0; j < productList.resultList.length; j++) { 
+          if (reviewList[i].id ===  productList.resultList[j].id) { 
+            resultList.push(productList.resultList[j]);
+            delete productList.resultList[j];
           }
         }
       }
 
-      for (let i = 0; i < productList.productList.length; i++) {
-        if (productList.productList[i] !== undefined) {
-          resultList.push(productList.productList[i]);
+      for (let i = 0; i < productList.resultList.length; i++) {
+        if (productList.resultList[i] !== undefined) {
+          resultList.push(productList.resultList[i]);
         }
       }
       const totalPage = productList.totalPage;
@@ -253,17 +253,17 @@ class ProductService {
       const resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
-        for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i].id ===  productList.productList[j].id) { 
-            resultList.push(productList.productList[j]);
-            delete productList.productList[j];
+        for (let j = 0; j < productList.resultList.length; j++) { 
+          if (reviewList[i].id ===  productList.resultList[j].id) { 
+            resultList.push(productList.resultList[j]);
+            delete productList.resultList[j];
           }
         }
       }
 
-      for (let i = 0; i < productList.productList.length; i++) {
-        if (productList.productList[i] !== undefined) {
-          resultList.push(productList.productList[i]);
+      for (let i = 0; i < productList.resultList.length; i++) {
+        if (productList.resultList[i] !== undefined) {
+          resultList.push(productList.resultList[i]);
         }
       }
 
@@ -277,17 +277,17 @@ class ProductService {
       const resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
-        for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i].id ===  productList.productList[j].id) { 
-            resultList.push(productList.productList[j]);
-            delete productList.productList[j];
+        for (let j = 0; j < productList.resultList.length; j++) { 
+          if (reviewList[i].id ===  productList.resultList[j].id) { 
+            resultList.push(productList.resultList[j]);
+            delete productList.resultList[j];
           }
         }
       }
 
-      for (let i = 0; i < productList.productList.length; i++) {
-        if (productList.productList[i] !== undefined) {
-          resultList.push(productList.productList[i]);
+      for (let i = 0; i < productList.resultList.length; i++) {
+        if (productList.resultList[i] !== undefined) {
+          resultList.push(productList.resultList[i]);
         }
       }
 
