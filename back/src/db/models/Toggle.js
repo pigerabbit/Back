@@ -1,4 +1,3 @@
-import { ProductModel } from "../schemas/product.js";
 import { ToggleModel } from "../schemas/toggle.js";
 
 class Toggle {
@@ -13,10 +12,11 @@ class Toggle {
   }
 
   static async findVeiwedProductsInfoByUserId({ userId }) {
-    const toggleInfo = await ToggleModel.findOne({
+    const list = await ToggleModel.findOne({
       userId,
     }).populate("viewedProducts");
-    return toggleInfo;
+    const viewedProducts = list.viewedProducts.reverse();
+    return viewedProducts;
   }
 }
 
