@@ -1,4 +1,5 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Mongoose } from "mongoose";
+import { Product } from "../models/Product";
 
 const ParticipantSchema = new Schema({
   userId: {
@@ -25,6 +26,10 @@ const ParticipantSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  review: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const GroupSchema = new Schema(
@@ -43,6 +48,11 @@ const GroupSchema = new Schema(
     },
     productId: {
       type: String,
+      required: true,
+    },
+    productInfo: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
       required: true,
     },
     remainedPersonnel: {
