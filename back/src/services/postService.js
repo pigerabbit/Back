@@ -155,7 +155,7 @@ class PostService {
     }
 
     if (post.type === "review" || post.type === "cs") { 
-      const commentList = await Post.findPostList({ receiver: postId });
+      const commentList = await Post.findCommentList({ receiver: postId });
       return { post, commentList };
     }
 
@@ -205,8 +205,8 @@ class PostService {
     const updatedPost = await Post.update({ postId, toUpdate });
 
     if (post.type === "review" || post.type === "cs") { 
-      const commentList = await Post.findPostList({ receiver: postId });
-      return { updatedPost, commentList };
+      const commentList = await Post.findCommentList({ receiver: postId });
+      return { post, commentList };
     }
 
     return updatedPost;

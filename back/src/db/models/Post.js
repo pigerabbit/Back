@@ -28,6 +28,23 @@ class Post {
     return postList;
   }
 
+  /** 글 남겨진 곳 검색 함수
+   *
+   * @param {String} receiver - 글이 남겨지는 곳
+   * @param {String} type - review / cs
+   * @returns {Object} postList
+   */
+  static async findCommentList({ receiver }) {
+    const postList = await PostModel.find(
+      { receiver, removed: false },
+      { _id: 0, __v: 0, updatedAt: 0 },
+    )
+      .sort({ createdAt: -1 })
+      .lean();
+    
+    return postList;
+  } 
+  
   /** 글이 존재하는지 확인하는 함수
    * 
    * @param {String} postId - 글 id  

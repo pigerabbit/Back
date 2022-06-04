@@ -72,6 +72,34 @@ class toggleService {
     return updatedToggle;
   }
 
+  static async setToggleSearchWord({ userId, toUpdate }) {
+    let toggleInfo = await Toggle.findByUserId({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "정보가 없습니다. user_id 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let searchWordsInfo = toggleInfo.searchWords;
+    let newValue = {};
+    const index = searchWordsInfo.findIndex((f) => f === toUpdate.searchWord);
+    if (index > -1) {
+      searchWordsInfo.splice(index, 1);
+      searchWordsInfo.push(toUpdate.searchWord);
+    } else {
+      searchWordsInfo.push(toUpdate.searchWord);
+    }
+    newValue = searchWordsInfo;
+    const updatedToggle = await ToggleModel.findOneAndUpdate(
+      { userId },
+      { $set: { searchWords: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedToggle;
+  }
+
   static async getToggleGroup({ userId }) {
     const toggleInfo = await Toggle.findByUserId({ userId });
     if (!toggleInfo) {
@@ -94,6 +122,18 @@ class toggleService {
     const toggleProducts = toggleInfo.products;
 
     return toggleProducts;
+  }
+
+  static async getToggleSearchWords({ userId }) {
+    const toggleInfo = await Toggle.findByUserId({ userId });
+    if (!toggleInfo) {
+      const errorMessage = "userId에 대한 toggleInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    const toggleSearchWords = toggleInfo.searchWords;
+
+    return toggleSearchWords;
   }
 }
 
