@@ -18,8 +18,7 @@ class Product {
    */
   static async findProduct({ id }) { 
     const product = await ProductModel.findOne({ id })
-      .populate('userInfo');
-    console.log("상품 :", product);
+      .populate('userInfo', 'business');
     return product;
   }
 
