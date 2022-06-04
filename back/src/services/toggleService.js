@@ -122,6 +122,18 @@ class toggleService {
 
     return toggleProducts;
   }
+
+  static async getToggleSearchWords({ userId }) {
+    const toggleInfo = await Toggle.findByUserId({ userId });
+    if (!toggleInfo) {
+      const errorMessage = "userId에 대한 toggleInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    const toggleSearchWords = toggleInfo.searchWords;
+
+    return toggleSearchWords;
+  }
 }
 
 export { toggleService };

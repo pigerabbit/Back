@@ -136,4 +136,24 @@ toggleRouter.get(
   }
 );
 
+toggleRouter.get(
+  "/toggle/searchWords",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+
+      const toggleInfo = await toggleService.getToggleSearchWords({ userId });
+
+      if (toggleInfo.errorMessage) {
+        throw new Error(toggleInfo.errorMessage);
+      }
+
+      res.status(200).json(toggleInfo);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export { toggleRouter };
