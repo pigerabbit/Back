@@ -29,11 +29,11 @@ class toggleService {
 
     let groupsInfo = toggleInfo.groups;
     let newValue = {};
-    const index = groupsInfo.findIndex((f) => f === toUpdate.groupId);
+    const index = groupsInfo.findIndex((f) => f === toUpdate.objectId);
     if (index > -1) {
       groupsInfo.splice(index, 1);
     } else {
-      groupsInfo.push(toUpdate.groupId);
+      groupsInfo.push(toUpdate.objectId);
     }
     newValue = groupsInfo;
     const updatedToggle = await ToggleModel.findOneAndUpdate(

@@ -22,14 +22,14 @@ toggleRouter.post("/toggles", async function (req, res, next) {
 });
 
 toggleRouter.put(
-  "/toggle/group/:groupId",
+  "/toggle/group/:objectId",
   login_required,
   async function (req, res, next) {
     try {
       const userId = req.currentUserId;
-      const groupId = req.params.groupId;
+      const objectId = req.params.objectId;
 
-      const toUpdate = { groupId };
+      const toUpdate = { objectId };
       const updatedGroupInfo = await toggleService.setToggleGroup({
         userId,
         toUpdate,

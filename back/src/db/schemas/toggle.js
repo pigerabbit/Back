@@ -9,12 +9,20 @@ const ToggleSchema = new Schema({
     type: String,
     required: true,
   },
-  groups: {
-    type: [String],
-  },
-  products: {
-    type: [String],
-  },
+  groups: [
+    {
+      type: [String],
+      ref: "Group",
+      required: false,
+    },
+  ],
+  products: [
+    {
+      type: [String],
+      ref: "Product",
+      required: false,
+    },
+  ],
   viewedProducts: [
     {
       type: Schema.Types.ObjectId,
