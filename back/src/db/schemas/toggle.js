@@ -15,6 +15,9 @@ const ToggleSchema = new Schema({
   products: {
     type: [String],
   },
+  viewedProducts: {
+    type: [String],
+  },
   searchWords: {
     type: [String],
   },

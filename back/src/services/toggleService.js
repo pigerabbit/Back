@@ -100,6 +100,34 @@ class toggleService {
     return updatedToggle;
   }
 
+  static async setToggleViewedProducts({ userId, toUpdate }) {
+    let toggleInfo = await Toggle.findByUserId({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "정보가 없습니다. user_id 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let viewedProductsInfo = toggleInfo.viewedProducts;
+    let newValue = {};
+    const index = viewedProductsInfo.findIndex((f) => f === toUpdate.objectId);
+    if (index > -1) {
+      viewedProductsInfo.splice(index, 1);
+      viewedProductsInfo.push(toUpdate.objectId);
+    } else {
+      viewedProductsInfo.push(toUpdate.objectId);
+    }
+    newValue = viewedProductsInfo;
+    const updatedToggle = await ToggleModel.findOneAndUpdate(
+      { userId },
+      { $set: { viewedProducts: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedToggle;
+  }
+
   static async getToggleGroup({ userId }) {
     const toggleInfo = await Toggle.findByUserId({ userId });
     if (!toggleInfo) {

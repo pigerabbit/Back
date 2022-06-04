@@ -156,4 +156,30 @@ toggleRouter.get(
   }
 );
 
+toggleRouter.put(
+  "/toggle/viewedProducts/:objectId",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+      const objectId = req.params.objectId;
+
+      const toUpdate = { objectId };
+      const updatedViewedProductsInfo =
+        await toggleService.setToggleViewedProducts({
+          userId,
+          toUpdate,
+        });
+
+      if (updatedViewedProductsInfo.errorMessage) {
+        throw new Error(updatedViewedProductsInfo.errorMessage);
+      }
+
+      res.status(200).json(updatedViewedProductsInfo);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export { toggleRouter };
