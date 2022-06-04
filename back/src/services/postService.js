@@ -297,9 +297,18 @@ class PostService {
       };
     }
 
-    let postList;
+    let postList = await Post.findPostListByWriter({ writer, option });  
 
-    postList = await Post.findPostListByWriter({ writer, option });
+    if (option === "cs") {
+      let posts = postList;
+      postList = [];
+      postList = await Promise.all(posts.map(async (v) => {
+        let comment = await Post.findCommentList({ receiver: v.postId });
+        return { post: v, comment: comment };
+      }));
+      return { postList };
+    }
+    
     return postList;
   }
 
