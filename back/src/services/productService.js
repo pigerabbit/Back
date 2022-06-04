@@ -375,7 +375,7 @@ class ProductService {
     const product = await Product.findUserProduct({ userId });
     return product;
   }
-}
+} 
 
 
-export { ProductService };
+export { ProductService }; 
