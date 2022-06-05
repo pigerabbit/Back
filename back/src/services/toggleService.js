@@ -111,8 +111,9 @@ class toggleService {
 
     let viewedProductsInfo = toggleInfo.viewedProducts;
     let newValue = {};
-    const index = viewedProductsInfo.findIndex((f) => f === toUpdate.objectId);
+    const index = viewedProductsInfo.findIndex((f) => f == toUpdate.objectId);
     if (index > -1) {
+      // [사과, 배, 감] => (1) [사과, 배, 감, 딸기] (2) [배, 감, 사과]
       viewedProductsInfo.splice(index, 1);
       viewedProductsInfo.push(toUpdate.objectId);
     } else {
