@@ -120,23 +120,25 @@ class ProductService {
   static async getProductTopList() { 
     const top = 10;
     const groupList = await Group.findProductSortByGroups();
-    const productList = await Product.findProductListNoPage();
+    const products = await Product.findProductListNoPage();
     let resultList = [];
     console.log("groupList :", groupList)
     for (let i = 0; i < groupList.length; i++) {
-      for (let j = 0; j < productList.length; j++) { 
-        if (groupList[i].id ===  productList[j].id) { 
-          resultList.push(productList[j]);
-          delete productList[j];
+      for (let j = 0; j < products.length; j++) { 
+        if (groupList[i].id ===  products[j].id) { 
+          resultList.push(products[j]);
+          delete products[j];
         }
       }
     }
 
-    for (let i = 0; i < productList.length; i++) {
-      resultList.push(productList[i]);
+    for (let i = 0; i < products.length; i++) {
+      resultList.push(products[i]);
     }
 
-    return resultList.slice(0, top);
+    resultList = resultList.slice(0, top);
+
+    return resultList;
   }
 
   /** 카테고리별 상품을 반환하는 함수
@@ -162,17 +164,17 @@ class ProductService {
       const resultList = [];
 
       for (let i = 0; i < groupList.length; i++) {
-        for (let j = 0; j < productList.productList.length; j++) { 
-          if (groupList[i].id ===  productList.productList[j].id) { 
-            resultList.push(productList.productList[j]);
-            delete productList.productList[j];
+        for (let j = 0; j < productList.resultList.length; j++) { 
+          if (groupList[i].id ===  productList.resultList[j].id) { 
+            resultList.push(productList.resultList[j]);
+            delete productList.resultList[j];
           }
         }
       }
 
-      for (let i = 0; i < productList.productList.length; i++) {
-        if (productList.productList[i] !== undefined) {
-          resultList.push(productList.productList[i]);
+      for (let i = 0; i < productList.resultList.length; i++) {
+        if (productList.resultList[i] !== undefined) {
+          resultList.push(productList.resultList[i]);
         }
       }
 
@@ -186,17 +188,17 @@ class ProductService {
       const resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
-        for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i].id ===  productList.productList[j].id) { 
-            resultList.push(productList.productList[j]);
-            delete productList.productList[j];
+        for (let j = 0; j < productList.resultList.length; j++) { 
+          if (reviewList[i].id ===  productList.resultList[j].id) { 
+            resultList.push(productList.resultList[j]);
+            delete productList.resultList[j];
           }
         }
       }
 
-      for (let i = 0; i < productList.productList.length; i++) {
-        if (productList.productList[i] !== undefined) {
-          resultList.push(productList.productList[i]);
+      for (let i = 0; i < productList.resultList.length; i++) {
+        if (productList.resultList[i] !== undefined) {
+          resultList.push(productList.resultList[i]);
         }
       }
       const totalPage = productList.totalPage;
@@ -220,14 +222,14 @@ class ProductService {
    * @returns 검색어 상품 Object List
    */
   static async getProductSearch({ search, page, perPage }) { 
-    const productList = await Product.findProductSearch({ search, page, perPage });
+    const resultList = await Product.findProductSearch({ search, page, perPage });
   
-    if (productList.len === 0) { 
+    if (resultList.len === 0) { 
       const errorMessage = "검색한 상품이 존재하지 않습니다";
       return { errorMessage };
     }
   
-    return productList;
+    return resultList;
   }
 
   /** 검색어 + 옵션별로 상품을 반환하는 함수
@@ -250,18 +252,18 @@ class ProductService {
       const productList = await Product.findProductSearchSortByGroups({ search, page, perPage });
       const resultList = [];
 
-      for (let i = 0; i < reviewListKey.length; i++) {
-        for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i].id ===  productList.productList[j].id) { 
-            resultList.push(productList.productList[j]);
-            delete productList.productList[j];
+      for (let i = 0; i < reviewList.length; i++) {
+        for (let j = 0; j < productList.resultList.length; j++) { 
+          if (reviewList[i].id ===  productList.resultList[j].id) { 
+            resultList.push(productList.resultList[j]);
+            delete productList.resultList[j];
           }
         }
       }
 
-      for (let i = 0; i < productList.productList.length; i++) {
-        if (productList.productList[i] !== undefined) {
-          resultList.push(productList.productList[i]);
+      for (let i = 0; i < productList.resultList.length; i++) {
+        if (productList.resultList[i] !== undefined) {
+          resultList.push(productList.resultList[i]);
         }
       }
 
@@ -274,18 +276,18 @@ class ProductService {
       const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
       const resultList = [];
 
-      for (let i = 0; i < reviewListKey.length; i++) {
-        for (let j = 0; j < productList.productList.length; j++) { 
-          if (reviewList[i].id ===  productList.productList[j].id) { 
-            resultList.push(productList.productList[j]);
-            delete productList.productList[j];
+      for (let i = 0; i < reviewList.length; i++) {
+        for (let j = 0; j < productList.resultList.length; j++) { 
+          if (reviewList[i].id ===  productList.resultList[j].id) { 
+            resultList.push(productList.resultList[j]);
+            delete productList.resultList[j];
           }
         }
       }
 
-      for (let i = 0; i < productList.productList.length; i++) {
-        if (productList.productList[i] !== undefined) {
-          resultList.push(productList.productList[i]);
+      for (let i = 0; i < productList.resultList.length; i++) {
+        if (productList.resultList[i] !== undefined) {
+          resultList.push(productList.resultList[i]);
         }
       }
 
@@ -294,11 +296,11 @@ class ProductService {
 
       return { resultList, totalPage, len };
     } else if (option === "views") {
-      const productList = await Product.findProductSearchSortByViews({ search, page, perPage });
-      return productList;
+      const resultList = await Product.findProductSearchSortByViews({ search, page, perPage });
+      return resultList;
     } else if (option === "salePrice") {
-      const productList = await Product.findProductSearchSortByPrice({ search, page, perPage });
-      return productList;
+      const resultList = await Product.findProductSearchSortByPrice({ search, page, perPage });
+      return resultList;
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
@@ -318,6 +320,11 @@ class ProductService {
       return { errorMessage };
     }
 
+    if (product.removed) {
+      const errorMessage = "삭제된 상품입니다.";
+      return { errorMessage };
+    }
+
     const toUpdate = {
       views: product.views + 1,
     };
@@ -334,17 +341,21 @@ class ProductService {
    * @param {Strings} id - 상품 id 
    * @returns 상품 Object
    */
-  static async deleteProduct({ userId, id }) { 
+  static async deleteProduct({ userId, id }) {
     const product = await Product.findProduct({ id });
 
-    if (product.userId !== userId) { 
+    if (product.userId !== userId) {
       const errorMessage = "다른 유저의 상품을 삭제할 수 없습니다.";
       return { errorMessage };
     }
     
-    await Product.deleteProduct({ id });
+    const toUpdate = {
+      removed: true,
+    };
 
-    //! 공동 구매 참여자로 변경하기
+    await Product.update({ id, toUpdate });
+
+    // 공동구매 참여자에게 상품이 삭제되었다는 알림 보내주기
     const participantsList = await Group.findParticipantsByProductId({ productId: product.id });
     console.log("삭제 :", participantsList);
     console.log("type :", typeof(participantsList));
@@ -372,8 +383,8 @@ class ProductService {
    * @returns 상품 Object
    */
   static async getUserProduct({ userId }) { 
-    const product = await Product.findUserProduct({ userId });
-    return product;
+    const resultList = await Product.findUserProduct({ userId });
+    return resultList;
   }   
 }     
 

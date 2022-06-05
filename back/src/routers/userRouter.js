@@ -193,14 +193,20 @@ userRouter.put("/users/:id", login_required, async function (req, res, next) {
     //name,desciption,weight,height,gender만 변경가능하고 비밀번호는 다른 라우터를 사용
     const name = req.body.name ?? null;
     const address = req.body.address ?? null;
-    const businessName = req.body.businessName ?? null;
     const location = req.body.location ?? null;
     const distance = req.body.distance ?? null;
+    const businessName = req.body.businessName ?? null;
+    const businessLocation = req.body.businessLocation ?? null;
 
-    const toUpdate = { name, address, businessName, location, distance };
+    const toUpdate = { name, address, location, distance };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
-    const updatedUser = await userService.setUser({ userId, toUpdate });
+    const updatedUser = await userService.setUser({
+      userId,
+      toUpdate,
+      businessName,
+      businessLocation,
+    });
 
     if (updatedUser.errorMessage) {
       throw new Error(updatedUser.errorMessage);

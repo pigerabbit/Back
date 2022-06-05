@@ -121,7 +121,12 @@ class userService {
     return resultUser;
   }
 
-  static async setUser({ userId, toUpdate }) {
+  static async setUser({
+    userId,
+    toUpdate,
+    businessName,
+    businessLocation,
+  }) {
     // 우선 해당 id 의 유저가 db에 존재하는지 여부 확인
     let user = await User.findById({ userId });
 
@@ -141,32 +146,32 @@ class userService {
       }
     });
 
-    let business = {};
-    if (
-      (toUpdate.businessName && toUpdate.businessLocation) ||
-      toUpdate.businessName
-    ) {
-      const businessNameList = await User.findByBusinessName({
-        businessName: toUpdate.businessName,
-      });
-
-      if (businessNameList.length !== 0) {
-        const errorMessage =
-          "이미 존재하는 상호명입니다. 다른 상호명을 입력해주십시오.";
-        return { errorMessage };
+    if (businessName && businessLocation) {
+      const business = {
+        businessName,
+        businessLocation,
+        ownerName: user.business[0].ownerName,
       }
+      const updateBusiness = { business }
+      const updatedBusiness = await User.updateAll({ userId, setter: updateBusiness })
 
-      business = {
-        businessName: toUpdate.businessName,
-        businessLocation: toUpdate.businessLocation,
+    } else if (businessName) {
+      const business = {
+        businessName,
+        businessLocation: user.business[0].businessLocation, 
+        ownerName: user.business[0].ownerName,
       };
-    } else {
-      business = {
-        businessLocation: toUpdate.businessLocation,
-      };
+      const updateBusiness = { business }
+      const updatedBusiness = await User.updateAll({ userId, setter: updateBusiness })
+
+    } else if (businessLocation) {
+      const business = {
+        businessName: user.business[0].businessName,
+        businessLocation,
+        ownerName: user.business[0].ownerName,
+      }
+      const updatedBusiness = await User.updateAll({ userId, setter: business })
     }
-
-    toUpdate["business"] = business;
 
     const updatedUser = await User.updateAll({ userId, setter: toUpdate });
     const resultUser = getRequiredInfoFromData(updatedUser);
