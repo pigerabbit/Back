@@ -68,7 +68,8 @@ class ProductService {
       shippingInfo,
     };
 
-    const product = await Product.create({ newProduct });
+    let product = await Product.create({ newProduct });
+    product = await Product.findProduct({ id });
     const resultProduct = getRequiredInfoFromProductData(product);
 
     return { resultProduct };
