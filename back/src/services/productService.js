@@ -320,6 +320,11 @@ class ProductService {
       return { errorMessage };
     }
 
+    if (product.removed) {
+      const errorMessage = "삭제된 상품입니다.";
+      return { errorMessage };
+    }
+
     const toUpdate = {
       views: product.views + 1,
     };
@@ -336,17 +341,21 @@ class ProductService {
    * @param {Strings} id - 상품 id 
    * @returns 상품 Object
    */
-  static async deleteProduct({ userId, id }) { 
+  static async deleteProduct({ userId, id }) {
     const product = await Product.findProduct({ id });
 
-    if (product.userId !== userId) { 
+    if (product.userId !== userId) {
       const errorMessage = "다른 유저의 상품을 삭제할 수 없습니다.";
       return { errorMessage };
     }
     
-    await Product.deleteProduct({ id });
+    const toUpdate = {
+      removed: true,
+    };
 
-    //! 공동 구매 참여자로 변경하기
+    await Product.update({ id, toUpdate });
+
+    // 공동구매 참여자에게 상품이 삭제되었다는 알림 보내주기
     const participantsList = await Group.findParticipantsByProductId({ productId: product.id });
     console.log("삭제 :", participantsList);
     console.log("type :", typeof(participantsList));
