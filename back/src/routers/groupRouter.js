@@ -368,7 +368,10 @@ groupRouter.get(
   login_required,
   async function (req, res, next) {
     try {
-      const groupList = await groupService.getSortedGroupsByRemainedTimeInfo();
+      const userId = req.currentUserId;
+      const groupList = await groupService.getSortedGroupsByRemainedTimeInfo(
+        userId
+      );
 
       const body = {
         success: true,
@@ -388,8 +391,9 @@ groupRouter.get(
   login_required,
   async function (req, res, next) {
     try {
+      const userId = req.currentUserId;
       const groupList =
-        await groupService.getSortedGroupsByRemainedPersonnelInfo();
+        await groupService.getSortedGroupsByRemainedPersonnelInfo(userId);
       console.log("groupList:", groupList);
       const body = {
         success: true,

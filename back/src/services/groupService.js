@@ -216,10 +216,11 @@ export class groupService {
         "해당 그룹은 생성 내역이 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-
+    console.log("group:", group);
     const productId = group.productId;
 
     const product = await Product.findProduct({ id: productId });
+    console.log("product:", product);
 
     const participants = group.participants;
     const numberOfParticipants = participants.length;
@@ -236,13 +237,22 @@ export class groupService {
   }
 
   static async getListbyBoolean({ userId, boolean }) {
-    const list = await Group.findAllbyBoolean({ userId, boolean });
+    const groups = await Group.findAllbyBoolean({ userId, boolean });
 
-    if (!list) {
+    if (!groups) {
       const errorMessage = "아이디를 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-    return list;
+
+    const toggleInfo = await ToggleModel.findOne({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    return withToggleInfo(toggleInfo.groups, groups);
   }
 
   static async addParticipants({ userId, groupId, quantity }) {
@@ -387,13 +397,32 @@ export class groupService {
     return checkState;
   }
 
-  static async getSortedGroupsByRemainedTimeInfo() {
+  static async getSortedGroupsByRemainedTimeInfo(userId) {
     const groups = await Group.findSortedGroupsByRemainedTimeInfo();
-    return groups;
+
+    const toggleInfo = await ToggleModel.findOne({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    return withToggleInfo(toggleInfo.groups, groups);
   }
 
-  static async getSortedGroupsByRemainedPersonnelInfo() {
+  static async getSortedGroupsByRemainedPersonnelInfo(userId) {
     const groups = await Group.findSortedGroupsByRemainedPersonnelInfo();
+
+    const toggleInfo = await ToggleModel.findOne({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    return withToggleInfo(toggleInfo.groups, groups);
 
     return groups;
   }

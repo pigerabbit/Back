@@ -43,7 +43,8 @@ class Group {
       ],
     })
       .populate("productInfo")
-      .sort({ deadline: 1 });
+      .sort({ deadline: 1 })
+      .lean();
 
     return groups;
   }
@@ -58,7 +59,8 @@ class Group {
       ],
     })
       .populate("productInfo")
-      .sort({ remainedPersonnel: 1 });
+      .sort({ remainedPersonnel: 1 })
+      .lean();
 
     return groups;
   }
@@ -93,7 +95,9 @@ class Group {
       participants: {
         $elemMatch: { userId: userId, manager: boolean },
       },
-    }).populate("productInfo");
+    })
+      .populate("productInfo")
+      .lean();
     return listWhenOwner;
   }
 
