@@ -172,8 +172,9 @@ groupRouter.get(
   login_required,
   async function (req, res, next) {
     try {
+      const userId = req.currentUserId;
       const groupId = req.params.groupId;
-      const groupInfo = await groupService.getGroupInfo({ groupId });
+      const groupInfo = await groupService.getGroupInfo({ userId, groupId });
 
       if (groupInfo.errorMessage) {
         throw new Error(groupInfo.errorMessage);

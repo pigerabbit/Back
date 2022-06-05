@@ -8,9 +8,9 @@ class Group {
   }
 
   static async findByGroupId({ groupId }) {
-    const groupInfo = await GroupModel.findOne({ groupId }).populate(
-      "productInfo"
-    );
+    const groupInfo = await GroupModel.findOne({ groupId })
+      .populate("productInfo")
+      .lean();
     return groupInfo;
   }
 
@@ -122,14 +122,16 @@ class Group {
       .lean();
 
     let participantsList = [];
-    participantsList.push(groupInfo.map((v) => {
-      const firstList = v.participants;
-      const secondList = firstList.map((v) => {
-        const userId = v.userId;
-        return userId;
-      });
-      return secondList;
-    }));
+    participantsList.push(
+      groupInfo.map((v) => {
+        const firstList = v.participants;
+        const secondList = firstList.map((v) => {
+          const userId = v.userId;
+          return userId;
+        });
+        return secondList;
+      })
+    );
 
     return participantsList[0];
   }

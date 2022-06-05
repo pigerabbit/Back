@@ -2,6 +2,7 @@ import { Group, Product } from "../db";
 import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
 import { nowDate } from "../utils/date-calculator.js";
+import { ToggleModel } from "../db/schemas/toggle.js";
 
 export class groupService {
   static async addGroup({
@@ -170,7 +171,7 @@ export class groupService {
     return updatedGroup;
   }
 
-  static async getGroupInfo({ groupId }) {
+  static async getGroupInfo({ userId, groupId }) {
     const group = await Group.findByGroupId({ groupId });
 
     // db에서 찾지 못한 경우, 에러 메시지 반환
@@ -179,6 +180,21 @@ export class groupService {
         "해당 그룹은 생성 내역이 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
+
+    const toggleInfo = await ToggleModel.findOne({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    if (toggleInfo.groups.includes(group._id)) {
+      group["toggle"] = 1;
+    } else {
+      group["toggle"] = 0;
+    }
+
     return group;
   }
 
