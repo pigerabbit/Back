@@ -23,8 +23,10 @@ class Group {
     return updatedGroup;
   }
 
-  static async findAll({ productId }) {
-    const groups = await GroupModel.find({ productId }).populate("productInfo");
+  static async findAllByProductId({ productId }) {
+    const groups = await GroupModel.find({ productId })
+      .populate("productInfo")
+      .lean();
     return groups;
   }
 

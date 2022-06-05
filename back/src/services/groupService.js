@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
 import { nowDate } from "../utils/date-calculator.js";
 import { ToggleModel } from "../db/schemas/toggle.js";
+import { withToggleInfo } from "../utils/withToggleInfo";
 
 export class groupService {
   static async addGroup({
@@ -189,18 +190,21 @@ export class groupService {
       return { errorMessage };
     }
 
-    if (toggleInfo.groups.includes(group._id)) {
-      group["toggle"] = 1;
-    } else {
-      group["toggle"] = 0;
-    }
-
-    return group;
+    return withToggleInfo(toggleInfo.groups, [group]);
   }
 
-  static async getGroupByProductId({ productId }) {
-    const groups = await Group.findAll({ productId });
-    return groups;
+  static async getGroupByProductId({ userId, productId }) {
+    const groups = await Group.findAllByProductId({ productId });
+
+    const toggleInfo = await ToggleModel.findOne({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    return withToggleInfo(toggleInfo.groups, groups);
   }
 
   static async getNumberInfoByGroupId({ groupId }) {

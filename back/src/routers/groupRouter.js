@@ -194,12 +194,16 @@ groupRouter.get(
 
 // 상품 아이디에 대한 모든 공동구매들을 반환하는 함수
 groupRouter.get(
-  "/grouplist/:productId",
+  "/groups/productId/:productId",
   login_required,
   async function (req, res, next) {
     try {
+      const userId = req.currentUserId;
       const productId = req.params.productId;
-      const groupList = await groupService.getGroupByProductId({ productId });
+      const groupList = await groupService.getGroupByProductId({
+        userId,
+        productId,
+      });
 
       const body = {
         success: true,
