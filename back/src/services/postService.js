@@ -304,7 +304,7 @@ class PostService {
       postList = [];
       postList = await Promise.all(posts.map(async (v) => {
         let comment = await Post.findCommentList({ receiver: v.postId });
-        return { post: v, comment: comment };
+        return { post: v, commentList: comment };
       }));
       return { postList };
     }
