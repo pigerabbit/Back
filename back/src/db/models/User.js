@@ -108,10 +108,21 @@ export class User {
    * @param {String} sendId - 알림을 보낸 위치
    * @param {String} content - 알림 내용
    */
-  static async updateAlert({ userId, from, sendId, content }) { 
+  static async updateAlert({
+    userId,
+    from,
+    sendId,
+    image,
+    type,
+    groupName,
+    content
+  }) { 
     const newAlert = {
       from,
       sendId,
+      image,
+      type,
+      groupName,
       content,
       removed: false,
     }

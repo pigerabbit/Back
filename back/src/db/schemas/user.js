@@ -9,6 +9,18 @@ const alertSchema = new Schema({
     type: String,
     required: true,
   },
+  image: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  groupName: {
+    type: String,
+    required: true,
+  },
   content: {
     type: String,
     required: true,
