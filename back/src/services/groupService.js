@@ -392,7 +392,10 @@ export class groupService {
       return { errorMessage };
     }
 
-    const checkState = groupInfo.state;
+    if (groupInfo.state === -1) { 
+      const errorMessage = "가뭄이 들은 당근밭입니다.";
+      throw new Error(errorMessage);
+    }
 
     return checkState;
   }

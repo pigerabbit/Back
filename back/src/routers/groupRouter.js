@@ -133,11 +133,7 @@ groupRouter.put(
       const productId = req.body.productId ?? null;
       const state = req.body.state ?? null;
 
-      const checkState = await groupService.checkState({ groupId });
-      if (checkState === -1) {
-        const errorMessage = "가뭄이 들은 당근밭입니다.";
-        throw new Error(errorMessage);
-      }
+      await groupService.checkState({ groupId });
 
       const toUpdate = {
         groupType,
