@@ -122,18 +122,18 @@ class Group {
   static async findParticipantsByProductId({ productId }) {
     const groupInfo = await GroupModel.find(
       { productId: productId },
-      "participants"
     )
-      .select("-_id")
       .lean();
-
+    
     let participantsList = [];
     participantsList.push(
       groupInfo.map((v) => {
+        const groupType = v.groupType;
+        const groupName = v.groupName;
         const firstList = v.participants;
         const secondList = firstList.map((v) => {
           const userId = v.userId;
-          return userId;
+          return { groupType, groupName, userId };
         });
         return secondList;
       })

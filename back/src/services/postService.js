@@ -33,6 +33,12 @@ class PostService {
     // review : 모두
     if (type === "cs") {
       const { userId, name } = await Product.findProduct({ id: receiver });
+
+      if (!userId) { 
+        const errorMessage = "존재하지 않는 상품입니다.";
+        return { errorMessage };
+      }
+      
       authorizedUsers = [writer, userId];
       
       // 문의글이 생겼다면 상품 판매자에게 알림
@@ -278,7 +284,7 @@ class PostService {
    * @param {String} option - 옵션 (review / cs / groupChat / comment)
    * @returns {Object} postList
    */
-  static async getPostListByWriter({ userId, writer, option }) { 
+  static async getPostListByWriter({ userId, writer, option, reply }) { 
     const optionList = ["review", "cs", "groupChat", "comment"];
 
     if (optionList.indexOf(option) === -1) { 
@@ -297,8 +303,8 @@ class PostService {
       };
     }
 
-    let postList = await Post.findPostListByWriter({ writer, option });  
-
+    let postList = await Post.findPostListByWriter({ writer, option, reply });  
+    console.log("전 :", postList);
     if (option === "cs") {
       let posts = postList;
       postList = [];
@@ -306,6 +312,7 @@ class PostService {
         let comment = await Post.findCommentList({ receiver: v.postId });
         return { post: v, commentList: comment };
       }));
+      console.log("service: ", postList);
       return { postList };
     }
     
