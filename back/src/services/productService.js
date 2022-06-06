@@ -356,25 +356,6 @@ class ProductService {
 
     await Product.update({ id, toUpdate });
 
-    // 공동구매 참여자에게 상품이 삭제되었다는 알림 보내주기
-    const participantsList = await Group.findParticipantsByProductId({ productId: product.id });
-    console.log("삭제 :", participantsList);
-    console.log("type :", typeof(participantsList));
-    console.log("participantsList[0] :", participantsList[0]);
-    participantsList.map((v) => {
-      const firstList = v;
-      console.log(firstList);
-      firstList.map(async (v) => {
-        await User.updateAlert({
-          userId: v,
-          from: "product",
-          sendId: product.id,
-          content: `'${product.name}' 상품이 삭제되었습니다.`,
-        });
-        return v;
-      });
-    });
-
     return product;
   }
   

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { ProductService } from "../services/productService";
+import { groupService } from "../services/groupService";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
@@ -919,6 +920,8 @@ productRouter.delete(
 
       return res.status(403).send(body);
     }
+
+    await groupService.deleteProduct({ id, product });
 
     const body = {
       success: true,
