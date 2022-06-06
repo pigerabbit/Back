@@ -11,14 +11,14 @@ const ToggleSchema = new Schema({
   },
   groups: [
     {
-      type: [String],
+      type: Schema.Types.ObjectId,
       ref: "Group",
       required: false,
     },
   ],
   products: [
     {
-      type: [String],
+      type: Schema.Types.ObjectId,
       ref: "Product",
       required: false,
     },

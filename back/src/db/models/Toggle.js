@@ -20,7 +20,11 @@ class Toggle {
   }
 
   static async findByUserIdWithPopulateGroup({ userId }) {
-    const toggleInfo = await ToggleModel.findOne({ userId }).populate("groups");
+    const toggleInfo = await ToggleModel.findOne({ userId }).populate({
+      path: "groups",
+      populate: { path: "productInfo" },
+    });
+
     return toggleInfo;
   }
 
