@@ -102,7 +102,8 @@ class ProductService {
     });
 
     const updatedProduct = await Product.update({ id, toUpdate });
-    const resultProduct = getRequiredInfoFromProductData(updatedProduct);
+    product = await Product.findProduct({ id });
+    const resultProduct = getRequiredInfoFromProductData(product);
 
     return { resultProduct };
   }
