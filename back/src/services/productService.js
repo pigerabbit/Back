@@ -4,8 +4,10 @@ import { Post } from "../db/index.js";
 import { Group } from "../db/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromProductData } from "../utils/product";
+import { ToggleModel } from "../db/schemas/toggle.js";
+import { productsWithToggleInfo } from "../utils/productsWithToggleInfo";
 
-class ProductService { 
+class ProductService {
   /** 판매 상품 생성 함수
    * 
    * @param {Strings} userId - 유저 Id
@@ -24,7 +26,7 @@ class ProductService {
    * @param {Strings} detailImg - 상품 상세 설명 사진
    * @param {Strings} shippingInfo - 배송 안내
    * @return {Object} 생성된 상품 정보 
-   */
+   
   static async addProduct({
     userId,
     images,
@@ -88,7 +90,7 @@ class ProductService {
       return { errorMessage };
     }
 
-    if (product.userId !== userId) { 
+    if (product.userId !== userId) {
       const errorMessage = "해당 상품을 판매하는 유저만 수정이 가능합니다.";
       return { errorMessage };
     }
@@ -98,7 +100,7 @@ class ProductService {
         delete toUpdate[key];
       }
     });
-    
+
     const updatedProduct = await Product.update({ id, toUpdate });
     const resultProduct = getRequiredInfoFromProductData(updatedProduct);
 
@@ -106,27 +108,38 @@ class ProductService {
   }
 
   /** 상품 전체를 반환하는 함수
-   * 
+   *
    * @returns 상품 전체 Object List
    */
-  static async getProductList({ page, perPage }) { 
+  static async getProductList({ userId, page, perPage }) {
     const resultList = await Product.findProductList({ page, perPage });
-    return resultList;
+
+    const toggleInfo = await ToggleModel.findOne({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    console.log("v.userInfo._id:", v.userInfo._id);
+
+    return productsWithToggleInfo(toggleInfo.products, resultList);
   }
 
   /** 공구 상품 top 10을 반환하는 함수
-   * 
+   *
    * @returns 상품 전체 Object List
    */
-  static async getProductTopList() { 
+  static async getProductTopList() {
     const top = 10;
     const groupList = await Group.findProductSortByGroups();
     const products = await Product.findProductListNoPage();
     let resultList = [];
-    console.log("groupList :", groupList)
+    console.log("groupList :", groupList);
     for (let i = 0; i < groupList.length; i++) {
-      for (let j = 0; j < products.length; j++) { 
-        if (groupList[i].id ===  products[j].id) { 
+      for (let j = 0; j < products.length; j++) {
+        if (groupList[i].id === products[j].id) {
           resultList.push(products[j]);
           delete products[j];
         }
@@ -143,30 +156,40 @@ class ProductService {
   }
 
   /** 카테고리별 상품을 반환하는 함수
-   * 
+   *
    * @returns 카테고리별 상품 Object List
    */
   static async getProductCategoryList({
+    userId,
     category,
     option,
     page,
     perPage,
-  }) { 
-    const productList = await Product.findProductCategoryList({ category, option, page, perPage });
+  }) {
+    const productList = await Product.findProductCategoryList({
+      category,
+      option,
+      page,
+      perPage,
+    });
 
-    if (productList.len === 0) { 
+    if (productList.len === 0) {
       const errorMessage = "해당 카테고리 상품이 존재하지 않습니다";
       return { errorMessage };
     }
 
     if (option === "groups") {
       const groupList = await Group.findProductSortByGroups();
-      const productList = await Product.findProductSortByReviews({ category, page, perPage });
+      const productList = await Product.findProductSortByReviews({
+        category,
+        page,
+        perPage,
+      });
       const resultList = [];
 
       for (let i = 0; i < groupList.length; i++) {
-        for (let j = 0; j < productList.resultList.length; j++) { 
-          if (groupList[i].id ===  productList.resultList[j].id) { 
+        for (let j = 0; j < productList.resultList.length; j++) {
+          if (groupList[i].id === productList.resultList[j].id) {
             resultList.push(productList.resultList[j]);
             delete productList.resultList[j];
           }
@@ -185,12 +208,17 @@ class ProductService {
       return { resultList, totalPage, len };
     } else if (option === "reviews") {
       const reviewList = await Post.findProductSortByReviews();
-      const productList = await Product.findProductSortByReviews({ category, page, perPage });
-      const resultList = [];
+      let productList = await Product.findProductSortByReviews({
+        category,
+        page,
+        perPage,
+      });
+
+      let resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
-        for (let j = 0; j < productList.resultList.length; j++) { 
-          if (reviewList[i].id ===  productList.resultList[j].id) { 
+        for (let j = 0; j < productList.resultList.length; j++) {
+          if (reviewList[i].id === productList.resultList[j].id) {
             resultList.push(productList.resultList[j]);
             delete productList.resultList[j];
           }
@@ -204,13 +232,23 @@ class ProductService {
       }
       const totalPage = productList.totalPage;
       const len = productList.len;
-
+      console.log("여기 오기는 하나?");
+      resultList = await productsWithToggleInfo(userId, productList.resultList);
+      console.log("resultList:", resultList);
       return { resultList, totalPage, len };
     } else if (option === "views") {
-      const resultList = await Product.findProductSortByViews({ category, page, perPage });
+      const resultList = await Product.findProductSortByViews({
+        category,
+        page,
+        perPage,
+      });
       return resultList;
     } else if (option === "salePrice") {
-      const resultList = await Product.findProductSortByPrice({ category, page, perPage });
+      const resultList = await Product.findProductSortByPrice({
+        category,
+        page,
+        perPage,
+      });
       return resultList;
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
@@ -219,43 +257,50 @@ class ProductService {
   }
 
   /** 검색어로 상품을 반환하는 함수
-   * 
+   *
    * @returns 검색어 상품 Object List
    */
-  static async getProductSearch({ search, page, perPage }) { 
-    const resultList = await Product.findProductSearch({ search, page, perPage });
-  
-    if (resultList.len === 0) { 
+  static async getProductSearch({ search, page, perPage }) {
+    const resultList = await Product.findProductSearch({
+      search,
+      page,
+      perPage,
+    });
+
+    if (resultList.len === 0) {
       const errorMessage = "검색한 상품이 존재하지 않습니다";
       return { errorMessage };
     }
-  
+
     return resultList;
   }
 
   /** 검색어 + 옵션별로 상품을 반환하는 함수
-   * 
+   *
    * optionField = ["salePrice", "reviews", "views", "likes"]
    * @returns 검색어 + 옵션 상품 Object List
    */
-  static async getProductSearchSortByOption({ search, option, page, perPage }) { 
-
+  static async getProductSearchSortByOption({ search, option, page, perPage }) {
     // 검색어에 해당하는 상품이 존재하는지 확인
     const product = await Product.findProductSearch({ search, page, perPage });
 
-    if (product.len === 0) { 
+    if (product.len === 0) {
       const errorMessage = "검색한 상품이 존재하지 않습니다";
       return { errorMessage };
     }
 
     if (option === "groups") {
       const reviewList = await Group.findProductSortByGroups();
-      const productList = await Product.findProductSearchSortByGroups({ search, page, perPage });
+      const productList = await Product.findProductSearchSortByGroups({
+        search,
+        page,
+        perPage,
+      });
       const resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
-        for (let j = 0; j < productList.resultList.length; j++) { 
-          if (reviewList[i].id ===  productList.resultList[j].id) { 
+        for (let j = 0; j < productList.resultList.length; j++) {
+          if (reviewList[i].id === productList.resultList[j].id) {
             resultList.push(productList.resultList[j]);
             delete productList.resultList[j];
           }
@@ -274,12 +319,16 @@ class ProductService {
       return { resultList, totalPage, len };
     } else if (option === "reviews") {
       const reviewList = await Post.findProductSortByReviews();
-      const productList = await Product.findProductSearchSortByReviews({ search, page, perPage });
+      const productList = await Product.findProductSearchSortByReviews({
+        search,
+        page,
+        perPage,
+      });
       const resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
-        for (let j = 0; j < productList.resultList.length; j++) { 
-          if (reviewList[i].id ===  productList.resultList[j].id) { 
+        for (let j = 0; j < productList.resultList.length; j++) {
+          if (reviewList[i].id === productList.resultList[j].id) {
             resultList.push(productList.resultList[j]);
             delete productList.resultList[j];
           }
@@ -297,10 +346,18 @@ class ProductService {
 
       return { resultList, totalPage, len };
     } else if (option === "views") {
-      const resultList = await Product.findProductSearchSortByViews({ search, page, perPage });
+      const resultList = await Product.findProductSearchSortByViews({
+        search,
+        page,
+        perPage,
+      });
       return resultList;
     } else if (option === "salePrice") {
-      const resultList = await Product.findProductSearchSortByPrice({ search, page, perPage });
+      const resultList = await Product.findProductSearchSortByPrice({
+        search,
+        page,
+        perPage,
+      });
       return resultList;
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
@@ -309,11 +366,11 @@ class ProductService {
   }
 
   /** 상품 id와 일치하는 상품을 조회하는 함수
-   * 
-   * @param {Strings} id - 상품 id 
+   *
+   * @param {Strings} id - 상품 id
    * @returns 상품 Object
    */
-  static async getProduct({ id }) { 
+  static async getProduct({ id }) {
     let product = await Product.findProduct({ id });
 
     if (!product) {
@@ -338,8 +395,8 @@ class ProductService {
   }
 
   /** 상품 id와 일치하는 상품을 삭제하는 함수
-   * 
-   * @param {Strings} id - 상품 id 
+   *
+   * @param {Strings} id - 상품 id
    * @returns 상품 Object
    */
   static async deleteProduct({ userId, id }) {
@@ -349,7 +406,7 @@ class ProductService {
       const errorMessage = "다른 유저의 상품을 삭제할 수 없습니다.";
       return { errorMessage };
     }
-    
+
     const toUpdate = {
       removed: true,
     };
@@ -357,9 +414,11 @@ class ProductService {
     await Product.update({ id, toUpdate });
 
     // 공동구매 참여자에게 상품이 삭제되었다는 알림 보내주기
-    const participantsList = await Group.findParticipantsByProductId({ productId: product.id });
+    const participantsList = await Group.findParticipantsByProductId({
+      productId: product.id,
+    });
     console.log("삭제 :", participantsList);
-    console.log("type :", typeof(participantsList));
+    console.log("type :", typeof participantsList);
     console.log("participantsList[0] :", participantsList[0]);
     participantsList.map((v) => {
       const firstList = v;
@@ -377,17 +436,16 @@ class ProductService {
 
     return product;
   }
-  
+
   /** 유저가 파는 상품 리스트 반환하는 함수
-   * 
-   * @param {Strings} userId - 유저 id 
+   *
+   * @param {Strings} userId - 유저 id
    * @returns 상품 Object
    */
-  static async getUserProduct({ userId }) { 
+  static async getUserProduct({ userId }) {
     const resultList = await Product.findUserProduct({ userId });
     return resultList;
-  }   
-}     
+  }
+}
 
-
-export { ProductService }; 
+export { ProductService };
