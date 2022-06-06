@@ -33,6 +33,12 @@ class PostService {
     // review : 모두
     if (type === "cs") {
       const { userId, name } = await Product.findProduct({ id: receiver });
+
+      if (!userId) { 
+        const errorMessage = "존재하지 않는 상품입니다.";
+        return { errorMessage };
+      }
+      
       authorizedUsers = [writer, userId];
       
       // 문의글이 생겼다면 상품 판매자에게 알림
