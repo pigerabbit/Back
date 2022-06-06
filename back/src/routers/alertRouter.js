@@ -40,7 +40,7 @@ const alertRouter = Router();
     try {
       const userId = req.currentUserId;
       const sendId = req.params.sendId;
-      const alertList = await userService.deleteAlertList({ userId, sendId });
+      await userService.deleteAlertList({ userId, sendId });
 
       const body = {
         success: true,
