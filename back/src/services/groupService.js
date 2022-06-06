@@ -1,4 +1,4 @@
-import { Group, Product } from "../db";
+import { Group, Product, User } from "../db";
 import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
 import { nowDate } from "../utils/date-calculator.js";
@@ -428,5 +428,24 @@ export class groupService {
     return withToggleInfo(toggleInfo.groups, groups);
 
     return groups;
+  }
+
+  static async deleteProduct({ id, product }) { 
+    const participants = await Group.findParticipantsByProductId({ productId: id });
+
+    participants.map((v) => {
+      const firstList = v;
+      firstList.map(async (v) => {
+        await User.updateAlert({
+          userId: v.userId,
+          from: "group",
+          sendId: product.id,
+          image: product.images,
+          type: v.groupType,
+          groupName: v.groupName,
+          content: `판매자의 판매 중단으로 공동구매가 취소되었습니다.`,
+        });
+      })
+    });
   }
 }
