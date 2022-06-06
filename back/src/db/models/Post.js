@@ -85,7 +85,7 @@ class Post {
    * @param {String} writer - 글쓴이 
    * @returns {Object} postList
    */
-  static async findPostListByWriter({ writer, option }) {
+  static async findPostListByWriter({ writer, option, reply }) {
     let postList = [];
     switch (option) { 
       case "review":
@@ -95,13 +95,25 @@ class Post {
         )
           .sort({ createdAt: -1 })
           .lean();
+        return postList;
       case "cs":
-        postList = await PostModel.find(
-          { "type": option, writer, removed: false },
-          { _id: 0, __v: 0, updatedAt: 0 },
-        )
-          .sort({ createdAt: -1 })
-          .lean();
+        if (reply === null) {
+          postList = await PostModel.find(
+            { "type": option, writer, removed: false },
+            { _id: 0, __v: 0, updatedAt: 0 },
+          )
+            .sort({ createdAt: -1 })
+            .lean();
+          return postList;
+        } else { 
+          postList = await PostModel.find(
+            { "type": option, writer, reply, removed: false },
+            { _id: 0, __v: 0, updatedAt: 0 },
+          )
+            .sort({ createdAt: -1 })
+            .lean();
+          return postList;
+        }
       case "comment":
         postList = await PostModel.find(
           { "type": option, writer, removed: false },
@@ -109,8 +121,8 @@ class Post {
         )
           .sort({ createdAt: -1 })
           .lean();
+        return postList;
     }
-
     return postList;
   }
 

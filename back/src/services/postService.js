@@ -284,7 +284,7 @@ class PostService {
    * @param {String} option - 옵션 (review / cs / groupChat / comment)
    * @returns {Object} postList
    */
-  static async getPostListByWriter({ userId, writer, option }) { 
+  static async getPostListByWriter({ userId, writer, option, reply }) { 
     const optionList = ["review", "cs", "groupChat", "comment"];
 
     if (optionList.indexOf(option) === -1) { 
@@ -303,8 +303,8 @@ class PostService {
       };
     }
 
-    let postList = await Post.findPostListByWriter({ writer, option });  
-
+    let postList = await Post.findPostListByWriter({ writer, option, reply });  
+    console.log("전 :", postList);
     if (option === "cs") {
       let posts = postList;
       postList = [];
@@ -312,6 +312,7 @@ class PostService {
         let comment = await Post.findCommentList({ receiver: v.postId });
         return { post: v, commentList: comment };
       }));
+      console.log("service: ", postList);
       return { postList };
     }
     
