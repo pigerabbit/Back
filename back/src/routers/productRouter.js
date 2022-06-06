@@ -42,10 +42,10 @@ const productRouter = Router();
  *              description:
  *                type: string
  *                example: 아주 맛있는 사과
- *              price: 
+ *              price:
  *                type: number
  *                example: 1000
- *              salePrice: 
+ *              salePrice:
  *                type: number
  *                example: 500
  *              minPurchaseQty:
@@ -228,9 +228,9 @@ productRouter.post(
         success: true,
         payload: newProduct,
       };
-  
+
       return res.status(201).json(body);
-    } catch (err) { 
+    } catch (err) {
       next(err);
     }
   }
@@ -294,7 +294,7 @@ productRouter.post(
  *                      example: 10000000
  *                    salePrice:
  *                      type: number
- *                      description: 판매 가격 
+ *                      description: 판매 가격
  *                      example: 5000000
  *                    minPurchaseQty:
  *                      type: number
@@ -311,6 +311,7 @@ productRouter.post(
 // query : page, perPage, category, option(groups, salePrice, reviews, views)
 productRouter.get(
   "/products",
+  login_required,
   [
     query("page")
       .exists()
@@ -328,19 +329,20 @@ productRouter.get(
   ],
   async (req, res, next) => {
     const userId = req.currentUserId;
+    console.log("라우터 userId:", userId);
     const { page, perPage, category, option } = req.query;
 
-    if (page <= 0 || perPage <= 0) { 
+    if (page <= 0 || perPage <= 0) {
       const body = {
         success: false,
         errorMessage: "잘못된 페이지를 입력하셨습니다.",
-      }
-      
+      };
+
       return res.status(400).send(body);
     }
 
     // 카테고리 쿼리가 존재한다면 카테고리별 상품 조회
-    if (category !== undefined) { 
+    if (category !== undefined) {
       const resultList = await ProductService.getProductCategoryList({
         userId,
         category,
@@ -349,31 +351,36 @@ productRouter.get(
         perPage,
       });
 
-    // 카테고리 이름이 존재하지 않는다면
-    if (resultList.errorMessage) { 
-      const body = {
-        success: false,
-        error: resultList.errorMessage,
-      }
+      // 카테고리 이름이 존재하지 않는다면
+      if (resultList.errorMessage) {
+        const body = {
+          success: false,
+          error: resultList.errorMessage,
+        };
 
-      return res.status(400).send(body);
-    }
+        return res.status(400).send(body);
+      }
 
       const body = {
         success: true,
         payload: resultList,
       };
-      
+
       return res.status(200).send(body);
-    } 
+    }
 
     // 카테고리 쿼리가 없다면 전체 상품 조회
-    const resultList = await ProductService.getProductList({ page, perPage });
+
+    const resultList = await ProductService.getProductList({
+      userId,
+      page,
+      perPage,
+    });
 
     const body = {
       success: true,
       payload: resultList,
-    }
+    };
 
     return res.status(200).send(body);
   }
@@ -410,8 +417,8 @@ productRouter.get(
         const body = {
           success: false,
           errorMessage: "잘못된 페이지를 입력하셨습니다.",
-        }
-        
+        };
+
         return res.status(400).send(body);
       }
       // search 쿼리가 없다면 오류
@@ -420,36 +427,46 @@ productRouter.get(
           success: false,
           errorMessage: "검색어를 입력해주세요",
         };
-        
+
         return res.status(400).send(body);
       }
 
       // option 쿼리가 존재한다면 옵션에 맞게 상품 조회
       if (option !== undefined) {
-        const resultList = await ProductService.getProductSearchSortByOption({ search, option, page, perPage });
-        
+        const resultList = await ProductService.getProductSearchSortByOption({
+          search,
+          option,
+          page,
+          perPage,
+        });
+
         // 맞지 않는 option이 들어왔다면
         if (resultList.errorMessage) {
           const body = {
             success: false,
             errorMessage: resultList.errorMessage,
-          }
-    
+          };
+
           return res.status(400).send(body);
         }
 
         const body = {
           success: true,
           payload: resultList,
-        }
+        };
 
         return res.status(200).send(body);
-      } else { // 아니라면 최신순 정렬
-        const resultList = await ProductService.getProductSearch({ search, page, perPage });
+      } else {
+        // 아니라면 최신순 정렬
+        const resultList = await ProductService.getProductSearch({
+          search,
+          page,
+          perPage,
+        });
         const body = {
           success: true,
           payload: resultList,
-        }
+        };
 
         return res.status(200).send(body);
       }
@@ -459,19 +476,16 @@ productRouter.get(
   }
 );
 
-productRouter.get(
-  "/products/main/top",
-  async (req, res, next) => { 
-    const resultList = await ProductService.getProductTopList();
+productRouter.get("/products/main/top", async (req, res, next) => {
+  const resultList = await ProductService.getProductTopList();
 
-    const body = {
-      success: true,
-      payload: resultList,
-    };
+  const body = {
+    success: true,
+    payload: resultList,
+  };
 
-    return res.status(200).send(body);
-  }
-);
+  return res.status(200).send(body);
+});
 
 /**
  * @swagger
@@ -507,7 +521,7 @@ productRouter.get(
  *              description:
  *                type: string
  *                example: 아주 맛있는 사과
- *              price: 
+ *              price:
  *                type: number
  *                example: 10000000
  *              salePrice:
@@ -665,13 +679,17 @@ productRouter.put(
       shippingInfo,
     };
 
-    const updatedProduct = await ProductService.setProduct({ userId, id, toUpdate });
+    const updatedProduct = await ProductService.setProduct({
+      userId,
+      id,
+      toUpdate,
+    });
 
-    if (updatedProduct.errorMessage) { 
+    if (updatedProduct.errorMessage) {
       const body = {
         success: false,
         error: updatedProduct.errorMessage,
-      }
+      };
 
       return res.status(400).send(body);
     }
@@ -679,12 +697,11 @@ productRouter.put(
     const body = {
       success: true,
       payload: updatedProduct,
-    }
-    
+    };
+
     return res.status(200).send(body);
   }
 );
-
 
 /**
  * @swagger
@@ -793,7 +810,7 @@ productRouter.get(
     notFoundValidate,
     validate,
   ],
-  async (req, res, next) => { 
+  async (req, res, next) => {
     const id = req.params.id;
     const product = await ProductService.getProduct({ id });
 
@@ -803,7 +820,7 @@ productRouter.get(
         success: false,
         error: product.errorMessage,
       };
-  
+
       return res.status(400).send(body);
     }
 
@@ -880,7 +897,7 @@ productRouter.get(
  *                      type: string
  *                      description: 오류 내용
  *                      example: 다른 유저의 상품을 삭제할 수 없습니다.
- * 
+ *
  */
 productRouter.delete(
   "/products/:id",
@@ -899,17 +916,17 @@ productRouter.delete(
     const id = req.params.id;
     const userId = req.currentUserId;
     const product = await ProductService.getProduct({ id });
-    
+
     // 해당 제품이 존재하지 않음
     if (product.errorMessage) {
       const body = {
         success: false,
         error: product.errorMessage,
       };
-      
+
       return res.status(400).send(body);
     }
-    
+
     const deletedProduct = await ProductService.deleteProduct({ userId, id });
 
     if (deletedProduct.errorMessage) {
@@ -926,7 +943,7 @@ productRouter.delete(
     const body = {
       success: true,
       payload: "상품 삭제를 성공했습니다.",
-    }
+    };
 
     return res.status(200).send(body);
   }
@@ -1039,20 +1056,20 @@ productRouter.get(
     notFoundValidate,
     validate,
   ],
-  async (req, res, next) => { 
+  async (req, res, next) => {
     const userId = req.params.userId;
 
     // 유저가 존재하는지 확인
     const user = await userService.getUserInfo({ userId });
 
     // 유저가 존재하지 않는다면 에러
-    if (user.errorMessage) { 
+    if (user.errorMessage) {
       const body = {
         success: false,
         error: user.errorMessage,
       };
 
-      return res.status(400).send(body); 
+      return res.status(400).send(body);
     }
 
     // 존재한다면 유저가 판매하는 상품 목록 조회
@@ -1067,6 +1084,5 @@ productRouter.get(
     return res.status(200).send(body);
   }
 );
-
 
 export { productRouter };

@@ -19,5 +19,6 @@ export function getRequiredInfoFromProductData(data) {
     detail: data.detail,
     detailImg: data.detailImg,
     shippingInfo: data.shippingInfo,
+    _id: data._id,
   };
 }

@@ -342,8 +342,9 @@ postRouter.get(
       const userId = req.currentUserId;
       const writer = req.params.writer;
       const option = req.params.option;
+      const reply  = req.query.reply ?? null;
 
-      const postList = await PostService.getPostListByWriter({ userId, writer, option });
+      const postList = await PostService.getPostListByWriter({ userId, writer, option, reply });
 
       if (postList.errorMessage) { 
         const body = {
