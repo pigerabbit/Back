@@ -328,7 +328,7 @@ productRouter.get(
   ],
   async (req, res, next) => {
     const userId = req.currentUserId;
-    console.log("라우터 userId:", userId);
+
     const { page, perPage, category, option } = req.query;
 
     if (page <= 0 || perPage <= 0) {
@@ -388,6 +388,7 @@ productRouter.get(
 // query : page, perPage, search(검색어), option(groups, salePrice, reviews, views)
 productRouter.get(
   "/products/search",
+  login_required,
   [
     query("page")
       .exists()
@@ -409,6 +410,7 @@ productRouter.get(
   ],
   async (req, res, next) => {
     try {
+      const userId = req.currentUserId;
       const { page, perPage, option } = req.query;
       let search = decodeURIComponent(req.query.search);
 
@@ -432,11 +434,12 @@ productRouter.get(
 
       // option 쿼리가 존재한다면 옵션에 맞게 상품 조회
       if (option !== undefined) {
-        const resultList = await ProductService.getProductSearchSortByOption({
+        let resultList = await ProductService.getProductSearchSortByOption({
           search,
           option,
           page,
           perPage,
+          userId,
         });
 
         // 맞지 않는 option이 들어왔다면
@@ -475,16 +478,21 @@ productRouter.get(
   }
 );
 
-productRouter.get("/products/main/top", async (req, res, next) => {
-  const resultList = await ProductService.getProductTopList();
+productRouter.get(
+  "/products/main/top",
+  login_required,
+  async (req, res, next) => {
+    const userId = req.currentUserId;
+    const resultList = await ProductService.getProductTopList(userId);
 
-  const body = {
-    success: true,
-    payload: resultList,
-  };
+    const body = {
+      success: true,
+      payload: resultList,
+    };
 
-  return res.status(200).send(body);
-});
+    return res.status(200).send(body);
+  }
+);
 
 /**
  * @swagger
@@ -799,6 +807,7 @@ productRouter.put(
  */
 productRouter.get(
   "/products/:id",
+  login_required,
   [
     check("id")
       .trim()
@@ -810,8 +819,9 @@ productRouter.get(
     validate,
   ],
   async (req, res, next) => {
+    const userId = req.currentUserId;
     const id = req.params.id;
-    const product = await ProductService.getProduct({ id });
+    const product = await ProductService.getProduct({ id, userId });
 
     // 아이디가 존재하지 않음
     if (product.errorMessage) {
