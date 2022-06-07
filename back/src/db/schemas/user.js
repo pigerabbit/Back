@@ -1,36 +1,41 @@
 import { Schema, model } from "mongoose";
 
-const alertSchema = new Schema({
-  from: {
-    type: String,
-    required: true,
+const alertSchema = new Schema(
+  {
+    from: {
+      type: String,
+      required: true,
+    },
+    sendId: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+    },
+    groupName: {
+      type: String,
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+    removed: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
-  sendId: {
-    type: String,
-    required: true,
+  {
+    timestamps: true,
   },
-  image: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    required: true,
-  },
-  groupName: {
-    type: String,
-    required: true,
-  },
-  content: {
-    type: String,
-    required: true,
-  },
-  removed: {
-    type: Boolean,
-    required: true, 
-    default: false,
-  },
-});
+);
 
 const businessSchema = new Schema({
   businessName: {
@@ -108,7 +113,7 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const UserModel = model("User", UserSchema);

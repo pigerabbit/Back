@@ -167,6 +167,47 @@ export class groupService {
       const errorMessage = "그룹 아이디를 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
+    let content = "";
+    if (toUpdate.state !== null) {
+      switch (toUpdate.state) {
+        case "1":
+          console.log("case 1");
+          content = "공구 인원이 달성되었습니다. 결제를 시작합니다.";
+          break;
+        case "-1":
+          content = "기간이 마감되어 공동구매가 취소되었습니다.";
+          break;
+        case "3":
+          content = "결제가 완료되었습니다. 배송이 곧 시작됩니다.";
+          break;
+        case "-3":
+          content = "결제가 실패되었습니다. 다시 한 번 확인해 주세요.";
+          break;
+        case "4":
+          content = "배송이 시작되었습니다.";
+          break;
+        case "-4":
+          content = "배송 곧 시작될 예정입니다.";
+          break;
+        case "5":
+          content = "배송이 완료되었습니다.";
+          break;
+        case "-6":
+          content = "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.";
+          break;
+      }
+      group.participants.map(async (v) => {
+        await User.updateAlert({
+          userId: v.userId,
+          from: "group",
+          sendId: groupId,
+          image: group.productInfo.images,
+          type: group.groupType,
+          groupName: group.groupName,
+          content: content,
+        });
+      });
+    }
 
     const updatedGroup = await Group.updateAll({ groupId, setter: toUpdate });
     return updatedGroup;
@@ -394,6 +435,11 @@ export class groupService {
 
     const checkState = groupInfo.state;
 
+    if (checkState === -1) { 
+      const errorMessage = "가뭄이 들은 당근밭입니다.";
+      throw new Error(errorMessage);
+    }
+
     return checkState;
   }
 
@@ -427,6 +473,11 @@ export class groupService {
     return groups;
   }
 
+  /** 상품이 삭제되면 공구에 참여 중인 유저에게 알림이 가는 함수
+   * 
+   * @param {String} id - productId
+   * @param {Object} product - 삭제되는 상품 정보
+   */
   static async deleteProduct({ id, product }) { 
     const participants = await Group.findParticipantsByProductId({ productId: id });
 
