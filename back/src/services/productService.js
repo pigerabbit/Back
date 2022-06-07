@@ -445,11 +445,11 @@ class ProductService {
    * @returns 상품 Object
    */
   static async getUserProduct({ userId }) {
-    const resultList = await Product.findUserProduct({ userId });
+    let resultList = await Product.findUserProduct({ userId });
 
-    resultList = await productsWithToggleInfo(userId, productList.resultList);
+    resultList = await productsWithToggleInfo(userId, resultList);
 
-    return resultList;
+    return { resultList };
   }
 }
 

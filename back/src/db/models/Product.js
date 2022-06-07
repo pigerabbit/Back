@@ -322,10 +322,9 @@ class Product {
    * @returns resultList
    */
   static async findUserProduct({ userId }) {
-    const resultList = await ProductModel.find({ userId: userId }).populate(
-      "userInfo",
-      "business"
-    );
+    const resultList = await ProductModel.find({ userId: userId })
+      .populate("userInfo", "business")
+      .lean();
     return resultList;
   }
 }
