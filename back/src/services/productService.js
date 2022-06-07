@@ -249,8 +249,8 @@ class ProductService {
         page,
         perPage,
       });
-
-      resultList = await productsWithToggleInfo(userId, productList.resultList);
+      console.log("sale Price Service :", resultList);
+      resultList = await productsWithToggleInfo(userId, resultList.resultList);
 
       return { resultList };
     } else {
