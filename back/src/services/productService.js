@@ -240,7 +240,7 @@ class ProductService {
         perPage,
       });
 
-      resultList = await productsWithToggleInfo(userId, productList.resultList);
+      resultList = await productsWithToggleInfo(userId, resultList.resultList);
 
       return resultList;
     } else if (option === "salePrice") {
