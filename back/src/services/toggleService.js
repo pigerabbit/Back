@@ -29,7 +29,8 @@ class toggleService {
 
     let groupsInfo = toggleInfo.groups;
     let newValue = {};
-    const index = groupsInfo.findIndex((f) => f === toUpdate.objectId);
+    const index = groupsInfo.findIndex((f) => f == toUpdate.objectId);
+
     if (index > -1) {
       groupsInfo.splice(index, 1);
     } else {
@@ -56,7 +57,7 @@ class toggleService {
 
     let productsInfo = toggleInfo.products;
     let newValue = {};
-    const index = productsInfo.findIndex((f) => f === toUpdate.objectId);
+    const index = productsInfo.findIndex((f) => f == toUpdate.objectId);
     if (index > -1) {
       productsInfo.splice(index, 1);
     } else {
