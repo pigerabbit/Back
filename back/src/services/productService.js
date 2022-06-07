@@ -242,7 +242,7 @@ class ProductService {
 
       resultList = await productsWithToggleInfo(userId, productList.resultList);
 
-      return resultList;
+      return { resultList };
     } else if (option === "salePrice") {
       let resultList = await Product.findProductSortByPrice({
         category,
@@ -252,7 +252,7 @@ class ProductService {
 
       resultList = await productsWithToggleInfo(userId, productList.resultList);
 
-      return resultList;
+      return { resultList };
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
