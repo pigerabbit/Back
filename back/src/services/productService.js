@@ -129,7 +129,6 @@ class ProductService {
     const groupList = await Group.findProductSortByGroups();
     const products = await Product.findProductListNoPage();
     let resultList = [];
-    console.log("groupList :", groupList);
     for (let i = 0; i < groupList.length; i++) {
       for (let j = 0; j < products.length; j++) {
         if (groupList[i].id === products[j].id) {
@@ -239,20 +238,22 @@ class ProductService {
         page,
         perPage,
       });
-
+      let totalPage = resultList.totalPage;
+      let len = resultList.len;
       resultList = await productsWithToggleInfo(userId, resultList.resultList);
 
-      return { resultList };
+      return { resultList, totalPage, len };
     } else if (option === "salePrice") {
       let resultList = await Product.findProductSortByPrice({
         category,
         page,
         perPage,
       });
-      console.log("sale Price Service :", resultList);
+      let totalPage = resultList.totalPage;
+      let len = resultList.len;
       resultList = await productsWithToggleInfo(userId, resultList.resultList);
 
-      return { resultList };
+      return { resultList, totalPage, len };
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
@@ -366,20 +367,21 @@ class ProductService {
         page,
         perPage,
       });
-      console.log("resultList:", resultList);
+      let totalPage = resultList.totalPage;
+      let len = resultList.len;
       resultList = await productsWithToggleInfo(userId, resultList.resultList);
-
-      return resultList;
+      return { resultList, totalPage, len };
     } else if (option === "salePrice") {
       let resultList = await Product.findProductSearchSortByPrice({
         search,
         page,
         perPage,
       });
-      console.log("resultList:", resultList);
+      let totalPage = resultList.totalPage;
+      let len = resultList.len;
       resultList = await productsWithToggleInfo(userId, resultList.resultList);
 
-      return resultList;
+      return { resultList, totalPage, len };
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
