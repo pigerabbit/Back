@@ -701,7 +701,7 @@ productRouter.put(
   }
 );
 
-productRouter.post(
+productRouter.put(
   "/products/:id/images",
   login_required,
   productImgUpload.single("images"),
@@ -742,7 +742,7 @@ productRouter.post(
   }
 );
 
-productRouter.post(
+productRouter.put(
   "/products/:id/descriptionImg",
   login_required,
   productImgUpload.single("descriptionImg"),
@@ -783,7 +783,7 @@ productRouter.post(
   }
 );
 
-productRouter.post(
+productRouter.put(
   "/products/:id/detailImg",
   login_required,
   productImgUpload.single("detailImg"),
