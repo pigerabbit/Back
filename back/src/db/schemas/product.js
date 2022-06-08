@@ -11,6 +11,10 @@ const ProductSchema = new Schema(
       required: true,
       ref: "User",
     },
+    productType: {
+      type: String,
+      required: true,
+    },
     id: {
       type: String,
       required: true,
@@ -74,7 +78,11 @@ const ProductSchema = new Schema(
     },
     shippingInfo: {
       type: String,
-      required: true,
+      required: false,
+    },
+    dueDate: {
+      type: String,
+      required: false,
     },
     removed: {
       type: Boolean,

@@ -4,6 +4,7 @@ export function getRequiredInfoFromProductData(data) {
     userInfo: data.userInfo,
     id: data.id,
     images: data.images,
+    productType: data.productType,
     category: data.category,
     name: data.name,
     description: data.description,
@@ -19,6 +20,7 @@ export function getRequiredInfoFromProductData(data) {
     detail: data.detail,
     detailImg: data.detailImg,
     shippingInfo: data.shippingInfo,
+    dueDate: data.dueDate,
     _id: data._id,
   };
 }

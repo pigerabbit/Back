@@ -26,14 +26,13 @@ class ProductService {
    * @param {Strings} detailImg - 상품 상세 설명 사진
    * @param {Strings} shippingInfo - 배송 안내
    * @return {Object} 생성된 상품 정보 
-   
+   */
   static async addProduct({
     userId,
-    images,
+    productType,
     category,
     name,
     description,
-    descriptionImg,
     price,
     salePrice,
     minPurchaseQty,
@@ -41,8 +40,8 @@ class ProductService {
     shippingFee,
     shippingFeeCon,
     detail,
-    detailImg,
-    shippingInfo
+    shippingInfo,
+    dueDate,
   }) { 
     const id = crypto.randomUUID();
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
@@ -53,11 +52,10 @@ class ProductService {
       id,
       userId,
       userInfo,
-      images,
+      productType,
       category,
       name,
       description,
-      descriptionImg,
       price,
       salePrice,
       discountRate,
@@ -66,8 +64,8 @@ class ProductService {
       shippingFee,
       shippingFeeCon,
       detail,
-      detailImg,
       shippingInfo,
+      dueDate,
     };
 
     let product = await Product.create({ newProduct });

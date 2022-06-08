@@ -188,11 +188,9 @@ productRouter.post(
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const images = req.files["images"]?.[0].location ?? null;
-      const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
-      const detailImg = req.files["detailImg"]?.[0].location ?? null;
 
       const {
+        productType,
         category,
         name,
         description,
@@ -204,15 +202,15 @@ productRouter.post(
         shippingFeeCon,
         detail,
         shippingInfo,
+        dueDate,
       } = req.body;
 
       const newProduct = await ProductService.addProduct({
         userId,
-        images,
+        productType,
         category,
         name,
         description,
-        descriptionImg,
         price,
         salePrice,
         minPurchaseQty,
@@ -220,8 +218,8 @@ productRouter.post(
         shippingFee,
         shippingFeeCon,
         detail,
-        detailImg,
         shippingInfo,
+        dueDate,
       });
 
       const body = {
@@ -646,14 +644,10 @@ productRouter.put(
     notFoundValidate,
     validate,
   ],
-  productImgUpload.fields([
-    { name: "images", maxCount: 1 },
-    { name: "descriptionImg", maxCount: 1 },
-    { name: "detailImg", maxCount: 1 },
-  ]),
   async (req, res, next) => {
     const userId = req.currentUserId;
     const id = req.params.id;
+    const productType = req.body.productType ?? null;
     const category = req.body.category ?? null;
     const name = req.body.name ?? null;
     const description = req.body.description ?? null;
@@ -665,17 +659,13 @@ productRouter.put(
     const shippingFeeCon = req.body.shippingFeeCon ?? null;
     const detail = req.body.detail ?? null;
     const shippingInfo = req.body.shippingInfo ?? null;
-
-    const images = req.files["images"]?.[0].location ?? null;
-    const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
-    const detailImg = req.files["detailImg"]?.[0].location ?? null;
+    const dueDate = req.body.dueDate ?? null;
 
     const toUpdate = {
+      productType,
       category,
-      images,
       name,
       description,
-      descriptionImg,
       price,
       salePrice,
       minPurchaseQty,
@@ -683,8 +673,8 @@ productRouter.put(
       shippingFee,
       shippingFeeCon,
       detail,
-      detailImg,
       shippingInfo,
+      dueDate,
     };
 
     const updatedProduct = await ProductService.setProduct({
@@ -708,6 +698,129 @@ productRouter.put(
     };
 
     return res.status(200).send(body);
+  }
+);
+
+productRouter.post(
+  "/products/:id/images",
+  login_required,
+  productImgUpload.single("images"),
+  async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const id = req.params.id;
+      const images = req.file?.location ?? null;
+
+      const toUpdate = {
+        images,
+      };
+
+      const updatedProduct = await ProductService.setProduct({
+        userId,
+        id,
+        toUpdate,
+      });
+
+      if (updatedProduct.errorMessage) {
+        const body = {
+          success: false,
+          error: updatedProduct.errorMessage,
+        };
+
+        return res.status(updatedProduct.status).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedProduct,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+productRouter.post(
+  "/products/:id/descriptionImg",
+  login_required,
+  productImgUpload.single("descriptionImg"),
+  async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const id = req.params.id;
+      const descriptionImg = req.file?.location ?? null;
+
+      const toUpdate = {
+        descriptionImg,
+      };
+
+      const updatedProduct = await ProductService.setProduct({
+        userId,
+        id,
+        toUpdate,
+      });
+
+      if (updatedProduct.errorMessage) {
+        const body = {
+          success: false,
+          error: updatedProduct.errorMessage,
+        };
+
+        return res.status(updatedProduct.status).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedProduct,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+productRouter.post(
+  "/products/:id/detailImg",
+  login_required,
+  productImgUpload.single("detailImg"),
+  async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const id = req.params.id;
+      const detailImg = req.file?.location ?? null;
+
+      const toUpdate = {
+        detailImg,
+      };
+
+      const updatedProduct = await ProductService.setProduct({
+        userId,
+        id,
+        toUpdate,
+      });
+
+      if (updatedProduct.errorMessage) {
+        const body = {
+          success: false,
+          error: updatedProduct.errorMessage,
+        };
+
+        return res.status(updatedProduct.status).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedProduct,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
   }
 );
 
@@ -833,8 +946,6 @@ productRouter.get(
 
       return res.status(400).send(body);
     }
-
-    console.log("라우터", product);
 
     const body = {
       success: true,
