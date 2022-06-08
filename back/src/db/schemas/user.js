@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { stringify } from "uuid";
 
 const alertSchema = new Schema(
   {
@@ -34,7 +35,7 @@ const alertSchema = new Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 const businessSchema = new Schema({
@@ -50,8 +51,17 @@ const businessSchema = new Schema({
   businessLocation: {
     type: String,
     required: true,
-  }
-})
+  },
+  locationXY: {
+    type: { type: String },
+    coordinates: [],
+    required: false,
+  },
+  placeUrl: {
+    type: String,
+    required: false,
+  },
+});
 
 const UserSchema = new Schema(
   {
@@ -74,7 +84,11 @@ const UserSchema = new Schema(
     },
     location: {
       type: String,
-      required: false,
+      required: true,
+    },
+    locationXY: {
+      type: { type: String },
+      coordinates: [],
     },
     distance: {
       type: Number,
@@ -113,7 +127,7 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 const UserModel = model("User", UserSchema);

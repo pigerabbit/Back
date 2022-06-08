@@ -63,6 +63,10 @@ const GroupSchema = new Schema(
       type: String,
       required: false,
     },
+    locationXY: {
+      type: { type: String },
+      coordinates: [],
+    },
     deadline: {
       type: String,
       required: true,
