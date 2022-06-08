@@ -57,10 +57,6 @@ const businessSchema = new Schema({
     coordinates: [],
     required: false,
   },
-  placeUrl: {
-    type: String,
-    required: false,
-  },
 });
 
 const UserSchema = new Schema(
