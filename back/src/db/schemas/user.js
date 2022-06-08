@@ -82,12 +82,11 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    location: {
-      type: String,
-      required: true,
-    },
     locationXY: {
-      type: { type: String },
+      type: {
+        type: String,
+        default: "Point",
+      },
       coordinates: [],
     },
     distance: {
