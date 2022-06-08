@@ -29,12 +29,10 @@ class ProductService {
    */
   static async addProduct({
     userId,
-    images,
     productType,
     category,
     name,
     description,
-    descriptionImg,
     price,
     salePrice,
     minPurchaseQty,
@@ -42,7 +40,6 @@ class ProductService {
     shippingFee,
     shippingFeeCon,
     detail,
-    detailImg,
     shippingInfo,
     dueDate,
   }) { 
@@ -55,12 +52,10 @@ class ProductService {
       id,
       userId,
       userInfo,
-      images,
       productType,
       category,
       name,
       description,
-      descriptionImg,
       price,
       salePrice,
       discountRate,
@@ -69,7 +64,6 @@ class ProductService {
       shippingFee,
       shippingFeeCon,
       detail,
-      detailImg,
       shippingInfo,
       dueDate,
     };
