@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { ProductService } from "../services/productService";
 import { groupService } from "../services/groupService";
+import { toggleService } from "../services/toggleService";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
@@ -430,6 +431,8 @@ productRouter.get(
 
         return res.status(400).send(body);
       }
+
+      await toggleService.setToggleSearchWord({ userId, toUpdate: { searchWord: search } });
 
       // option 쿼리가 존재한다면 옵션에 맞게 상품 조회
       if (option !== undefined) {
