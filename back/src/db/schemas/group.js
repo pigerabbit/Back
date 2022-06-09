@@ -65,7 +65,7 @@ const GroupSchema = new Schema(
     },
     locationXY: {
       type: { type: String },
-      coordinates: [],
+      coordinates: [Number],
     },
     deadline: {
       type: String,

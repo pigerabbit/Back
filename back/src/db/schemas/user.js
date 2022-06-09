@@ -54,7 +54,7 @@ const businessSchema = new Schema({
   },
   locationXY: {
     type: { type: String },
-    coordinates: [],
+    coordinates: [Number],
     required: false,
   },
 });
