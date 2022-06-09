@@ -4,6 +4,7 @@ import { Group } from "./models/Group";
 import { Product } from "./models/Product";
 import { Post } from "./models/Post";
 import { Toggle } from "./models/Toggle";
+import { Topic } from "./models/Topic";
 
 const DB_URL =
   process.env.MONGODB_URL ||
@@ -19,4 +20,4 @@ db.on("error", (error) =>
   console.error("MongoDB 연결에 실패하였습니다...\n" + DB_URL + "\n" + error)
 );
 
-export { User, Group, Product, Post, Toggle };
+export { User, Group, Product, Post, Toggle, Topic };
