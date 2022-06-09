@@ -210,10 +210,10 @@ class PostService {
 
     const updatedPost = await Post.update({ postId, toUpdate });
 
-    if (post.type === "review" || post.type === "cs") { 
+    if (post.type === "review" || post.type === "cs") {
       const commentList = await Post.findCommentList({ receiver: postId });
-      return { post, commentList };
-    }
+      return { post: updatedPost, commentList };
+   }
 
     return updatedPost;
   }
