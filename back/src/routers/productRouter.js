@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ProductService } from "../services/productService";
 import { groupService } from "../services/groupService";
 import { toggleService } from "../services/toggleService";
+import { TopicService } from "../services/topicService";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
@@ -433,6 +434,7 @@ productRouter.get(
       }
 
       await toggleService.setToggleSearchWord({ userId, toUpdate: { searchWord: search } });
+      await TopicService.addTopic({ word: search });
 
       // option 쿼리가 존재한다면 옵션에 맞게 상품 조회
       if (option !== undefined) {
@@ -1208,5 +1210,6 @@ productRouter.get(
     return res.status(200).send(body);
   }
 );
+
 
 export { productRouter };
