@@ -30,6 +30,13 @@ class Group {
     return groups;
   }
 
+  static async findCompletedPostByProductId({ productId, state }) {
+    const groups = await GroupModel.find({ productId, state })
+      .populate("productInfo")
+      .lean();
+    return groups;
+  } 
+
   static async findSortedGroupsByRemainedTimeInfo() {
     const groups = await GroupModel.find({
       $and: [

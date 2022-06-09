@@ -196,9 +196,12 @@ groupRouter.get(
     try {
       const userId = req.currentUserId;
       const productId = req.params.productId;
+      const state = req.query.state ?? null;
+
       const groupList = await groupService.getGroupByProductId({
         userId,
         productId,
+        state,
       });
 
       const body = {
