@@ -81,7 +81,7 @@ class PostService {
       }
       const updateId = post.postId;
       const addCommentCount = post.commentCount + 1;
-      const toUpdate = { commentCount: addCommentCount };
+      const toUpdate = { commentCount: addCommentCount, reply: true };
       post = await Post.update({ postId: updateId, toUpdate });
 
       // 댓글이 추가되었다면 글 쓴 유저에게 알림
