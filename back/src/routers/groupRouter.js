@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { login_required } from "../middlewares/login_required";
 import { groupService } from "../services/groupService";
+import { addressToXY } from "../utils/addressToXY.js";
 
 const groupRouter = Router();
 // 공동구매 생성
@@ -12,7 +13,6 @@ groupRouter.post("/groups", login_required, async function (req, res, next) {
       groupName,
       location,
       productId,
-      state,
       deadline,
       quantity,
     } = req.body;
@@ -23,7 +23,6 @@ groupRouter.post("/groups", login_required, async function (req, res, next) {
       groupName,
       location,
       productId,
-      state,
       deadline,
       quantity,
     });
@@ -134,15 +133,21 @@ groupRouter.put(
       const state = req.body.state ?? null;
 
       await groupService.checkState({ groupId });
-
+      
+      const coordinates = await addressToXY(location);
       const toUpdate = {
         groupType,
         groupName,
         location,
+        locationXY: {
+          type: "Point",
+          coordinates,
+        },
         deadline,
         productId,
         state,
       };
+
 
       const updatedGroup = await groupService.setGroup({ groupId, toUpdate });
 
