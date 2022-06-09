@@ -110,7 +110,7 @@ class Product {
       removed: false,
     })
       .populate("userInfo", "business")
-      .sort({ views: -1 })
+      .sort({ views: -1, _id: 1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -131,7 +131,7 @@ class Product {
       removed: false,
     })
       .populate("userInfo", "business")
-      .sort({ views: -1 })
+      .sort({ views: -1, _id: 1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -151,13 +151,13 @@ class Product {
       category: { $regex: category },
       removed: false,
     })
+      .sort({ views: -1, _id: 1 })
       .populate("userInfo", "business")
-      .sort({ views: -1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
       .lean();
-
+    
     return { resultList, totalPage, len };
   }
 
@@ -174,7 +174,7 @@ class Product {
       removed: false,
     })
       .populate("userInfo", "business")
-      .sort({ salePrice: 1 })
+      .sort({ salePrice: 1, _id: 1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -263,7 +263,7 @@ class Product {
 
     const resultList = await ProductModel.find({ name: { $regex: search } })
       .populate("userInfo", "business")
-      .sort({ salePrice: 1 })
+      .sort({ salePrice: 1, _id: 1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -307,7 +307,7 @@ class Product {
 
     const resultList = await ProductModel.find({ name: { $regex: search } })
       .populate("userInfo", "business")
-      .sort({ views: -1 })
+      .sort({ views: -1, _id: 1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -322,10 +322,9 @@ class Product {
    * @returns resultList
    */
   static async findUserProduct({ userId }) {
-    const resultList = await ProductModel.find({ userId: userId }).populate(
-      "userInfo",
-      "business"
-    );
+    const resultList = await ProductModel.find({ userId: userId })
+      .populate("userInfo", "business")
+      .lean();
     return resultList;
   }
 }

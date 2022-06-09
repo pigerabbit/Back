@@ -24,16 +24,23 @@ class Group {
   }
 
   static async findAllByProductId({ productId }) {
-    const groups = await GroupModel.find({ productId })
+    const groups = await GroupModel.find({ productId, state: 0 })
       .populate("productInfo")
       .lean();
     return groups;
   }
 
+  static async findCompletedPostByProductId({ productId, state }) {
+    const groups = await GroupModel.find({ productId, state })
+      .populate("productInfo")
+      .lean();
+    return groups;
+  } 
+
   static async findSortedGroupsByRemainedTimeInfo() {
     const groups = await GroupModel.find({
       $and: [
-        {},
+        { state: 0 },
         {
           deadline: {
             $gte: nowDate(),
@@ -52,9 +59,11 @@ class Group {
   static async findSortedGroupsByRemainedPersonnelInfo() {
     const groups = await GroupModel.find({
       $and: [
-        {},
+        { state: 0 },
         {
-          state: 0,
+          remainedPersonnel: {
+            $gte: 1,
+          },
         },
       ],
     })
@@ -120,11 +129,8 @@ class Group {
   }
 
   static async findParticipantsByProductId({ productId }) {
-    const groupInfo = await GroupModel.find(
-      { productId: productId },
-    )
-      .lean();
-    
+    const groupInfo = await GroupModel.find({ productId: productId }).lean();
+
     let participantsList = [];
     participantsList.push(
       groupInfo.map((v) => {

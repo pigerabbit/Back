@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { ProductService } from "../services/productService";
 import { groupService } from "../services/groupService";
+import { toggleService } from "../services/toggleService";
+import { TopicService } from "../services/topicService";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
@@ -188,11 +190,9 @@ productRouter.post(
   async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const images = req.files["images"]?.[0].location ?? null;
-      const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
-      const detailImg = req.files["detailImg"]?.[0].location ?? null;
 
       const {
+        productType,
         category,
         name,
         description,
@@ -204,15 +204,15 @@ productRouter.post(
         shippingFeeCon,
         detail,
         shippingInfo,
+        dueDate,
       } = req.body;
 
       const newProduct = await ProductService.addProduct({
         userId,
-        images,
+        productType,
         category,
         name,
         description,
-        descriptionImg,
         price,
         salePrice,
         minPurchaseQty,
@@ -220,8 +220,8 @@ productRouter.post(
         shippingFee,
         shippingFeeCon,
         detail,
-        detailImg,
         shippingInfo,
+        dueDate,
       });
 
       const body = {
@@ -329,7 +329,7 @@ productRouter.get(
   ],
   async (req, res, next) => {
     const userId = req.currentUserId;
-    console.log("라우터 userId:", userId);
+
     const { page, perPage, category, option } = req.query;
 
     if (page <= 0 || perPage <= 0) {
@@ -389,6 +389,7 @@ productRouter.get(
 // query : page, perPage, search(검색어), option(groups, salePrice, reviews, views)
 productRouter.get(
   "/products/search",
+  login_required,
   [
     query("page")
       .exists()
@@ -410,6 +411,7 @@ productRouter.get(
   ],
   async (req, res, next) => {
     try {
+      const userId = req.currentUserId;
       const { page, perPage, option } = req.query;
       let search = decodeURIComponent(req.query.search);
 
@@ -431,13 +433,17 @@ productRouter.get(
         return res.status(400).send(body);
       }
 
+      await toggleService.setToggleSearchWord({ userId, toUpdate: { searchWord: search } });
+      await TopicService.addTopic({ word: search });
+
       // option 쿼리가 존재한다면 옵션에 맞게 상품 조회
       if (option !== undefined) {
-        const resultList = await ProductService.getProductSearchSortByOption({
+        let resultList = await ProductService.getProductSearchSortByOption({
           search,
           option,
           page,
           perPage,
+          userId,
         });
 
         // 맞지 않는 option이 들어왔다면
@@ -476,16 +482,21 @@ productRouter.get(
   }
 );
 
-productRouter.get("/products/main/top", async (req, res, next) => {
-  const resultList = await ProductService.getProductTopList();
+productRouter.get(
+  "/products/main/top",
+  login_required,
+  async (req, res, next) => {
+    const userId = req.currentUserId;
+    const resultList = await ProductService.getProductTopList(userId);
 
-  const body = {
-    success: true,
-    payload: resultList,
-  };
+    const body = {
+      success: true,
+      payload: resultList,
+    };
 
-  return res.status(200).send(body);
-});
+    return res.status(200).send(body);
+  }
+);
 
 /**
  * @swagger
@@ -638,14 +649,10 @@ productRouter.put(
     notFoundValidate,
     validate,
   ],
-  productImgUpload.fields([
-    { name: "images", maxCount: 1 },
-    { name: "descriptionImg", maxCount: 1 },
-    { name: "detailImg", maxCount: 1 },
-  ]),
   async (req, res, next) => {
     const userId = req.currentUserId;
     const id = req.params.id;
+    const productType = req.body.productType ?? null;
     const category = req.body.category ?? null;
     const name = req.body.name ?? null;
     const description = req.body.description ?? null;
@@ -657,17 +664,13 @@ productRouter.put(
     const shippingFeeCon = req.body.shippingFeeCon ?? null;
     const detail = req.body.detail ?? null;
     const shippingInfo = req.body.shippingInfo ?? null;
-
-    const images = req.files["images"]?.[0].location ?? null;
-    const descriptionImg = req.files["descriptionImg"]?.[0].location ?? null;
-    const detailImg = req.files["detailImg"]?.[0].location ?? null;
+    const dueDate = req.body.dueDate ?? null;
 
     const toUpdate = {
+      productType,
       category,
-      images,
       name,
       description,
-      descriptionImg,
       price,
       salePrice,
       minPurchaseQty,
@@ -675,8 +678,8 @@ productRouter.put(
       shippingFee,
       shippingFeeCon,
       detail,
-      detailImg,
       shippingInfo,
+      dueDate,
     };
 
     const updatedProduct = await ProductService.setProduct({
@@ -700,6 +703,129 @@ productRouter.put(
     };
 
     return res.status(200).send(body);
+  }
+);
+
+productRouter.post(
+  "/products/:id/images",
+  login_required,
+  productImgUpload.single("images"),
+  async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const id = req.params.id;
+      const images = req.file?.location ?? null;
+
+      const toUpdate = {
+        images,
+      };
+
+      const updatedProduct = await ProductService.setProduct({
+        userId,
+        id,
+        toUpdate,
+      });
+
+      if (updatedProduct.errorMessage) {
+        const body = {
+          success: false,
+          error: updatedProduct.errorMessage,
+        };
+
+        return res.status(updatedProduct.status).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedProduct,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+productRouter.post(
+  "/products/:id/descriptionImg",
+  login_required,
+  productImgUpload.single("descriptionImg"),
+  async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const id = req.params.id;
+      const descriptionImg = req.file?.location ?? null;
+
+      const toUpdate = {
+        descriptionImg,
+      };
+
+      const updatedProduct = await ProductService.setProduct({
+        userId,
+        id,
+        toUpdate,
+      });
+
+      if (updatedProduct.errorMessage) {
+        const body = {
+          success: false,
+          error: updatedProduct.errorMessage,
+        };
+
+        return res.status(updatedProduct.status).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedProduct,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+productRouter.post(
+  "/products/:id/detailImg",
+  login_required,
+  productImgUpload.single("detailImg"),
+  async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const id = req.params.id;
+      const detailImg = req.file?.location ?? null;
+
+      const toUpdate = {
+        detailImg,
+      };
+
+      const updatedProduct = await ProductService.setProduct({
+        userId,
+        id,
+        toUpdate,
+      });
+
+      if (updatedProduct.errorMessage) {
+        const body = {
+          success: false,
+          error: updatedProduct.errorMessage,
+        };
+
+        return res.status(updatedProduct.status).send(body);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedProduct,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
   }
 );
 
@@ -800,6 +926,7 @@ productRouter.put(
  */
 productRouter.get(
   "/products/:id",
+  login_required,
   [
     check("id")
       .trim()
@@ -811,8 +938,9 @@ productRouter.get(
     validate,
   ],
   async (req, res, next) => {
+    const userId = req.currentUserId;
     const id = req.params.id;
-    const product = await ProductService.getProduct({ id });
+    const product = await ProductService.getProduct({ id, userId });
 
     // 아이디가 존재하지 않음
     if (product.errorMessage) {
@@ -823,8 +951,6 @@ productRouter.get(
 
       return res.status(400).send(body);
     }
-
-    console.log("라우터", product);
 
     const body = {
       success: true,
@@ -1084,5 +1210,6 @@ productRouter.get(
     return res.status(200).send(body);
   }
 );
+
 
 export { productRouter };

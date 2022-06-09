@@ -9,6 +9,8 @@ import { productRouter } from "./routers/productRouter";
 import { postRouter } from "./routers/postRouter";
 import { businessAuthRouter } from "./routers/businessAuthRouter";
 import { toggleRouter } from "./routers/toggleRouter";
+import { locationRouter } from "./routers/locationRouter";
+import { topicRouter } from "./routers/topicRouter";
 
 const app = express();
 
@@ -35,6 +37,8 @@ app.use(productRouter);
 app.use(postRouter);
 app.use(businessAuthRouter);
 app.use(toggleRouter);
+app.use(locationRouter);
+app.use(topicRouter);
 
 // 순서 중요 (router 에서 next() 시 아래의 에러 핸들링  middleware로 전달됨)
 app.use(errorMiddleware);

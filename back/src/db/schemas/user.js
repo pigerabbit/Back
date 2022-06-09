@@ -1,36 +1,42 @@
 import { Schema, model } from "mongoose";
+import { stringify } from "uuid";
 
-const alertSchema = new Schema({
-  from: {
-    type: String,
-    required: true,
+const alertSchema = new Schema(
+  {
+    from: {
+      type: String,
+      required: true,
+    },
+    sendId: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+    },
+    groupName: {
+      type: String,
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+    removed: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
-  sendId: {
-    type: String,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    required: true,
-  },
-  groupName: {
-    type: String,
-    required: true,
-  },
-  content: {
-    type: String,
-    required: true,
-  },
-  removed: {
-    type: Boolean,
-    required: true, 
-    default: false,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const businessSchema = new Schema({
   businessName: {
@@ -45,8 +51,13 @@ const businessSchema = new Schema({
   businessLocation: {
     type: String,
     required: true,
-  }
-})
+  },
+  locationXY: {
+    type: { type: String },
+    coordinates: [],
+    required: false,
+  },
+});
 
 const UserSchema = new Schema(
   {
@@ -67,9 +78,12 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    location: {
-      type: String,
-      required: false,
+    locationXY: {
+      type: {
+        type: String,
+        default: "Point",
+      },
+      coordinates: [],
     },
     distance: {
       type: Number,

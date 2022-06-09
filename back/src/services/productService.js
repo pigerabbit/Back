@@ -26,14 +26,13 @@ class ProductService {
    * @param {Strings} detailImg - 상품 상세 설명 사진
    * @param {Strings} shippingInfo - 배송 안내
    * @return {Object} 생성된 상품 정보 
-   
+   */
   static async addProduct({
     userId,
-    images,
+    productType,
     category,
     name,
     description,
-    descriptionImg,
     price,
     salePrice,
     minPurchaseQty,
@@ -41,8 +40,8 @@ class ProductService {
     shippingFee,
     shippingFeeCon,
     detail,
-    detailImg,
-    shippingInfo
+    shippingInfo,
+    dueDate,
   }) { 
     const id = crypto.randomUUID();
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
@@ -53,11 +52,10 @@ class ProductService {
       id,
       userId,
       userInfo,
-      images,
+      productType,
       category,
       name,
       description,
-      descriptionImg,
       price,
       salePrice,
       discountRate,
@@ -66,8 +64,8 @@ class ProductService {
       shippingFee,
       shippingFeeCon,
       detail,
-      detailImg,
       shippingInfo,
+      dueDate,
     };
 
     let product = await Product.create({ newProduct });
@@ -115,29 +113,20 @@ class ProductService {
   static async getProductList({ userId, page, perPage }) {
     const resultList = await Product.findProductList({ page, perPage });
 
-    const toggleInfo = await ToggleModel.findOne({ userId });
+    resultList = await productsWithToggleInfo(userId, productList.resultList);
 
-    if (!toggleInfo) {
-      const errorMessage =
-        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
-      return { errorMessage };
-    }
-
-    console.log("v.userInfo._id:", v.userInfo._id);
-
-    return productsWithToggleInfo(toggleInfo.products, resultList);
+    return resultList;
   }
 
   /** 공구 상품 top 10을 반환하는 함수
    *
    * @returns 상품 전체 Object List
    */
-  static async getProductTopList() {
+  static async getProductTopList(userId) {
     const top = 10;
     const groupList = await Group.findProductSortByGroups();
     const products = await Product.findProductListNoPage();
     let resultList = [];
-    console.log("groupList :", groupList);
     for (let i = 0; i < groupList.length; i++) {
       for (let j = 0; j < products.length; j++) {
         if (groupList[i].id === products[j].id) {
@@ -152,6 +141,8 @@ class ProductService {
     }
 
     resultList = resultList.slice(0, top);
+
+    resultList = await productsWithToggleInfo(userId, resultList);
 
     return resultList;
   }
@@ -186,7 +177,7 @@ class ProductService {
         page,
         perPage,
       });
-      const resultList = [];
+      let resultList = [];
 
       for (let i = 0; i < groupList.length; i++) {
         for (let j = 0; j < productList.resultList.length; j++) {
@@ -205,6 +196,8 @@ class ProductService {
 
       const totalPage = productList.totalPage;
       const len = productList.len;
+
+      resultList = await productsWithToggleInfo(userId, productList.resultList);
 
       return { resultList, totalPage, len };
     } else if (option === "reviews") {
@@ -233,24 +226,32 @@ class ProductService {
       }
       const totalPage = productList.totalPage;
       const len = productList.len;
-      console.log("여기 오기는 하나?");
+
       resultList = await productsWithToggleInfo(userId, productList.resultList);
-      console.log("resultList:", resultList);
+
       return { resultList, totalPage, len };
     } else if (option === "views") {
-      const resultList = await Product.findProductSortByViews({
+      let resultList = await Product.findProductSortByViews({
         category,
         page,
         perPage,
       });
-      return resultList;
+      let totalPage = resultList.totalPage;
+      let len = resultList.len;
+      resultList = await productsWithToggleInfo(userId, resultList.resultList);
+
+      return { resultList, totalPage, len };
     } else if (option === "salePrice") {
-      const resultList = await Product.findProductSortByPrice({
+      let resultList = await Product.findProductSortByPrice({
         category,
         page,
         perPage,
       });
-      return resultList;
+      let totalPage = resultList.totalPage;
+      let len = resultList.len;
+      resultList = await productsWithToggleInfo(userId, resultList.resultList);
+
+      return { resultList, totalPage, len };
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
@@ -262,7 +263,7 @@ class ProductService {
    * @returns 검색어 상품 Object List
    */
   static async getProductSearch({ search, page, perPage }) {
-    const resultList = await Product.findProductSearch({
+    let resultList = await Product.findProductSearch({
       search,
       page,
       perPage,
@@ -273,6 +274,8 @@ class ProductService {
       return { errorMessage };
     }
 
+    resultList = await productsWithToggleInfo(userId, productList.resultList);
+
     return resultList;
   }
 
@@ -281,7 +284,13 @@ class ProductService {
    * optionField = ["salePrice", "reviews", "views", "likes"]
    * @returns 검색어 + 옵션 상품 Object List
    */
-  static async getProductSearchSortByOption({ search, option, page, perPage }) {
+  static async getProductSearchSortByOption({
+    search,
+    option,
+    page,
+    perPage,
+    userId,
+  }) {
     // 검색어에 해당하는 상품이 존재하는지 확인
     const product = await Product.findProductSearch({ search, page, perPage });
 
@@ -297,7 +306,7 @@ class ProductService {
         page,
         perPage,
       });
-      const resultList = [];
+      let resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
         for (let j = 0; j < productList.resultList.length; j++) {
@@ -316,6 +325,8 @@ class ProductService {
 
       const totalPage = productList.totalPage;
       const len = productList.len;
+
+      resultList = await productsWithToggleInfo(userId, productList.resultList);
 
       return { resultList, totalPage, len };
     } else if (option === "reviews") {
@@ -325,7 +336,7 @@ class ProductService {
         page,
         perPage,
       });
-      const resultList = [];
+      let resultList = [];
 
       for (let i = 0; i < reviewList.length; i++) {
         for (let j = 0; j < productList.resultList.length; j++) {
@@ -345,21 +356,30 @@ class ProductService {
       const totalPage = productList.totalPage;
       const len = productList.len;
 
+      resultList = await productsWithToggleInfo(userId, productList.resultList);
+
       return { resultList, totalPage, len };
     } else if (option === "views") {
-      const resultList = await Product.findProductSearchSortByViews({
+      let resultList = await Product.findProductSearchSortByViews({
         search,
         page,
         perPage,
       });
-      return resultList;
+      let totalPage = resultList.totalPage;
+      let len = resultList.len;
+      resultList = await productsWithToggleInfo(userId, resultList.resultList);
+      return { resultList, totalPage, len };
     } else if (option === "salePrice") {
-      const resultList = await Product.findProductSearchSortByPrice({
+      let resultList = await Product.findProductSearchSortByPrice({
         search,
         page,
         perPage,
       });
-      return resultList;
+      let totalPage = resultList.totalPage;
+      let len = resultList.len;
+      resultList = await productsWithToggleInfo(userId, resultList.resultList);
+
+      return { resultList, totalPage, len };
     } else {
       const errorMessage = "존재하지 않는 옵션입니다.";
       return { errorMessage };
@@ -371,7 +391,7 @@ class ProductService {
    * @param {Strings} id - 상품 id
    * @returns 상품 Object
    */
-  static async getProduct({ id }) {
+  static async getProduct({ id, userId }) {
     let product = await Product.findProduct({ id });
 
     if (!product) {
@@ -390,7 +410,9 @@ class ProductService {
 
     await Product.update({ id, toUpdate });
     product = await Product.findProduct({ id });
-    const resultProduct = getRequiredInfoFromProductData(product);
+    let resultProduct = getRequiredInfoFromProductData(product);
+
+    const resultList = await productsWithToggleInfo(userId, [resultProduct]);
 
     return resultProduct;
   }
@@ -423,8 +445,11 @@ class ProductService {
    * @returns 상품 Object
    */
   static async getUserProduct({ userId }) {
-    const resultList = await Product.findUserProduct({ userId });
-    return resultList;
+    let resultList = await Product.findUserProduct({ userId });
+
+    resultList = await productsWithToggleInfo(userId, resultList);
+
+    return { resultList };
   }
 }
 

@@ -8,7 +8,6 @@ export function getRequiredInfoFromData(data) {
       nickname: data.nickname,
       seller: data.seller,
       business: data.business,
-      location: data.location,
       distance: data.distance,
       type: data.type,
       imageLink: data.imageLink,
@@ -22,11 +21,14 @@ export function getRequiredInfoFromData(data) {
       address: data.address,
       nickname: data.nickname,
       seller: data.seller,
-      location: data.location,
       distance: data.distance,
       type: data.type,
       imageLink: data.imageLink,
       reportedBy: data.reportedBy,
+      locationXY: {
+        type: data.locationXY.type,
+        coordinates: data.locationXY.coordinates,
+      },
     };
   }
 }

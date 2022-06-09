@@ -56,7 +56,7 @@ export class groupService {
 
     return createdNewGroup;
   }
-  /// 여기서부터
+
   static async setQuantity({ groupId, userId, quantity }) {
     let groupInfo = await Group.findByGroupId({ groupId });
 
@@ -234,8 +234,13 @@ export class groupService {
     return withToggleInfo(toggleInfo.groups, [group]);
   }
 
-  static async getGroupByProductId({ userId, productId }) {
-    const groups = await Group.findAllByProductId({ productId });
+  static async getGroupByProductId({ userId, productId, state }) {
+    let groups;
+    if (state !== null) {
+      groups = await Group.findCompletedPostByProductId({ productId, state });
+    } else {
+      groups = await Group.findAllByProductId({ productId });
+    }
 
     const toggleInfo = await ToggleModel.findOne({ userId });
 

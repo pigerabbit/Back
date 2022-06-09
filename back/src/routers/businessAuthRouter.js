@@ -3,6 +3,7 @@ import { login_required } from "../middlewares/login_required";
 import { businessAuthService } from "../services/businessAuthservice";
 import { validate, notFoundValidate } from "../middlewares/validator";
 import { check, body, query } from "express-validator";
+import { addressToXY } from "../utils/addressToXY";
 const request = require('request');
 
 require("dotenv").config();
@@ -14,6 +15,7 @@ const businessAuthRouter = Router();
  * 
  * body
  *    businessName : 상점 이름
+ *    businessLocation : 상점 주소
  *    b_no : 사업자 등록 번호
  *    p_nm : 대표자 성명
  *    start_dt : 개업 일자
@@ -90,10 +92,16 @@ businessAuthRouter.post(
 
     request.post(options, async function (err, httpResponse, body) {
       if (body.data[0].valid === "01") {
+        const coordinates = await addressToXY(businessLocation);
+        const locationXY = {
+          type: "Point",
+          coordinates,
+        };
         const toUpdate = {
           ownerName: p_nm,
           businessName,
           businessLocation,
+          locationXY,
         };
         const newUser = await businessAuthService.setBusiness({ userId, toUpdate });
         
