@@ -21,7 +21,7 @@ class Topic {
         $match:
         {
           createdAt:
-            { $gte: new Date((new Date()).valueOf() - 1000 * 60 * 60) }
+            { $gte: new Date((new Date()).valueOf() - 1000*60*60*24) }
         }
       },
       {
