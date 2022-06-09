@@ -4,7 +4,10 @@ import { login_required } from "../middlewares/login_required";
 
 const toggleRouter = Router();
 
-toggleRouter.post("/toggles", async function (req, res, next) {
+toggleRouter.post(
+  "/toggles",
+  login_required,
+  async function (req, res, next) {
   try {
     const userId = req.currentUserId;
     const newToggle = await toggleService.addToggle({
