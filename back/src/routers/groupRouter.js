@@ -421,4 +421,38 @@ groupRouter.get(
 //   }
 // });
 
+groupRouter.delete(
+  "/groups/:groupId",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+      const groupId = req.params.groupId;
+
+      // const checkState = await groupService.checkState({ groupId });
+      // if (checkState === -1) {
+      //   const errorMessage = "가뭄이 들은 당근밭입니다.";
+      //   throw new Error(errorMessage);
+      // }
+
+      const UpdatedGroup = await groupService.deleteGroup({
+        userId,
+        groupId,
+      });
+
+      if (UpdatedGroup.errorMessage) {
+        throw new Error(UpdatedGroup.errorMessage);
+      }
+
+      const body = {
+        success: true,
+        payload: UpdatedGroup,
+      };
+      res.status(200).json(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export { groupRouter };

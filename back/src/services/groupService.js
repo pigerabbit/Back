@@ -435,7 +435,7 @@ export class groupService {
 
     const checkState = groupInfo.state;
 
-    if (checkState === -1) { 
+    if (checkState === -1) {
       const errorMessage = "가뭄이 들은 당근밭입니다.";
       throw new Error(errorMessage);
     }
@@ -474,12 +474,14 @@ export class groupService {
   }
 
   /** 상품이 삭제되면 공구에 참여 중인 유저에게 알림이 가는 함수
-   * 
+   *
    * @param {String} id - productId
    * @param {Object} product - 삭제되는 상품 정보
    */
-  static async deleteProduct({ id, product }) { 
-    const participants = await Group.findParticipantsByProductId({ productId: id });
+  static async deleteProduct({ id, product }) {
+    const participants = await Group.findParticipantsByProductId({
+      productId: id,
+    });
 
     participants.map((v) => {
       const firstList = v;
@@ -493,7 +495,32 @@ export class groupService {
           groupName: v.groupName,
           content: `판매자의 판매 중단으로 공동구매가 취소되었습니다.`,
         });
-      })
+      });
     });
+  }
+
+  static async deleteGroup({ userId, groupId }) {
+    const groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+    const productId = groupInfo.productId;
+    const productInfo = await Product.findProduct({ id: productId });
+    const sellerId = productInfo.userId;
+
+    if (sellerId !== userId) {
+      const errorMessage = "판매자가 아닙니다.";
+      return { errorMessage };
+    }
+
+    const updatedGroup = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { state: "-7" } },
+      { returnOriginal: false }
+    );
+
+    return updatedGroup;
   }
 }
