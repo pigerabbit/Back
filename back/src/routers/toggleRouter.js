@@ -6,7 +6,7 @@ const toggleRouter = Router();
 
 toggleRouter.post("/toggles", async function (req, res, next) {
   try {
-    const userId = req.body.userId;
+    const userId = req.currentUserId;
     const newToggle = await toggleService.addToggle({
       userId,
     });
