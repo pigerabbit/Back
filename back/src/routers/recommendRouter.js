@@ -5,7 +5,7 @@ import { login_required } from "../middlewares/login_required";
 const recommendRouter = Router();
 
 recommendRouter.get(
-  "/recommend",
+  "/recommendations",
   login_required,
   async function (req, res, next) {
     try {
