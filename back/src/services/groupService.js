@@ -368,7 +368,7 @@ export class groupService {
       if (participantsInfo[index].manager === true) {
         await GroupModel.findOneAndUpdate(
           { groupId },
-          { $set: { state: "-1" } },
+          { $set: { state: "-6" } },
           { returnOriginal: false }
         );
       }
@@ -419,7 +419,7 @@ export class groupService {
         payment: participantsInfo[index].payment,
       };
     } else {
-      stateInfo = { state: -1 };
+      stateInfo = { state: -6 };
     }
 
     return stateInfo;
@@ -435,7 +435,7 @@ export class groupService {
 
     const checkState = groupInfo.state;
 
-    if (checkState === -1) {
+    if (checkState < 0) {
       const errorMessage = "가뭄이 들은 당근밭입니다.";
       throw new Error(errorMessage);
     }
@@ -483,7 +483,9 @@ export class groupService {
       productId: id,
     });
 
-    const deletedProductGroupList = await Group.findAllByProductId({ productId: id });
+    const deletedProductGroupList = await Group.findAllByProductId({
+      productId: id,
+    });
 
     deletedProductGroupList.map(async (v) => {
       await GroupModel.findOneAndUpdate(
