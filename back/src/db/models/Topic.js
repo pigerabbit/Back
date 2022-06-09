@@ -21,10 +21,9 @@ class Topic {
         $match:
         {
           createdAt:
-            { $gte: new Date(new Date().setDate(new Date().getDate() - 1)) }
+            { $gte: new Date((new Date()).valueOf()-1000*60*60) }
         }
       },
-      // { $match: { word: { $regex: "양" } }},
       {
         $group: {
           _id: "$word",
@@ -33,8 +32,6 @@ class Topic {
       },
       { $sort: { count: -1 }},
     ])
-    
-    console.log(topicList);
     
     return topicList;
   }
