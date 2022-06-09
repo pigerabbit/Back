@@ -560,4 +560,46 @@ export class groupService {
 
     return updatedGroup;
   }
+
+  static async findNearGroupList({ userId }) {
+    const perPage = 3;
+    const user = await User.findById({ userId });
+    const len = await GroupModel.countDocuments({
+      delete: false,
+      state: 0,
+    });
+    console.log("len =====>", len);
+
+    // 랜덤 페이지 생성 (최댓값 포함 X)
+    const page = Math.floor(Math.random() * (len - 1)) + 1;
+    console.log("page =====>", page);
+    console.log("x =====>", parseFloat(user.locationXY.coordinates[0]));
+    console.log("x =====>", parseFloat(user.locationXY.coordinates[0]));
+    
+    const groupList = await GroupModel.aggregate([
+      {
+        $geoNear: {
+          spherical: true,
+          maxDistance: 50000, // 5km 이내의 공구
+          near: {
+            type: "Point",
+            coordinates: [
+              parseFloat(user.locationXY.coordinates[0]),
+              parseFloat(user.locationXY.coordinates[1]),
+            ],
+          },
+          distanceField: "distance",
+          query: { state: 0, groupType: "local" },
+        },
+      },
+      { '$sort': { 'createdAt': -1 } },
+      {
+        '$facet': {
+          data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }] 
+        }
+      }
+    ]);
+    
+    return groupList;
+  }
 }

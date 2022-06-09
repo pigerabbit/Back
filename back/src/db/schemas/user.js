@@ -83,7 +83,7 @@ const UserSchema = new Schema(
         type: String,
         default: "Point",
       },
-      coordinates: [],
+      coordinates: [Number],
     },
     distance: {
       type: Number,
