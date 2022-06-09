@@ -483,6 +483,16 @@ export class groupService {
       productId: id,
     });
 
+    const deletedProductGroupList = await Group.findAllByProductId({ productId: id });
+
+    deletedProductGroupList.map(async (v) => {
+      await GroupModel.findOneAndUpdate(
+        { groupId: v.groupId },
+        { $set: { state: "-7" } }, // 판매자의 상품 삭제 state는 -7
+        { returnOriginal: false }
+      );
+    });
+
     participants.map((v) => {
       const firstList = v;
       firstList.map(async (v) => {
