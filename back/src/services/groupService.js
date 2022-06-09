@@ -498,4 +498,29 @@ export class groupService {
       });
     });
   }
+
+  static async deleteGroup({ userId, groupId }) {
+    const groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+    const productId = groupInfo.productId;
+    const productInfo = await Product.findProduct({ id: productId });
+    const sellerId = productInfo.userId;
+
+    if (sellerId !== userId) {
+      const errorMessage = "판매자가 아닙니다.";
+      return { errorMessage };
+    }
+
+    const updatedGroup = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { state: "-7" } },
+      { returnOriginal: false }
+    );
+
+    return updatedGroup;
+  }
 }
