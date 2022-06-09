@@ -12,7 +12,6 @@ groupRouter.post("/groups", login_required, async function (req, res, next) {
       groupName,
       location,
       productId,
-      state,
       deadline,
       quantity,
     } = req.body;
@@ -23,7 +22,6 @@ groupRouter.post("/groups", login_required, async function (req, res, next) {
       groupName,
       location,
       productId,
-      state,
       deadline,
       quantity,
     });
