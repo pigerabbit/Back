@@ -4,6 +4,7 @@ import { GroupModel } from "../db/schemas/group";
 import { nowDate } from "../utils/date-calculator.js";
 import { ToggleModel } from "../db/schemas/toggle.js";
 import { withToggleInfo } from "../utils/withToggleInfo";
+import { addressToXY } from "../utils/addressToXY.js";
 
 export class groupService {
   static async addGroup({
@@ -12,7 +13,6 @@ export class groupService {
     groupName,
     location,
     productId,
-    state,
     deadline,
     quantity,
   }) {
@@ -22,12 +22,19 @@ export class groupService {
     const remainedPersonnel = minPurchaseQty - quantity;
     const product = await Product.findProduct({ id: productId });
     const productInfo = product._id;
-
+    let state = 0;
+    
     if (remainedPersonnel < 0) {
       const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
       return { errorMessage };
     }
 
+    if (remainedPersonnel === 0) { 
+      state = 1;
+    }
+
+    const coordinates = await addressToXY(location);
+    
     const participants = {
       participantId: participantId,
       userId: userId,
@@ -45,6 +52,10 @@ export class groupService {
       groupName,
       groupType,
       location,
+      locationXY: {
+        type: "Point",
+        coordinates: coordinates,
+      },
       deadline,
       participants,
       productId,
@@ -89,6 +100,13 @@ export class groupService {
       return { errorMessage };
     }
 
+    let state;
+    if (updatedRemainedPersonnel === 0) {
+      state = 1;
+    } else { 
+      state = groupInfo.state;
+    }
+
     newValue = participantsInfo;
 
     const updatedParticipants = await GroupModel.findOneAndUpdate(
@@ -97,6 +115,7 @@ export class groupService {
         $set: {
           participants: newValue,
           remainedPersonnel: updatedRemainedPersonnel,
+          state,
         },
       },
       { returnOriginal: false }
@@ -339,6 +358,11 @@ export class groupService {
       const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
       return { errorMessage };
     }
+    
+    let state;
+    if (updatedRemainedPersonnel === 0) { 
+      state = 1;
+    }
 
     newValue = participantsInfo;
     const updatedParticipants = await GroupModel.findOneAndUpdate(
@@ -347,6 +371,7 @@ export class groupService {
         $set: {
           participants: newValue,
           remainedPersonnel: updatedRemainedPersonnel,
+          state,
         },
       },
       { returnOriginal: false }
@@ -383,11 +408,6 @@ export class groupService {
       participantsInfo.splice(index, 1);
     } else {
       const errorMessage = "이미 공동구매 참여자가 아닙니다.";
-      return { errorMessage };
-    }
-
-    if (updatedRemainedPersonnel < 0) {
-      const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
       return { errorMessage };
     }
 
