@@ -406,6 +406,29 @@ groupRouter.get(
   }
 );
 
+// 열린 공구가 가까운 순으로 오름차순 정렬
+groupRouter.get(
+  "/groups/sort/locations",
+  login_required,
+  async function (req, res, next) {
+    try {
+      const userId = req.currentUserId;
+      const groupList = await groupService.findNearGroupList({ userId });
+
+      console.log("groupList:", groupList);
+
+      const body = {
+        success: true,
+        payload: groupList,
+      };
+
+      res.status(200).send(body);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // import { Group } from "../db/models/Group.js";
 
 // groupRouter.get("/groups/test/:groupId", async function (req, res, next) {

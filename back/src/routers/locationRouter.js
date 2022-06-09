@@ -5,7 +5,7 @@ import { addressToXY } from "../utils/addressToXY.js";
 
 const locationRouter = Router();
 
-locationRouter.put(
+locationRouter.get(
   "/locations",
   login_required,
   async function (req, res, next) {
