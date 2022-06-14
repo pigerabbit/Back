@@ -434,7 +434,7 @@ class ProductService {
       removed: true,
     };
 
-    await Product.update({ id, toUpdate });
+    // await Product.update({ id, toUpdate });
 
     return product;
   }
