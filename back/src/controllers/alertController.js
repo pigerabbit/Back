@@ -33,7 +33,7 @@ const alertController = {
     } catch (error) {
       next(error);
     }
-  }
+  },
 }
 
 export { alertController };
