@@ -1,7 +1,7 @@
 import { userService } from "../services/userService";
 
-class alertController { 
-  static async createAlert (req, res, next) {
+const alertController = {
+  createAlert: async (req, res, next) => {
     try {
       const currentUserId = req.currentUserId;
       const userId = req.params.id;
@@ -16,9 +16,9 @@ class alertController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async deleteAlert (req, res, next) {
+  deleteAlert: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const sendId = req.params.sendId;
@@ -33,7 +33,7 @@ class alertController {
     } catch (error) {
       next(error);
     }
-  }
-}
+  },
+};
 
 export { alertController };

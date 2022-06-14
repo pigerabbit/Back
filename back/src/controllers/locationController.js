@@ -1,7 +1,7 @@
 import { addressToXY } from "../utils/addressToXY.js";
 
-class locationController { 
-  static async getLocation(req, res, next) { 
+const locationController = {
+  getLocation: async (req, res, next) => {
     try {
       const address = req.query.address;
       const data = await addressToXY(address);
@@ -14,7 +14,7 @@ class locationController {
     } catch (error) {
       next(error);
     }
-  }
-}
+  },
+};
 
 export { locationController };
