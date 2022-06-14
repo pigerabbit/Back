@@ -21,7 +21,7 @@ alertRouter.get(
  alertRouter.delete(
   "/users/:sendId/alert",
   login_required,
-  alertController.deleteAlert,
+  alertController.deleteAlert
 );
 
 
