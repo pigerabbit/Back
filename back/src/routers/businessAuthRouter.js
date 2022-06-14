@@ -10,6 +10,9 @@ const businessAuthRouter = Router();
 
 /** 사업자 인증 API
  * 
+ * param
+ *    userId : 유저 id
+ * 
  * body
  *    businessName : 상점 이름
  *    businessLocation : 상점 주소
