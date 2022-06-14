@@ -226,7 +226,7 @@ const postController = {
   getReviewList: async (req, res, next) => {
     const reviewList = await PostService.getReviewList();
     return res.status(200).send(reviewList);
-  }
+  },
 }
 
 
