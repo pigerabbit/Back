@@ -1,10 +1,10 @@
 import { PostService } from "../services/postService";
 
-const postController = { 
-  createPost: async (req, res, next) => { 
+const postController = {
+  createPost: async (req, res, next) => {
     try {
       const writer = req.currentUserId;
-      const { 
+      const {
         type,
         receiver,
         title,
@@ -22,7 +22,7 @@ const postController = {
       if (createdPost.errorMessage) {
         const body = {
           success: false,
-          error:  createdPost.errorMessage,
+          error: createdPost.errorMessage,
         }
 
         return res.status(400).send(body);
@@ -39,7 +39,7 @@ const postController = {
     }
   },
 
-  createPostImg: async (req, res, next) => { 
+  createPostImg: async (req, res, next) => {
     try {
       const writer = req.currentUserId;
       const postId = req.params.postId;
@@ -79,7 +79,7 @@ const postController = {
     }
   },
 
-  getPostList: async (req, res, next) => { 
+  getPostList: async (req, res, next) => {
     try {
       const { receiver, type } = req.query;
       const postList = await PostService.getPostList({ receiver, type });
@@ -97,21 +97,21 @@ const postController = {
         success: true,
         payload: postList,
       };
-``
+      ``
       return res.status(200).json(body);
     } catch (err) {
       next(err);
     }
   },
 
-  getPost: async (req, res, next) => { 
+  getPost: async (req, res, next) => {
     try {
       const postId = req.params.postId;
       const userId = req.currentUserId;
 
       const post = await PostService.getPost({ postId, userId });
 
-      if (post.errorMessage) { 
+      if (post.errorMessage) {
         const body = {
           success: false,
           payload: post.errorMessage,
@@ -126,12 +126,12 @@ const postController = {
       }
 
       return res.status(200).send(body);
-    } catch (err) { 
+    } catch (err) {
       next(err);
     }
   },
 
-  editPost: async (req, res, next) => { 
+  editPost: async (req, res, next) => {
     try {
       const writer = req.currentUserId;
       const postId = req.params.postId;
@@ -181,7 +181,7 @@ const postController = {
         }
         
         return res.status(deletedPost.status).send(body);
-      } 
+      }
 
       const body = {
         success: true,
@@ -189,7 +189,7 @@ const postController = {
       }
 
       return res.status(200).send(body);
-    } catch (err) { 
+    } catch (err) {
       next(err);
     }
   },
@@ -227,7 +227,7 @@ const postController = {
     const reviewList = await PostService.getReviewList();
     return res.status(200).send(reviewList);
   },
-}
+};
 
 
 export { postController };

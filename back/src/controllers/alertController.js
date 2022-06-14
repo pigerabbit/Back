@@ -1,6 +1,6 @@
 import { userService } from "../services/userService";
 
-const alertController = { 
+const alertController = {
   createAlert: async (req, res, next) => {
     try {
       const currentUserId = req.currentUserId;
@@ -34,6 +34,6 @@ const alertController = {
       next(error);
     }
   },
-}
+};
 
 export { alertController };

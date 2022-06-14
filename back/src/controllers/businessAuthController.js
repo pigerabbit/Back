@@ -4,7 +4,7 @@ const request = require('request');
 require("dotenv").config();
 
 const businessAuthController = {
-  isSeller: async (req, res, next) => { 
+  isSeller: async (req, res, next) => {
     const myaddr = `http://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${process.env.OPEN_API_SERVICE_KEY}`;
     const userId = req.currentUserId;
     const id = req.params.id;
@@ -79,6 +79,6 @@ const businessAuthController = {
       }
     });
   },
-}
+};
 
 export { businessAuthController };
