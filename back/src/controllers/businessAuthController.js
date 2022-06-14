@@ -3,8 +3,8 @@ import { addressToXY } from "../utils/addressToXY";
 const request = require('request');
 require("dotenv").config();
 
-class businessAuthController {
-  static async isSeller(req, res, next) { 
+const businessAuthController = {
+  isSeller: async (req, res, next) => { 
     const myaddr = `http://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${process.env.OPEN_API_SERVICE_KEY}`;
     const userId = req.currentUserId;
     const id = req.params.id;
@@ -53,7 +53,7 @@ class businessAuthController {
         };
         const newUser = await businessAuthService.setBusiness({ userId, toUpdate });
         
-        if (newUser.errorMessage) { 
+        if (newUser.errorMessage) {
           const body = {
             success: false,
             errorMessage: newUser.errorMessage,
@@ -77,8 +77,8 @@ class businessAuthController {
 
         return res.status(400).send(body);
       }
-    })
-  }
+    });
+  },
 }
 
 export { businessAuthController };
