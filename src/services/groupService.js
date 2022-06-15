@@ -564,10 +564,35 @@ export class groupService {
   static async findNearGroupList({ userId }) {
     const perPage = 3;
     const user = await User.findById({ userId });
-    const len = await GroupModel.countDocuments({
-      delete: false,
-      state: 0,
-    });
+    const list = await GroupModel.aggregate([
+      {
+        $geoNear: {
+          spherical: true,
+          maxDistance: 50000, // 5km 이내의 공구
+          near: {
+            type: "Point",
+            coordinates: [
+              parseFloat(user.locationXY.coordinates[0]),
+              parseFloat(user.locationXY.coordinates[1]),
+            ],
+          },
+          distanceField: "distance",
+          query: { state: 0, groupType: "local" },
+        },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'productInfo',
+          foreignField: '_id',
+          as: 'productInfo',
+        },
+      },
+      { '$sort': { 'createdAt': -1 } },
+    ]);
+
+    const len = list.length;
+
     console.log("len =====>", len);
 
     // 랜덤 페이지 생성 (최댓값 포함 X)
