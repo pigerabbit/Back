@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { login_required } from "../middlewares/login_required";
-import { groupService } from "../services/groupService";
 import { groupController } from "../controllers/groupController";
 
 const groupRouter = Router();

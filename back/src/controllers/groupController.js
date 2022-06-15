@@ -1,8 +1,8 @@
 import { groupService } from "../services/groupService";
 import { addressToXY } from "../utils/addressToXY.js";
 
-class groupController {
-  static async createGroup(req, res, next) {
+const groupController = {
+  createGroup: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const { groupType, groupName, location, productId, deadline, quantity } =
@@ -30,9 +30,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updateQuantity(req, res, next) {
+  updateQuantity: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
@@ -63,9 +63,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updatePayment(req, res, next) {
+  updatePayment: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
@@ -96,9 +96,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updateGroup(req, res, next) {
+  updateGroup: async (req, res, next) => {
     try {
       const groupId = req.params.groupId;
 
@@ -140,9 +140,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getGroup(req, res, next) {
+  getGroup: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
@@ -161,9 +161,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getGroupsByProductId(req, res, next) {
+  getGroupsByProductId: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const productId = req.params.productId;
@@ -184,9 +184,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getGroupsByNumberInfo(req, res, next) {
+  getGroupsByNumberInfo: async (req, res, next) => {
     try {
       const groupId = req.params.groupId;
 
@@ -201,9 +201,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getGroupsByIsManager(req, res, next) {
+  getGroupsByIsManager: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const boolean = req.params.boolean;
@@ -221,9 +221,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updateParticipateIn(req, res, next) {
+  updateParticipateIn: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
@@ -253,9 +253,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updateParticipateOut(req, res, next) {
+  updateParticipateOut: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
@@ -283,9 +283,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getGroupStateInfo(req, res, next) {
+  getGroupStateInfo: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
@@ -304,9 +304,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getGroupsByRemainedTime(req, res, next) {
+  getGroupsByRemainedTime: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupList = await groupService.getSortedGroupsByRemainedTimeInfo(
@@ -322,9 +322,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getGroupsByRemainedPersonnel(req, res, next) {
+  getGroupsByRemainedPersonnel: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupList =
@@ -339,9 +339,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getGroupsByLocations(req, res, next) {
+  getGroupsByLocations: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupList = await groupService.findNearGroupList({ userId });
@@ -355,9 +355,9 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async deleteGroup(req, res, next) {
+  deleteGroup: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
@@ -385,7 +385,7 @@ class groupController {
     } catch (error) {
       next(error);
     }
-  }
-}
+  },
+};
 
 export { groupController };
