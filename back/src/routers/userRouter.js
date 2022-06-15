@@ -27,7 +27,7 @@ userRouter.post(
 );
 
 userRouter.post(
-  "/user/login",
+  "/users/login",
   userController.login
 );
 
