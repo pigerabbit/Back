@@ -625,6 +625,12 @@ export class groupService {
           as: 'productInfo',
         },
       },
+      {
+        $unwind:
+          {
+            path: "$productInfo",
+          }
+      },
       { '$sort': { 'createdAt': -1 } },
       {
         '$facet': {
