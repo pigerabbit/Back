@@ -582,13 +582,13 @@ export class groupService {
       },
       {
         $lookup: {
-          from: 'products',
-          localField: 'productInfo',
-          foreignField: '_id',
-          as: 'productInfo',
+          from: "products",
+          localField: "productInfo",
+          foreignField: "_id",
+          as: "productInfo",
         },
       },
-      { '$sort': { 'createdAt': -1 } },
+      { $sort: { createdAt: -1 } },
     ]);
 
     const len = list.length;
@@ -623,6 +623,11 @@ export class groupService {
           localField: "productInfo",
           foreignField: "_id",
           as: "productInfo",
+        },
+      },
+      {
+        $unwind: {
+          path: "$productInfo",
         },
       },
       { $sort: { createdAt: -1 } },
