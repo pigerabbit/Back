@@ -338,8 +338,13 @@ class userService {
       return { errorMessage };
     }
 
-    const alertList = await User.getAlertList({ userId });
-    return alertList;
+    let alertList = await User.getAlertList({ userId });
+    
+    alertList[0].alertList.sort((a, b) => {
+      return b.createdAt - a.createdAt;
+    });
+
+    return alertList[0].alertList;
   }
 
   /** 유저 alert 삭제 함수
