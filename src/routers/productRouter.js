@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { validate, notFoundValidate } from "../middlewares/validator";
-import { check, body, query } from "express-validator";
 import { login_required } from "../middlewares/login_required";
 
+import { productValidator } from "../middlewares/express-validator";
 import { productController } from "../controllers/productController";
 
 const { productImgUpload } = require("../utils/s3");
@@ -263,21 +262,7 @@ productRouter.post(
 productRouter.get(
   "/products",
   login_required,
-  [
-    query("page")
-      .exists()
-      .withMessage("query에 page 값을 입력해주세요.")
-      .bail(),
-    query("perPage")
-      .exists()
-      .withMessage("query에 perPage 값을 입력해주세요.")
-      .bail(),
-    query("option")
-      .exists()
-      .withMessage("query에 option 값을 입력해주세요.")
-      .bail(),
-    validate,
-  ],
+  productValidator.categoryQuery,
   productController.getProductList
 );
 
@@ -285,25 +270,7 @@ productRouter.get(
 productRouter.get(
   "/products/search",
   login_required,
-  [
-    query("page")
-      .exists()
-      .withMessage("query에 page 값을 입력해주세요.")
-      .bail(),
-    query("perPage")
-      .exists()
-      .withMessage("query에 perPage 값을 입력해주세요.")
-      .bail(),
-    query("option")
-      .exists()
-      .withMessage("query에 option 값을 입력해주세요.")
-      .bail(),
-    query("search")
-      .exists()
-      .withMessage("query에 option 값을 입력해주세요.")
-      .bail(),
-    validate,
-  ],
+  productValidator.searchQuery,
   productController.getSearchProduct
 );
 
@@ -464,16 +431,7 @@ productRouter.get(
 productRouter.put(
   "/products/:id",
   login_required,
-  [
-    check("id")
-      .trim()
-      .isLength()
-      .exists()
-      .withMessage("parameter 값으로 상품의 아이디를 입력해주세요.")
-      .bail(),
-    notFoundValidate,
-    validate,
-  ],
+  productValidator.checkProductId,
   productController.editProduct
 );
 
@@ -596,16 +554,7 @@ productRouter.post(
 productRouter.get(
   "/products/:id",
   login_required,
-  [
-    check("id")
-      .trim()
-      .isLength()
-      .exists()
-      .withMessage("parameter 값으로 상품의 아이디를 입력해주세요.")
-      .bail(),
-    notFoundValidate,
-    validate,
-  ],
+  productValidator.checkProductId,
   productController.getProduct
 );
 
@@ -676,16 +625,7 @@ productRouter.get(
 productRouter.delete(
   "/products/:id",
   login_required,
-  [
-    check("id")
-      .trim()
-      .isLength()
-      .exists()
-      .withMessage("parameter 값으로 상품의 아이디를 입력해주세요.")
-      .bail(),
-    notFoundValidate,
-    validate,
-  ],
+  productValidator.checkProductId,
   productController.deleteProduct
 );
 
@@ -786,16 +726,7 @@ productRouter.delete(
  */
 productRouter.get(
   "/markets/:userId",
-  [
-    check("userId")
-      .trim()
-      .isLength()
-      .exists()
-      .withMessage("parameter 값으로 유저의 아이디를 입력해주세요.")
-      .bail(),
-    notFoundValidate,
-    validate,
-  ],
+  productValidator.checkUserId,
   productController.getUserProducts
 );
 
