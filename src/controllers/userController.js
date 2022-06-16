@@ -1,6 +1,7 @@
 import { userService } from "../services/userService";
 import { User } from "../db";
 import generateRandomPassword from "../utils/generate-random-password";
+import is from "@sindresorhus/is";
 import bcrypt from "bcrypt";
 
 const userController = {
