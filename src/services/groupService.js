@@ -23,18 +23,18 @@ export class groupService {
     const product = await Product.findProduct({ id: productId });
     const productInfo = product._id;
     let state = 0;
-    
+
     if (remainedPersonnel < 0) {
       const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
       return { errorMessage };
     }
 
-    if (remainedPersonnel === 0) { 
+    if (remainedPersonnel === 0) {
       state = 1;
     }
 
     const coordinates = await addressToXY(location);
-    
+
     const participants = {
       participantId: participantId,
       userId: userId,
@@ -103,7 +103,7 @@ export class groupService {
     let state;
     if (updatedRemainedPersonnel === 0) {
       state = 1;
-    } else { 
+    } else {
       state = groupInfo.state;
     }
 
@@ -358,9 +358,9 @@ export class groupService {
       const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
       return { errorMessage };
     }
-    
+
     let state;
-    if (updatedRemainedPersonnel === 0) { 
+    if (updatedRemainedPersonnel === 0) {
       state = 1;
     }
 
@@ -596,11 +596,11 @@ export class groupService {
     console.log("len =====>", len);
 
     // 랜덤 페이지 생성 (최댓값 포함 X)
-    const page = Math.floor(Math.random() * (len/perPage)) + 1;
+    const page = Math.floor(Math.random() * (len / perPage)) + 1;
     console.log("page =====>", page);
     console.log("x =====>", parseFloat(user.locationXY.coordinates[0]));
     console.log("x =====>", parseFloat(user.locationXY.coordinates[0]));
-    
+
     const groupList = await GroupModel.aggregate([
       {
         $geoNear: {
@@ -619,20 +619,28 @@ export class groupService {
       },
       {
         $lookup: {
-          from: 'products',
-          localField: 'productInfo',
-          foreignField: '_id',
-          as: 'productInfo',
+          from: "products",
+          localField: "productInfo",
+          foreignField: "_id",
+          as: "productInfo",
         },
       },
-      { '$sort': { 'createdAt': -1 } },
+      { $sort: { createdAt: -1 } },
       {
-        '$facet': {
-          data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }] 
-        }
-      }
+        $facet: {
+          data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
+        },
+      },
     ]);
-    
-    return groupList;
+
+    const toggleInfo = await ToggleModel.findOne({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    return withToggleInfo(toggleInfo.groups, groupList[0].data);
   }
 }
