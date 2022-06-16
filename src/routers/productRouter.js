@@ -277,17 +277,7 @@ productRouter.get(
 productRouter.get(
   "/products/main/top",
   login_required,
-  async (req, res, next) => {
-    const userId = req.currentUserId;
-    const resultList = await ProductService.getProductTopList(userId);
-
-    const body = {
-      success: true,
-      payload: resultList,
-    };
-
-    return res.status(200).send(body);
-  }
+  productController.getBestList
 );
 
 /**
