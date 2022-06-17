@@ -45,12 +45,12 @@ class Product {
    * @returns resultList
    */
   static async findProductList({ page, perPage }) {
-    const len = await ProductModel.countDocuments();
+    const len = await ProductModel.countDocuments({ removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({ removed: false })
       .populate("userInfo", "business")
-      .sort({ createdAt: -1 })
+      .sort({ views: -1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -66,7 +66,7 @@ class Product {
   static async findProductListNoPage() {
     const resultList = await ProductModel.find({ removed: false })
       .populate("userInfo", "business")
-      .sort({ createdAt: -1 })
+      .sort({ views: -1 })
       .select("-__v")
       .lean();
 
@@ -81,12 +81,12 @@ class Product {
    * @returns resultList
    */
   static async findProductCategoryList({ category, page, perPage }) {
-    const len = await ProductModel.countDocuments({ category });
+    const len = await ProductModel.countDocuments({ category, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({ category, removed: false })
       .populate("userInfo", "business")
-      .sort({ createdAt: -1 })
+      .sort({ views: -1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -102,7 +102,7 @@ class Product {
    * @param {Number} perPage
    */
   static async findProductSortByGroups({ category, page, perPage }) {
-    const len = await ProductModel.countDocuments({ category });
+    const len = await ProductModel.countDocuments({ category, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
@@ -123,7 +123,7 @@ class Product {
    *
    */
   static async findProductSortByReviews({ category, page, perPage }) {
-    const len = await ProductModel.countDocuments({ category });
+    const len = await ProductModel.countDocuments({ category, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
@@ -144,7 +144,7 @@ class Product {
    *
    */
   static async findProductSortByViews({ category, page, perPage }) {
-    const len = await ProductModel.countDocuments({ category });
+    const len = await ProductModel.countDocuments({ category, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
@@ -166,7 +166,7 @@ class Product {
    * @param {String} category
    */
   static async findProductSortByPrice({ category, page, perPage }) {
-    const len = await ProductModel.countDocuments({ category });
+    const len = await ProductModel.countDocuments({ category, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
@@ -211,7 +211,7 @@ class Product {
    * @returns resultList
    */
   static async findProductSearch({ search, page, perPage }) {
-    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const len = await ProductModel.countDocuments({ name: { $regex: search }, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
@@ -219,7 +219,7 @@ class Product {
       removed: false,
     })
       .populate("userInfo", "business")
-      .sort({ createdAt: -1 })
+      .sort({ views: -1 })
       .select("-__v")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -236,7 +236,7 @@ class Product {
    * @returns resultList
    */
   static async findProductSearchSortByGroups({ search, page, perPage }) {
-    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const len = await ProductModel.countDocuments({ name: { $regex: search }, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({ name: { $regex: search } })
@@ -258,7 +258,7 @@ class Product {
    * @returns resultList
    */
   static async findProductSearchSortByPrice({ search, page, perPage }) {
-    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const len = await ProductModel.countDocuments({ name: { $regex: search }, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({ name: { $regex: search } })
@@ -280,7 +280,7 @@ class Product {
    * @returns resultList
    */
   static async findProductSearchSortByReviews({ search, page, perPage }) {
-    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const len = await ProductModel.countDocuments({ name: { $regex: search }, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({ name: { $regex: search } })
@@ -302,7 +302,7 @@ class Product {
    * @returns resultList
    */
   static async findProductSearchSortByViews({ search, page, perPage }) {
-    const len = await ProductModel.countDocuments({ name: { $regex: search } });
+    const len = await ProductModel.countDocuments({ name: { $regex: search }, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({ name: { $regex: search } })

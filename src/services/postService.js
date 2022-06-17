@@ -32,7 +32,7 @@ class PostService {
     // groupChat : 그룹 공구에 참여하는 사람
     // review : 모두
     if (type === "cs") {
-      const { userId, name } = await Product.findProduct({ id: receiver });
+      const { userId, name, images } = await Product.findProduct({ id: receiver });
 
       if (!userId) { 
         const errorMessage = "존재하지 않는 상품입니다.";
@@ -45,18 +45,21 @@ class PostService {
       await User.updateAlert({
         userId: userId,
         from: type,
+        image: images,
         sendId: receiver, // productId
         content: `'${name}' 상품에 문의가 생성되었습니다.`,
       });
       
     } else if (type === "groupChat") { 
       authorizedUsers = await Group.findParticipantsByGroupId({ groupId: receiver });
-      const { groupName } = await Group.findByGroupId({ groupId: receiver });
+      const group = await Group.findByGroupId({ groupId: receiver });
+      const groupName = group.groupName;
 
       // 공동 구매 댓글이 생겼다면 공동구매 참여자 전원에게 알림
       authorizedUsers.map(async (v) => await User.updateAlert({
         userId: v,
         from: type,
+        image: group.productInfo.images,
         sendId: receiver, // groupId
         content: `'${groupName}'에 공동 구매 댓글이 생성되었습니다.`,
       }));
@@ -64,10 +67,11 @@ class PostService {
       authorizedUsers = [];
 
       // 후기가 생겼다면 상품 판매자에게 알림
-      const { userId, name } = await Product.findProduct({ id: receiver });
+      const { userId, name, images } = await Product.findProduct({ id: receiver });
       await User.updateAlert({
         userId: userId,
         from: type,
+        image: images,
         sendId: receiver, // productId
         content: `'${name}' 상품에 후기가 생성되었습니다.`,
       });
@@ -83,7 +87,7 @@ class PostService {
       const addCommentCount = post.commentCount + 1;
       const toUpdate = { commentCount: addCommentCount, reply: true };
       post = await Post.update({ postId: updateId, toUpdate });
-
+      const { images } = await Product.findProduct({ id: post.receiver });
       // 댓글이 추가되었다면 글 쓴 유저에게 알림
       if (writer !== post.writer) {
         const toUpdate = { reply: true };
@@ -91,6 +95,7 @@ class PostService {
         await User.updateAlert({
           userId: post.writer,
           from: type,
+          image: images,
           sendId: post.postId,
           content: `'${post.title}' 글에 댓글이 생성되었습니다.`,
         });
