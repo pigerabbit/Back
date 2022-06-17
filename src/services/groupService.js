@@ -186,6 +186,8 @@ export class groupService {
       const errorMessage = "그룹 아이디를 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
+
+    console.log("group =====>", group);
     let content = "";
     if (toUpdate.state !== null) {
       switch (toUpdate.state) {
@@ -525,7 +527,7 @@ export class groupService {
       firstList.map(async (v) => {
         await User.updateAlert({
           userId: v.userId,
-          from: "group",
+          from: "product",
           sendId: product.id,
           image: product.images,
           type: v.groupType,
