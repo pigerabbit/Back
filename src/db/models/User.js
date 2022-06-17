@@ -127,6 +127,7 @@ export class User {
       content,
       removed: false,
     };
+    console.log("model =====>", userId);
     const updateAlert = await UserModel.findOneAndUpdate(
       { id: userId },
       { $push: { alertList: newAlert } }
