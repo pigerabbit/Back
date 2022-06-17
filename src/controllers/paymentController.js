@@ -55,6 +55,31 @@ const paymentController = {
       next(err);
     }
   },
+
+  getPayment: async (req, res, next) => {
+    try {
+      const paymentId = req.params.paymentId;
+      const userId = req.currentUserId;
+
+      const payment = await paymentService.getPayment({
+        paymentId,
+        userId,
+      });
+
+      if (payment.errorMessage) {
+        throw new Error(payment.errorMessage);
+      }
+
+      const body = {
+        success: true,
+        payload: payment,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
+  },
 };
 
 export { paymentController };

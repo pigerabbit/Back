@@ -16,4 +16,10 @@ paymentRouter.put(
   paymentController.updatePayment
 );
 
+paymentRouter.get(
+  "/payments/:paymentId",
+  login_required,
+  paymentController.getPayment
+);
+
 export { paymentRouter };
