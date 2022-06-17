@@ -494,8 +494,6 @@ export class groupService {
     }
 
     return withToggleInfo(toggleInfo.groups, groups);
-
-    return groups;
   }
 
   /** 상품이 삭제되면 공구에 참여 중인 유저에게 알림이 가는 함수
