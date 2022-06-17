@@ -74,6 +74,7 @@ const userController = {
       const email = req.body.email;
       const password = req.body.password;
       const address = req.body.address;
+      const phoneNumber = req.body.phoneNumber;
       const type = "sogongx2";
   
       // 위 데이터를 유저 db에 추가하기
@@ -82,6 +83,7 @@ const userController = {
         email,
         password,
         address,
+        phoneNumber,
         type,
       });
   
@@ -174,11 +176,12 @@ const userController = {
       //name,desciption,weight,height,gender만 변경가능하고 비밀번호는 다른 라우터를 사용
       const name = req.body.name ?? null;
       const address = req.body.address ?? null;
+      const phoneNumber = req.body.phoneNumber ?? null;
       const distance = req.body.distance ?? null;
       const businessName = req.body.businessName ?? null;
       const businessLocation = req.body.businessLocation ?? null;
   
-      const toUpdate = { name, address, distance };
+      const toUpdate = { name, address, phoneNumber, distance };
   
       // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
       const updatedUser = await userService.setUser({
