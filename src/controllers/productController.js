@@ -22,7 +22,7 @@ const productController = {
         shippingFeeCon,
         detail,
         shippingInfo,
-        dueDate,
+        term,
       } = req.body;
 
       const newProduct = await ProductService.addProduct({
@@ -39,7 +39,7 @@ const productController = {
         shippingFeeCon,
         detail,
         shippingInfo,
-        dueDate,
+        term,
       });
 
       const body = {
@@ -198,7 +198,7 @@ const productController = {
     const shippingFeeCon = req.body.shippingFeeCon ?? null;
     const detail = req.body.detail ?? null;
     const shippingInfo = req.body.shippingInfo ?? null;
-    const dueDate = req.body.dueDate ?? null;
+    const term = req.body.term ?? null;
 
     const toUpdate = {
       productType,
@@ -213,7 +213,7 @@ const productController = {
       shippingFeeCon,
       detail,
       shippingInfo,
-      dueDate,
+      term,
     };
 
     const updatedProduct = await ProductService.setProduct({
@@ -361,6 +361,8 @@ const productController = {
 
       return res.status(400).send(body);
     }
+
+    await toggleService.setToggleViewedProducts({ userId, objectId: product._id });
 
     const body = {
       success: true,
