@@ -9,7 +9,7 @@ import { toggleService } from "../services/toggleService";
 import { addressToXY } from "../utils/addressToXY.js";
 
 class userService {
-  static async addUser({ id, name, email, password, address, type }) {
+  static async addUser({ id, name, email, password, address, phoneNumber, type }) {
     //일반회원가입일때
     if (type === "sogongx2") {
       const emailExits = await User.isEmailExists({ email, type });
@@ -50,6 +50,7 @@ class userService {
       email,
       password: hashedPassword,
       address,
+      phoneNumber,
       type,
       imageLink,
       locationXY: {

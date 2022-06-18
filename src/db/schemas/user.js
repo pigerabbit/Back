@@ -93,6 +93,10 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
     type: {
       type: String,
       required: false,
