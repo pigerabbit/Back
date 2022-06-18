@@ -362,6 +362,8 @@ const productController = {
       return res.status(400).send(body);
     }
 
+    await toggleService.setToggleViewedProducts({ userId, objectId: product._id });
+
     const body = {
       success: true,
       payload: product,
