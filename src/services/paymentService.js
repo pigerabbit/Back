@@ -59,8 +59,6 @@ export class paymentService {
   }
 
   static async getPayment({ paymentId, userId }) {
-    console.log("paymentId:", paymentId);
-    console.log("userId:", userId);
     const paymentInfo = await Payment.findByPaymentId({
       paymentId,
     });
