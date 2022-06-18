@@ -445,7 +445,7 @@ class ProductService {
    * @returns 상품 Object
    */
   static async getUserProduct({ userId }) {
-    let resultList = await Product.findUserProduct({ userId });
+    let resultList = await Product.findUserProduct({ userId, removed: false });
 
     resultList = await productsWithToggleInfo(userId, resultList);
 
