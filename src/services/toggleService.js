@@ -101,6 +101,33 @@ class toggleService {
     return updatedToggle;
   }
 
+  static async deleteToggleSearchWord({ userId, searchWord }) {
+    let toggleInfo = await Toggle.findByUserId({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "정보가 없습니다. user_id 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let searchWordsInfo = toggleInfo.searchWords;
+    let newValue = {};
+    const index = searchWordsInfo.findIndex((f) => f === searchWord);
+    if (index > -1) {
+      searchWordsInfo.splice(index, 1);
+    } else {
+      searchWordsInfo.push(searchWord);
+    }
+    newValue = searchWordsInfo;
+    const updatedToggle = await ToggleModel.findOneAndUpdate(
+      { userId },
+      { $set: { searchWords: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedToggle;
+  }
+
   static async setToggleViewedProducts({ userId, toUpdate }) {
     let toggleInfo = await Toggle.findByUserId({ userId });
 

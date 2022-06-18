@@ -81,6 +81,26 @@ const toggleController = {
     }
   },
 
+  deleteToggleSearchWord: async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const searchWord = req.params.searchWord;
+
+      const updatedSearchWordInfo = await toggleService.deleteToggleSearchWord({
+        userId,
+        searchWord,
+      });
+
+      if (updatedSearchWordInfo.errorMessage) {
+        throw new Error(updatedSearchWordInfo.errorMessage);
+      }
+
+      res.status(200).json(updatedSearchWordInfo);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   getToggleGroups: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
