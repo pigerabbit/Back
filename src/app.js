@@ -28,15 +28,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // 기본 페이지
 app.get("/", (req, res) => {
-  res.send(`
-  |￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
-  |　PIG + TIGER + RABBIT　|
-  |   　　　　　     ===　　　　　　|
-  |　　　　PIGERABBIT　　　　|
-  |＿＿＿＿＿＿＿＿＿＿＿＿＿＿| 
-  (\\＿/) || 
-  (•ㅅ•)  ||
-  / 　 づ`);
+  res.send(`<p>
+  <div>|￣￣￣￣￣￣￣￣￣￣￣￣￣￣|</div>
+  <div>|  　PIG ＋ TIGER ＋ RABBIT 　|</div>
+  <div>|   　 　　　　    ===　　　　　　|</div>
+  <div>|　  　  　PIGERABBIT　　  　  　|</div>
+  <div>|＿＿＿＿＿＿＿＿＿＿＿＿＿＿|</div>
+  <div>(＼＿/)　||</div>
+  <div>(•ㅅ•) ||</div>
+  <div>/ 　 　づづ</div></p>`);
 });
 
 // router, service 구현 (userAuthRouter는 맨 위에 있어야 함.)
