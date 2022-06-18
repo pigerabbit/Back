@@ -173,7 +173,9 @@ export class recommendService {
 
     for (let i = 0; i < productList3.length; i++) {
       const productId = productList3[i].id;
-      const group = await GroupModel.findOne({ productId, state: 0 }).lean();
+      const group = await GroupModel.findOne({ productId, state: 0 })
+        .populate("productInfo")
+        .lean();
       if (group !== null) {
         newList.push(group);
       }
