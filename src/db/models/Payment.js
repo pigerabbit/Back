@@ -7,7 +7,9 @@ class Payment {
   }
 
   static async findByPaymentId({ paymentId }) {
-    const paymentInfo = await PaymentModel.findOne({ paymentId });
+    const paymentInfo = await PaymentModel.findOne({ paymentId }).populate(
+      "groupId"
+    );
     return paymentInfo;
   }
 
@@ -15,7 +17,7 @@ class Payment {
     const paymentInfo = await PaymentModel.findOne({
       groupId,
       userId,
-    });
+    }).populate("groupId");
 
     return paymentInfo;
   }
