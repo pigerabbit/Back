@@ -28,7 +28,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // 기본 페이지
 app.get("/", (req, res) => {
-  res.send("안녕하세요, 픽어래빗-꿀호깡 입니다.");
+  res.send(`
+  |￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
+  |　PIG + TIGER + RABBIT　|
+  |   　　　　　     ===　　　　　　|
+  |　　　　PIGERABBIT　　　　|
+  |＿＿＿＿＿＿＿＿＿＿＿＿＿＿| 
+  (\\＿/) || 
+  (•ㅅ•)  ||
+  / 　 づ`);
 });
 
 // router, service 구현 (userAuthRouter는 맨 위에 있어야 함.)
