@@ -1,15 +1,15 @@
-import { Payment } from "../db";
+import { Payment, Group, User } from "../db";
 import crypto from "crypto";
 import { PaymentModel } from "../db/schemas/payment";
 
 export class paymentService {
-  static async addPayment({ userId, productId, dueDate, used }) {
+  static async addPayment({ userId, groupId, dueDate, used }) {
     const paymentId = crypto.randomUUID();
 
     const newPayment = {
       paymentId,
       userId,
-      productId,
+      groupId,
       dueDate,
       used,
     };
@@ -59,6 +59,8 @@ export class paymentService {
   }
 
   static async getPayment({ paymentId, userId }) {
+    console.log("paymentId:", paymentId);
+    console.log("userId:", userId);
     const paymentInfo = await Payment.findByPaymentId({
       paymentId,
     });
@@ -71,6 +73,36 @@ export class paymentService {
 
     if (userId !== paymentInfo.userId) {
       const errorMessage = "본인의 결제 내역이 아닙니다.";
+      return { errorMessage };
+    }
+
+    return paymentInfo;
+  }
+
+  static async getPaymentByGroupAndUserId({ groupId, userId }) {
+    const groupInfo = await Group.findByGroupIdByObjectId({
+      _id: groupId,
+    });
+
+    if (groupInfo === null) {
+      const errorMessage = "존재하지 않는 groupId입니다.";
+      return { errorMessage };
+    }
+
+    const userInfo = await User.findById({ userId });
+
+    if (userInfo === null) {
+      const errorMessage = "존재하지 않는 userId입니다.";
+      return { errorMessage };
+    }
+
+    const paymentInfo = await Payment.findByGroupAndUserId({
+      groupId,
+      userId,
+    });
+
+    if (paymentInfo === null) {
+      const errorMessage = "존재하지 않는 paymentId입니다.";
       return { errorMessage };
     }
 

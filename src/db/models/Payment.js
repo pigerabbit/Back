@@ -10,6 +10,15 @@ class Payment {
     const paymentInfo = await PaymentModel.findOne({ paymentId });
     return paymentInfo;
   }
+
+  static async findByGroupAndUserId({ groupId, userId }) {
+    const paymentInfo = await PaymentModel.findOne({
+      groupId,
+      userId,
+    });
+
+    return paymentInfo;
+  }
 }
 
 export { Payment };

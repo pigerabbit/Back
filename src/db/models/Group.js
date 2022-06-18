@@ -14,6 +14,13 @@ class Group {
     return groupInfo;
   }
 
+  static async findByGroupIdByObjectId({ _id }) {
+    const groupInfo = await GroupModel.findOne({ _id })
+      .populate("productInfo")
+      .lean();
+    return groupInfo;
+  }
+
   static async updateAll({ groupId, setter }) {
     const updatedGroup = await GroupModel.findOneAndUpdate(
       { groupId },
@@ -35,7 +42,7 @@ class Group {
       .populate("productInfo")
       .lean();
     return groups;
-  } 
+  }
 
   static async findSortedGroupsByRemainedTimeInfo() {
     const groups = await GroupModel.find({
