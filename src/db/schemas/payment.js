@@ -17,11 +17,11 @@ const PaymentSchema = new Schema(
     },
     dueDate: {
       type: String,
-      required: true,
+      required: false,
     },
     used: {
       type: Boolean,
-      required: true,
+      required: false,
       default: false,
     },
   },
