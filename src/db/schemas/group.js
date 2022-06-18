@@ -14,7 +14,7 @@ const ParticipantSchema = new Schema({
     required: true,
   },
   payment: {
-    type: Boolean,
+    type: String,
     required: true,
   },
   complete: {
