@@ -22,4 +22,10 @@ paymentRouter.get(
   paymentController.getPayment
 );
 
+paymentRouter.get(
+  "/payments/:groupId/:userId",
+  login_required,
+  paymentController.getPaymentByGroupAndUserId
+);
+
 export { paymentRouter };
