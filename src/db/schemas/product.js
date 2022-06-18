@@ -80,8 +80,8 @@ const ProductSchema = new Schema(
       type: String,
       required: false,
     },
-    dueDate: {
-      type: String,
+    term: {
+      type: Number,
       required: false,
     },
     removed: {

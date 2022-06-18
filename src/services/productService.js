@@ -41,7 +41,7 @@ class ProductService {
     shippingFeeCon,
     detail,
     shippingInfo,
-    dueDate,
+    term,
   }) { 
     const id = crypto.randomUUID();
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
@@ -65,7 +65,7 @@ class ProductService {
       shippingFeeCon,
       detail,
       shippingInfo,
-      dueDate,
+      term,
     };
 
     let product = await Product.create({ newProduct });
