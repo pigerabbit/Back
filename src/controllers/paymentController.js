@@ -4,11 +4,11 @@ const paymentController = {
   createPayment: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const { productId, dueDate, used } = req.body;
+      const { groupId, dueDate, used } = req.body;
 
       const newPayment = await paymentService.addPayment({
         userId,
-        productId,
+        groupId,
         dueDate,
         used,
       });
@@ -63,6 +63,31 @@ const paymentController = {
 
       const payment = await paymentService.getPayment({
         paymentId,
+        userId,
+      });
+
+      if (payment.errorMessage) {
+        throw new Error(payment.errorMessage);
+      }
+
+      const body = {
+        success: true,
+        payload: payment,
+      };
+
+      return res.status(200).send(body);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  getPaymentByGroupAndUserId: async (req, res, next) => {
+    try {
+      const groupId = req.params.groupId;
+      const userId = req.params.userId;
+
+      const payment = await paymentService.getPaymentByGroupAndUserId({
+        groupId,
         userId,
       });
 

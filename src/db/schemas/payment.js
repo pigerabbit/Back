@@ -10,18 +10,18 @@ const PaymentSchema = new Schema(
       type: String,
       required: true,
     },
-    productId: {
+    groupId: {
       type: Schema.Types.ObjectId,
-      ref: "Product",
-      required: false,
+      ref: "Group",
+      required: true,
     },
     dueDate: {
       type: String,
-      required: true,
+      required: false,
     },
     used: {
       type: Boolean,
-      required: true,
+      required: false,
       default: false,
     },
   },

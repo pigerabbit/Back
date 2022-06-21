@@ -24,6 +24,12 @@ toggleRouter.put(
   toggleController.updateToggleSearchWord
 );
 
+toggleRouter.delete(
+  "/toggle/searchWord/:searchWord",
+  login_required,
+  toggleController.deleteToggleSearchWord
+);
+
 toggleRouter.get(
   "/toggle/groups",
   login_required,
