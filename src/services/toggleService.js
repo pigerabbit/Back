@@ -130,7 +130,6 @@ class toggleService {
 
   static async setToggleViewedProducts({ userId, objectId }) {
     let toggleInfo = await Toggle.findByUserId({ userId });
-
     if (!toggleInfo) {
       const errorMessage =
         "정보가 없습니다. user_id 값을 다시 한 번 확인해 주세요.";
@@ -138,8 +137,12 @@ class toggleService {
     }
 
     let viewedProductsInfo = toggleInfo.viewedProducts;
+    console.log(viewedProductsInfo);
     let newValue = {};
-    const index = viewedProductsInfo.findIndex((f) => f === objectId);
+    const index = viewedProductsInfo.findIndex((f) => {
+      return f.str === objectId.str
+    });
+    console.log("index =====>", index);
     if (index > -1) {
       // [사과, 배, 감] => (1) [사과, 배, 감, 딸기] (2) [배, 감, 사과]
       viewedProductsInfo.splice(index, 1);
