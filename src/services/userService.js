@@ -116,7 +116,7 @@ class userService {
   static async getUserInfo({ userId }) {
     const user = await User.findById({ userId });
 
-    // db에서 찾지 못한 경우, 에러 메시지 반환
+    // db에서 찾지 못한 경우, 에러 메시지 반환 
     if (!user) {
       const errorMessage =
         "해당 유저는 가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
@@ -127,7 +127,9 @@ class userService {
       return { errorMessage };
     }
     const resultUser = getRequiredInfoFromData(user);
-    return resultUser;
+    let alertsExist = await User.getAlertList({ userId });
+    alertsExist = alertsExist[0]?.alertList.length > 0 ? true : false;
+    return { resultUser, alertsExist };
   }
 
   static async setUser({ userId, toUpdate, businessName, businessLocation }) {
@@ -200,23 +202,6 @@ class userService {
 
     const updatedUser = await User.updateAll({ userId, setter: toUpdate });
     const resultUser = getRequiredInfoFromData(updatedUser);
-    return resultUser;
-  }
-
-  static async getUserInfo({ userId }) {
-    const user = await User.findById({ userId });
-
-    // db에서 찾지 못한 경우, 에러 메시지 반환
-    if (!user) {
-      const errorMessage =
-        "해당 유저는 가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
-      return { errorMessage };
-    }
-    if (user.deleted === true) {
-      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
-      return { errorMessage };
-    }
-    const resultUser = getRequiredInfoFromData(user);
     return resultUser;
   }
 

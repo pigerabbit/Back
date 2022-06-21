@@ -34,7 +34,6 @@ export class User {
 
   static async findById({ userId }) {
     const user = await UserModel.findOne({ id: userId }).lean();
-
     return user;
   }
 
@@ -127,7 +126,6 @@ export class User {
       content,
       removed: false,
     };
-    console.log("model =====>", userId);
     const updateAlert = await UserModel.findOneAndUpdate(
       { id: userId },
       { $push: { alertList: newAlert } }
