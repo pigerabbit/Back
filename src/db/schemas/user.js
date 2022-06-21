@@ -123,6 +123,13 @@ const UserSchema = new Schema(
       default: false,
     },
     alertList: [alertSchema],
+    alertsExist: {
+      type: Boolean,
+      default: false,
+    },
+    viewAlertTime: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

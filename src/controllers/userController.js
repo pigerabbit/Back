@@ -162,7 +162,6 @@ const userController = {
         success: true,
         payload: {
           resultUser: currentUserInfo,
-          alertsExist,
         },
       };
       
