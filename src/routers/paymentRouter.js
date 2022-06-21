@@ -10,11 +10,7 @@ paymentRouter.post(
   paymentController.createPayment
 );
 
-paymentRouter.put(
-  "/payments/:paymentId",
-  login_required,
-  paymentController.updatePayment
-);
+paymentRouter.put("/payments/:paymentId", paymentController.updatePayment);
 
 paymentRouter.get(
   "/payments/:paymentId",
@@ -24,7 +20,6 @@ paymentRouter.get(
 
 paymentRouter.get(
   "/payments/:groupId/:userId",
-  login_required,
   paymentController.getPaymentByGroupAndUserId
 );
 
