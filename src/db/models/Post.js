@@ -68,7 +68,7 @@ class Post {
    */
   static async update({ postId, toUpdate }) { 
     const updatedPost = await PostModel.findOneAndUpdate(
-      { postId: postId },
+      { postId: postId, removed: false, },
       { $set: toUpdate },
       { returnOriginal: false },
     )
