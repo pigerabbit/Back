@@ -160,10 +160,7 @@ const userController = {
 
       const body = {
         success: true,
-        payload: {
-          resultUser: currentUserInfo,
-          alertsExist,
-        },
+        payload: currentUserInfo,
       };
       
       res.json(body);

@@ -330,13 +330,24 @@ class userService {
       return { errorMessage };
     }
 
+    // 알림 확인을 했다면 false로 바꾸고, 마지막으로 알림을 본 시간 업데이트
+    await UserModel.findOneAndUpdate(
+      { id: userId },
+      {
+        $set: {
+          alertsExist: false,
+          viewAlertTime: Date.now(),
+        },
+      },
+    );
+    
     let alertList = await User.getAlertList({ userId });
-
-    alertList[0].alertList.sort((a, b) => {
+      
+    alertList[0]?.alertList.sort((a, b) => {
       return b.createdAt - a.createdAt;
     });
 
-    return alertList[0].alertList;
+    return alertList[0]?.alertList;
   }
 
   /** 유저 alert 삭제 함수

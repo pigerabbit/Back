@@ -11,7 +11,7 @@ const alertRouter = Router();
 alertRouter.get(
   "/users/:id/alert",
   login_required,
-  alertController.createAlert
+  alertController.viewAlert
 );
 
 /** user 알림 삭제 함수

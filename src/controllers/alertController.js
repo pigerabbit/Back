@@ -1,7 +1,7 @@
 import { userService } from "../services/userService";
 
 const alertController = {
-  createAlert: async (req, res, next) => {
+  viewAlert: async (req, res, next) => {
     try {
       const currentUserId = req.currentUserId;
       const userId = req.params.id;

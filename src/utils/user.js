@@ -13,6 +13,7 @@ export function getRequiredInfoFromData(data) {
       type: data.type,
       imageLink: data.imageLink,
       reportedBy: data.reportedBy,
+      alertsExist: data.alertsExist,
     };
   } else {
     return {
@@ -31,6 +32,7 @@ export function getRequiredInfoFromData(data) {
         type: data.locationXY.type,
         coordinates: data.locationXY.coordinates,
       },
+      alertsExist: data.alertsExist,
     };
   }
 }

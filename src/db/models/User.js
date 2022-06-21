@@ -88,7 +88,7 @@ export class User {
     )
       .sort({ createdAt: -1 })
       .lean();
-
+    
     return alertList;
   }
 
@@ -133,7 +133,14 @@ export class User {
     };
     const updateAlert = await UserModel.findOneAndUpdate(
       { id: userId },
-      { $push: { alertList: newAlert } }
+      {
+        $set: {
+          alertsExist: true,
+        },
+        $push: {
+          alertList: newAlert,
+        },
+      }
     )
       .sort({ createdAt: -1 })
       .lean();
