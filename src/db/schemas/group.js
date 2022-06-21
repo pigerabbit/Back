@@ -14,8 +14,9 @@ const ParticipantSchema = new Schema({
     required: true,
   },
   payment: {
-    type: String,
-    required: true,
+    type: Schema.Types.ObjectId,
+    ref: "Payment",
+    required: false,
   },
   complete: {
     type: Boolean,

@@ -44,7 +44,6 @@ export class groupService {
       userId: userId,
       participantDate: nowDate(),
       quantity: quantity,
-      payment: false,
       complete: false,
       manager: true,
       review: false,
@@ -71,13 +70,27 @@ export class groupService {
     const groupObjectId = createdNewGroup._id;
 
     // 결제가 완료되었다고 가정!! (결제 완료 후 payment 추가)
-    const payment = paymentService.addPayment({
+    const payment = await paymentService.addPayment({
       groupId: groupObjectId,
       userId,
       used: false,
     });
 
-    return createdNewGroup;
+    const paymentObjectId = payment._id;
+
+    let participantInfo = createdNewGroup.participants;
+    let newValue = {};
+
+    participantInfo[0]["payment"] = paymentObjectId;
+    newValue = participantInfo;
+
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedParticipants;
   }
 
   static async setQuantity({ groupId, userId, quantity }) {
@@ -137,6 +150,37 @@ export class groupService {
   }
 
   static async setPayment({ groupId, userId, payment }) {
+    let groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage =
+        "정보가 없습니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let participantsInfo = groupInfo.participants;
+    let newValue = {};
+
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
+    if (index > -1) {
+      participantsInfo[index]["payment"] = payment;
+    } else {
+      const errorMessage =
+        "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+    newValue = participantsInfo;
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedParticipants;
+  }
+
+  static async setObjectId({ groupId, userId, payment }) {
     let groupInfo = await Group.findByGroupId({ groupId });
 
     if (!groupInfo) {
