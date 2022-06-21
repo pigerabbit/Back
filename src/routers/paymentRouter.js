@@ -24,7 +24,6 @@ paymentRouter.get(
 
 paymentRouter.get(
   "/payments/:groupId/:userId",
-  login_required,
   paymentController.getPaymentByGroupAndUserId
 );
 
