@@ -9,7 +9,15 @@ import { toggleService } from "../services/toggleService";
 import { addressToXY } from "../utils/addressToXY.js";
 
 class userService {
-  static async addUser({ id, name, email, password, address, phoneNumber, type }) {
+  static async addUser({
+    id,
+    name,
+    email,
+    password,
+    address,
+    phoneNumber,
+    type,
+  }) {
     //일반회원가입일때
     if (type === "sogongx2") {
       const emailExits = await User.isEmailExists({ email, type });
@@ -144,7 +152,7 @@ class userService {
       return { errorMessage };
     }
 
-    if (toUpdate.address !== null) {
+    if (toUpdate.address !== undefined) {
       coordinates = await addressToXY(toUpdate.address);
     }
 
@@ -340,7 +348,7 @@ class userService {
     }
 
     let alertList = await User.getAlertList({ userId });
-    
+
     alertList[0].alertList.sort((a, b) => {
       return b.createdAt - a.createdAt;
     });
