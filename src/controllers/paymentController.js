@@ -30,13 +30,11 @@ const paymentController = {
   updatePayment: async (req, res, next) => {
     try {
       const paymentId = req.params.paymentId;
-      const userId = req.currentUserId;
       const dueDate = req.body.dueDate ?? null;
       const used = req.body.used ?? null;
 
       const payment = await paymentService.setPayment({
         paymentId,
-        userId,
         dueDate,
         used,
       });

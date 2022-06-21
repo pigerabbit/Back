@@ -18,7 +18,7 @@ export class paymentService {
     return createdNewPayment;
   }
 
-  static async setPayment({ paymentId, userId, dueDate, used }) {
+  static async setPayment({ paymentId, dueDate, used }) {
     let paymentInfo = await Payment.findByPaymentId({
       paymentId,
     });
@@ -26,11 +26,6 @@ export class paymentService {
     if (!paymentInfo) {
       const errorMessage =
         "정보가 없습니다. paymentId 값을 다시 한 번 확인해 주세요.";
-      return { errorMessage };
-    }
-
-    if (userId !== paymentInfo.userId) {
-      const errorMessage = "본인의 결제 내역이 아닙니다.";
       return { errorMessage };
     }
 
