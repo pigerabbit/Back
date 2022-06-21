@@ -103,6 +103,10 @@ export class paymentService {
       return { errorMessage };
     }
 
+    const groupInfoFromPayment = paymentInfo.groupId;
+    delete paymentInfo.groupId;
+    paymentInfo["group"] = groupInfoFromPayment;
+
     return paymentInfo;
   }
 }

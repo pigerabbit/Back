@@ -17,7 +17,9 @@ class Payment {
     const paymentInfo = await PaymentModel.findOne({
       groupId,
       userId,
-    }).populate("groupId");
+    })
+      .populate("groupId")
+      .lean();
 
     return paymentInfo;
   }
