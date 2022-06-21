@@ -10,8 +10,13 @@ export class User {
     return await UserModel.exists({ email, type });
   }
 
-  static async findByEmail({ email, type }) {
-    const user = await UserModel.findOne({ email, type });
+  // static async findByEmail({ email, type }) {
+  //   const user = await UserModel.findOne({ email, type });
+  //   return user;
+  // }
+
+  static async findByEmail({ email }) {
+    const user = await UserModel.findOne({ email });
     return user;
   }
 
