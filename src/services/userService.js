@@ -127,9 +127,7 @@ class userService {
       return { errorMessage };
     }
     const resultUser = getRequiredInfoFromData(user);
-    let alertsExist = await User.getAlertList({ userId });
-    alertsExist = alertsExist[0]?.alertList.length > 0 ? true : false;
-    return { resultUser, alertsExist };
+    return resultUser;
   }
 
   static async setUser({ userId, toUpdate, businessName, businessLocation }) {

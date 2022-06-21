@@ -155,10 +155,17 @@ const userController = {
         throw new Error(currentUserInfo.errorMessage);
       }
 
+      let alertsExist = await User.getAlertList({ userId });
+      alertsExist = alertsExist[0]?.alertList.length > 0 ? true : false;
+
       const body = {
         success: true,
-        payload: currentUserInfo,
+        payload: {
+          resultUser: currentUserInfo,
+          alertsExist,
+        },
       };
+      
       res.json(body);
     } catch (error) {
       next(error);
