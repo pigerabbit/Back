@@ -18,7 +18,7 @@ export class paymentService {
     return createdNewPayment;
   }
 
-  static async setPayment({ paymentId, dueDate, used }) {
+  static async setPayment({ paymentId, dueDate, used, voucher }) {
     let paymentInfo = await Payment.findByPaymentId({
       paymentId,
     });
@@ -42,6 +42,14 @@ export class paymentService {
         { paymentId },
         { $set: { used } },
         { returnOriginal: false }
+      );
+    }
+
+    if (voucher !== null) {
+      await PaymentModel.findOneAndUpdate(
+        { paymentId },
+        { $set: { voucher } },
+        { reteurnOriginal: false }
       );
     }
 

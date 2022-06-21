@@ -24,6 +24,11 @@ const PaymentSchema = new Schema(
       required: false,
       default: false,
     },
+    voucher: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   {
     timestamps: true,

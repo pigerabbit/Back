@@ -32,11 +32,13 @@ const paymentController = {
       const paymentId = req.params.paymentId;
       const dueDate = req.body.dueDate ?? null;
       const used = req.body.used ?? null;
+      const voucher = req.body.voucher ?? null;
 
       const payment = await paymentService.setPayment({
         paymentId,
         dueDate,
         used,
+        voucher,
       });
 
       if (payment.errorMessage) {
