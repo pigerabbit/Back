@@ -5,6 +5,7 @@ import { nowDate } from "../utils/date-calculator.js";
 import { ToggleModel } from "../db/schemas/toggle.js";
 import { withToggleInfo } from "../utils/withToggleInfo";
 import { addressToXY } from "../utils/addressToXY.js";
+import { paymentService } from "./paymentService";
 
 export class groupService {
   static async addGroup({
@@ -18,7 +19,10 @@ export class groupService {
   }) {
     const groupId = crypto.randomUUID();
     const participantId = crypto.randomUUID();
-    const { minPurchaseQty } = await Product.findProduct({ id: productId });
+    const { minPurchaseQty, term } = await Product.findProduct({
+      id: productId,
+    });
+
     const remainedPersonnel = minPurchaseQty - quantity;
     const product = await Product.findProduct({ id: productId });
     const productInfo = product._id;
@@ -64,6 +68,14 @@ export class groupService {
     };
 
     const createdNewGroup = await Group.create({ newGroup });
+    const groupObjectId = createdNewGroup._id;
+
+    // 결제가 완료되었다고 가정!! (결제 완료 후 payment 추가)
+    const payment = paymentService.addPayment({
+      groupId: groupObjectId,
+      userId,
+      used: false,
+    });
 
     return createdNewGroup;
   }
@@ -352,6 +364,13 @@ export class groupService {
       };
 
       participantsInfo.push(participant);
+
+      const groupObjectId = groupInfo._id;
+      const payment = await paymentService.addPayment({
+        groupId: groupObjectId,
+        userId,
+        used: false,
+      });
     }
 
     const updatedRemainedPersonnel = groupInfo.remainedPersonnel - quantity;

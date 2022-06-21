@@ -3,14 +3,13 @@ import crypto from "crypto";
 import { PaymentModel } from "../db/schemas/payment";
 
 export class paymentService {
-  static async addPayment({ userId, groupId, dueDate, used }) {
+  static async addPayment({ userId, groupId, used }) {
     const paymentId = crypto.randomUUID();
 
     const newPayment = {
       paymentId,
       userId,
       groupId,
-      dueDate,
       used,
     };
 
