@@ -45,6 +45,10 @@ class Group {
         path: "participants",
         populate: { path: "payment" },
       })
+      .populate({
+        path: "participants",
+        populate: { path: "userInfo" },
+      })
       .lean();
     return groups;
   }
