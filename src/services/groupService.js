@@ -19,6 +19,7 @@ export class groupService {
     productId,
     deadline,
     quantity,
+    paymentMethod,
   }) {
     const groupId = crypto.randomUUID();
     const participantId = crypto.randomUUID();
@@ -78,6 +79,7 @@ export class groupService {
       userId,
       used: false,
       voucher: quantity,
+      paymentMethod,
     });
 
     const paymentObjectId = payment._id;
@@ -407,7 +409,7 @@ export class groupService {
     return withToggleInfo(toggleInfo.groups, groups);
   }
 
-  static async addParticipants({ userId, groupId, quantity }) {
+  static async addParticipants({ userId, groupId, quantity, paymentMethod }) {
     const groupInfo = await Group.findByGroupId({ groupId });
 
     if (!groupInfo) {
@@ -432,6 +434,7 @@ export class groupService {
         userId,
         used: false,
         voucher: quantity,
+        paymentMethod,
       });
 
       const participant = {

@@ -4,13 +4,14 @@ const paymentController = {
   createPayment: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const { groupId, dueDate, used } = req.body;
+      const { groupId, dueDate, used, paymentMethod } = req.body;
 
       const newPayment = await paymentService.addPayment({
         userId,
         groupId,
         dueDate,
         used,
+        paymentMethod,
       });
 
       if (newPayment.errorMessage) {
@@ -33,12 +34,14 @@ const paymentController = {
       const dueDate = req.body.dueDate ?? null;
       const used = req.body.used ?? null;
       const voucher = req.body.voucher ?? null;
+      const paymentMethod = req.body.paymentMethod ?? null;
 
       const payment = await paymentService.setPayment({
         paymentId,
         dueDate,
         used,
         voucher,
+        paymentMethod,
       });
 
       if (payment.errorMessage) {
