@@ -137,12 +137,15 @@ class toggleService {
     }
 
     let viewedProductsInfo = toggleInfo.viewedProducts;
-    console.log(viewedProductsInfo);
+
     let newValue = {};
-    const index = viewedProductsInfo.findIndex((f) => {
-      return f.str === objectId.str
+    let index = 0;    
+    viewedProductsInfo.map((f) => {
+      if (f.equals(objectId))
+        return index;
+      index = index + 1;
     });
-    console.log("index =====>", index);
+
     if (index > -1) {
       // [사과, 배, 감] => (1) [사과, 배, 감, 딸기] (2) [배, 감, 사과]
       viewedProductsInfo.splice(index, 1);
@@ -150,6 +153,7 @@ class toggleService {
     } else {
       viewedProductsInfo.push(objectId);
     }
+    
     newValue = viewedProductsInfo;
     const updatedToggle = await ToggleModel.findOneAndUpdate(
       { userId },
