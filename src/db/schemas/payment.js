@@ -18,6 +18,7 @@ const PaymentSchema = new Schema(
     dueDate: {
       type: String,
       required: false,
+      default: "2000-01-01 00:00:00",
     },
     used: {
       type: Boolean,
