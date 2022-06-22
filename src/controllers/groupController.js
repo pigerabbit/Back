@@ -345,6 +345,15 @@ const groupController = {
     try {
       const userId = req.currentUserId;
       const groupList = await groupService.findNearGroupList({ userId });
+      if (groupList.data === false) { 
+        const body = {
+          success: true,
+          data: groupList.data,
+          payload: groupList.groupList,
+        };
+  
+        return res.status(200).send(body);
+      }
 
       const body = {
         success: true,

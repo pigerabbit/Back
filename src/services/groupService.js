@@ -6,6 +6,7 @@ import { ToggleModel } from "../db/schemas/toggle.js";
 import { withToggleInfo } from "../utils/withToggleInfo";
 import { addressToXY } from "../utils/addressToXY.js";
 import { paymentService } from "./paymentService";
+import { ProductService } from "./productService";
 import { PaymentModel } from "../db/schemas/payment";
 import { dueDateFtn } from "../utils/date-calculator";
 
@@ -732,6 +733,21 @@ export class groupService {
       },
     ]);
 
+    if (len === 0) { 
+      const data = false;
+      let groupList = await GroupModel.find().populate("productInfo").limit(20).lean();
+      const toggleInfo = await ToggleModel.findOne({ userId });
+
+      if (!toggleInfo) {
+        const errorMessage =
+          "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+        return { errorMessage };
+      }
+
+      groupList = withToggleInfo(toggleInfo.groups, groupList);
+      return { data, groupList };
+    }
+
     const toggleInfo = await ToggleModel.findOne({ userId });
 
     if (!toggleInfo) {
@@ -739,7 +755,6 @@ export class groupService {
         "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-
     return withToggleInfo(toggleInfo.groups, groupList[0].data);
   }
 }
