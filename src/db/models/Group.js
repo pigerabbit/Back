@@ -10,6 +10,10 @@ class Group {
   static async findByGroupId({ groupId }) {
     const groupInfo = await GroupModel.findOne({ groupId })
       .populate("productInfo")
+      .populate({
+        path: "participants",
+        populate: { path: "payment" },
+      })
       .lean();
     return groupInfo;
   }
@@ -17,6 +21,10 @@ class Group {
   static async findByGroupIdByObjectId({ _id }) {
     const groupInfo = await GroupModel.findOne({ _id })
       .populate("productInfo")
+      .populate({
+        path: "participants",
+        populate: { path: "payment" },
+      })
       .lean();
     return groupInfo;
   }
@@ -33,6 +41,10 @@ class Group {
   static async findAllByProductId({ productId }) {
     const groups = await GroupModel.find({ productId, state: 0 })
       .populate("productInfo")
+      .populate({
+        path: "participants",
+        populate: { path: "payment" },
+      })
       .lean();
     return groups;
   }
@@ -40,6 +52,10 @@ class Group {
   static async findCompletedPostByProductId({ productId, state }) {
     const groups = await GroupModel.find({ productId, state })
       .populate("productInfo")
+      .populate({
+        path: "participants",
+        populate: { path: "payment" },
+      })
       .lean();
     return groups;
   }
@@ -57,6 +73,10 @@ class Group {
       ],
     })
       .populate("productInfo")
+      .populate({
+        path: "participants",
+        populate: { path: "payment" },
+      })
       .sort({ deadline: 1 })
       .lean();
 
@@ -75,6 +95,10 @@ class Group {
       ],
     })
       .populate("productInfo")
+      .populate({
+        path: "participants",
+        populate: { path: "payment" },
+      })
       .sort({ remainedPersonnel: 1 })
       .lean();
 
@@ -113,6 +137,10 @@ class Group {
       },
     })
       .populate("productInfo")
+      .populate({
+        path: "participants",
+        populate: { path: "payment" },
+      })
       .lean();
     return listWhenOwner;
   }
