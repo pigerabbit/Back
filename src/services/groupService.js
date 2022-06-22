@@ -24,6 +24,13 @@ export class groupService {
     const { minPurchaseQty, term } = await Product.findProduct({
       id: productId,
     });
+    const user = await User.findById({ userId });
+    const userObjectId = user._id;
+
+    if (!user) {
+      const errorMessage = "userId가 존재하지 않습니다.";
+      return { errorMessage };
+    }
 
     const remainedPersonnel = minPurchaseQty - quantity;
     const product = await Product.findProduct({ id: productId });
@@ -44,6 +51,7 @@ export class groupService {
     const participants = {
       participantId: participantId,
       userId: userId,
+      userInfo: userObjectId,
       participantDate: nowDate(),
       quantity: quantity,
       complete: false,
@@ -408,9 +416,16 @@ export class groupService {
 
   static async addParticipants({ userId, groupId, quantity }) {
     const groupInfo = await Group.findByGroupId({ groupId });
+    const user = await User.findById({ userId });
+    const userObjectId = user._id;
 
     if (!groupInfo) {
       const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    if (!user) {
+      const errorMessage = "userId가 존재하지 않습니다.";
       return { errorMessage };
     }
 
@@ -436,6 +451,7 @@ export class groupService {
       const participant = {
         participantId: participantId,
         userId: userId,
+        userInfo: userObjectId,
         participantDate: nowDate(),
         quantity: quantity,
         payment: payment,
