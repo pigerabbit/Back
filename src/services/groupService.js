@@ -6,6 +6,7 @@ import { ToggleModel } from "../db/schemas/toggle.js";
 import { withToggleInfo } from "../utils/withToggleInfo";
 import { addressToXY } from "../utils/addressToXY.js";
 import { paymentService } from "./paymentService";
+import { ProductService } from "./productService";
 import { PaymentModel } from "../db/schemas/payment";
 import { dueDateFtn } from "../utils/date-calculator";
 
@@ -18,12 +19,22 @@ export class groupService {
     productId,
     deadline,
     quantity,
+    paymentMethod,
   }) {
     const groupId = crypto.randomUUID();
     const participantId = crypto.randomUUID();
-    const { minPurchaseQty, term } = await Product.findProduct({
+    const isProduct = await Product.findProduct({
       id: productId,
     });
+
+    const minPurchaseQty = isProduct?.minPurchaseQty;
+    const term = isProduct?.term;
+    
+    if (!minPurchaseQty) { 
+      const errorMessage = "product가 존재하지 않습니다.";
+      return { errorMessage };
+    } 
+
     const user = await User.findById({ userId });
     const userObjectId = user._id;
 
@@ -85,6 +96,7 @@ export class groupService {
       userId,
       used: false,
       voucher: quantity,
+      paymentMethod,
     });
 
     const paymentObjectId = payment._id;
@@ -414,7 +426,7 @@ export class groupService {
     return withToggleInfo(toggleInfo.groups, groups);
   }
 
-  static async addParticipants({ userId, groupId, quantity }) {
+  static async addParticipants({ userId, groupId, quantity, paymentMethod }) {
     const groupInfo = await Group.findByGroupId({ groupId });
     const user = await User.findById({ userId });
     const userObjectId = user._id;
@@ -446,6 +458,7 @@ export class groupService {
         userId,
         used: false,
         voucher: quantity,
+        paymentMethod,
       });
 
       const participant = {
@@ -762,6 +775,21 @@ export class groupService {
       },
     ]);
 
+    if (len === 0) { 
+      const data = false;
+      let groupList = await GroupModel.find().populate("productInfo").limit(20).lean();
+      const toggleInfo = await ToggleModel.findOne({ userId });
+
+      if (!toggleInfo) {
+        const errorMessage =
+          "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+        return { errorMessage };
+      }
+
+      groupList = withToggleInfo(toggleInfo.groups, groupList);
+      return { data, groupList };
+    }
+
     const toggleInfo = await ToggleModel.findOne({ userId });
 
     if (!toggleInfo) {
@@ -769,7 +797,6 @@ export class groupService {
         "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-
     return withToggleInfo(toggleInfo.groups, groupList[0].data);
   }
 }
