@@ -3,6 +3,7 @@ import { ProductService } from "../services/productService";
 import { groupService } from "../services/groupService";
 import { toggleService } from "../services/toggleService";
 import { TopicService } from "../services/topicService";
+import { regExp } from "../utils/regexTools";
 
 const productController = {
   createProduct: async (req, res, next) => { 
@@ -116,7 +117,8 @@ const productController = {
       const userId = req.currentUserId;
       const { page, perPage, option } = req.query;
       let search = decodeURIComponent(req.query.search);
-
+      search = regExp(search);
+      
       if (page <= 0 || perPage <= 0) {
         const body = {
           success: false,
