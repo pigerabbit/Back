@@ -19,6 +19,10 @@ class Payment {
       userId,
     })
       .populate("groupId")
+      .populate({
+        path: "groupId",
+        populate: { path: "productInfo" },
+      })
       .lean();
 
     return paymentInfo;
