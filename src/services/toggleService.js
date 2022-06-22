@@ -137,13 +137,9 @@ class toggleService {
     }
 
     let viewedProductsInfo = toggleInfo.viewedProducts;
-
     let newValue = {};
-    let index = 0;    
-    viewedProductsInfo.map((f) => {
-      if (f.equals(objectId))
-        return index;
-      index = index + 1;
+    let index = viewedProductsInfo.findIndex((f) => {
+      return f.toString() === objectId.toString();
     });
 
     if (index > -1) {
@@ -153,7 +149,7 @@ class toggleService {
     } else {
       viewedProductsInfo.push(objectId);
     }
-    
+
     newValue = viewedProductsInfo;
     const updatedToggle = await ToggleModel.findOneAndUpdate(
       { userId },
