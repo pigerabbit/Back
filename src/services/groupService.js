@@ -397,25 +397,27 @@ export class groupService {
       return { errorMessage };
     } else {
       const participantId = crypto.randomUUID();
-      const participant = {
-        participantId: participantId,
-        userId: userId,
-        participantDate: nowDate(),
-        quantity: quantity,
-        payment: false,
-        complete: false,
-        manager: false,
-        review: false,
-      };
-
-      participantsInfo.push(participant);
 
       const groupObjectId = groupInfo._id;
       const payment = await paymentService.addPayment({
         groupId: groupObjectId,
         userId,
         used: false,
+        voucher: quantity,
       });
+
+      const participant = {
+        participantId: participantId,
+        userId: userId,
+        participantDate: nowDate(),
+        quantity: quantity,
+        payment: payment,
+        complete: false,
+        manager: false,
+        review: false,
+      };
+
+      participantsInfo.push(participant);
     }
 
     const updatedRemainedPersonnel = groupInfo.remainedPersonnel - quantity;

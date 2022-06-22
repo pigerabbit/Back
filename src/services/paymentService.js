@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { PaymentModel } from "../db/schemas/payment";
 
 export class paymentService {
-  static async addPayment({ userId, groupId, used }) {
+  static async addPayment({ userId, groupId, used, voucher }) {
     const paymentId = crypto.randomUUID();
 
     const newPayment = {
@@ -11,6 +11,7 @@ export class paymentService {
       userId,
       groupId,
       used,
+      voucher,
     };
 
     const createdNewPayment = await Payment.create({ newPayment });
