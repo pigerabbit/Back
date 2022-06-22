@@ -1,7 +1,7 @@
 import { Group, Product, User } from "../db";
 import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
-import { dueDate, nowDate } from "../utils/date-calculator.js";
+import { getDateDiff, nowDate } from "../utils/date-calculator.js";
 import { ToggleModel } from "../db/schemas/toggle.js";
 import { withToggleInfo } from "../utils/withToggleInfo";
 import { addressToXY } from "../utils/addressToXY.js";
@@ -103,6 +103,20 @@ export class groupService {
           { returnOriginal: false }
         );
     }
+
+    // 공동구매 기간이 지났는데도 state가 0인 경우, state를 -1로 변경
+    const remainedTime = getDateDiff(nowDate(), deadline);
+
+    setTimeout(async () => {
+      const group = await GroupModel.findOne({ groupId });
+      if (group.state === 0) {
+        const updatedGroup = await GroupModel.findOneAndUpdate(
+          { groupId },
+          { $set: { state: -1 } },
+          { returnOriginal: false }
+        );
+      }
+    }, remainedTime);
 
     return updatedParticipants;
   }
