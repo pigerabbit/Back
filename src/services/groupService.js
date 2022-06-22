@@ -23,9 +23,18 @@ export class groupService {
   }) {
     const groupId = crypto.randomUUID();
     const participantId = crypto.randomUUID();
-    const { minPurchaseQty, term } = await Product.findProduct({
+    const isProduct = await Product.findProduct({
       id: productId,
     });
+
+    const minPurchaseQty = isProduct?.minPurchaseQty;
+    const term = isProduct?.term;
+    
+    if (!minPurchaseQty) { 
+      const errorMessage = "product가 존재하지 않습니다.";
+      return { errorMessage };
+    } 
+
     const user = await User.findById({ userId });
     const userObjectId = user._id;
 
