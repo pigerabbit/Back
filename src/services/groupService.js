@@ -1,11 +1,13 @@
 import { Group, Product, User } from "../db";
 import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
-import { nowDate } from "../utils/date-calculator.js";
+import { dueDate, nowDate } from "../utils/date-calculator.js";
 import { ToggleModel } from "../db/schemas/toggle.js";
 import { withToggleInfo } from "../utils/withToggleInfo";
 import { addressToXY } from "../utils/addressToXY.js";
 import { paymentService } from "./paymentService";
+import { PaymentModel } from "../db/schemas/payment";
+import { dueDateFtn } from "../utils/date-calculator";
 
 export class groupService {
   static async addGroup({
@@ -85,11 +87,22 @@ export class groupService {
     participantInfo[0]["payment"] = paymentObjectId;
     newValue = participantInfo;
 
-    const updatedParticipants = await GroupModel.findOneAndUpdate(
+    let updatedParticipants = await GroupModel.findOneAndUpdate(
       { groupId },
       { $set: { participants: newValue } },
       { returnOriginal: false }
     );
+
+    if (state === 1) {
+      const term = product.term;
+
+      const updatedParticipantsWithDueDate =
+        await PaymentModel.findOneAndUpdate(
+          { _id: paymentObjectId },
+          { $set: { dueDate: dueDateFtn(term) } },
+          { returnOriginal: false }
+        );
+    }
 
     return updatedParticipants;
   }
@@ -444,6 +457,21 @@ export class groupService {
       },
       { returnOriginal: false }
     );
+
+    if (state === 1) {
+      const productId = groupInfo.productId;
+      const product = await Product.findProduct({ id: productId });
+      const term = product.term;
+      const participants = updatedParticipants.participants;
+
+      participants.forEach(async (v) => {
+        await PaymentModel.findOneAndUpdate(
+          { _id: v.payment },
+          { $set: { dueDate: dueDateFtn(term) } },
+          { returnOriginal: false }
+        );
+      });
+    }
 
     return updatedParticipants;
   }
