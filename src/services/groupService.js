@@ -74,6 +74,7 @@ export class groupService {
       groupId: groupObjectId,
       userId,
       used: false,
+      voucher: quantity,
     });
 
     const paymentObjectId = payment._id;
