@@ -5,7 +5,7 @@ const groupController = {
   createGroup: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const { groupType, groupName, location, productId, deadline, quantity } =
+      const { groupType, groupName, location, productId, deadline, quantity, paymentMethod } =
         req.body;
 
       const newGroup = await groupService.addGroup({
@@ -16,6 +16,7 @@ const groupController = {
         productId,
         deadline,
         quantity,
+        paymentMethod,
       });
 
       if (newGroup.errorMessage) {
@@ -70,6 +71,7 @@ const groupController = {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
       const payment = req.body.payment;
+      const paymentMethod = req.body.paymentMethod;
 
       const checkState = await groupService.checkState({ groupId });
       if (checkState === -1) {
@@ -81,6 +83,7 @@ const groupController = {
         userId,
         groupId,
         payment,
+        paymentMethod,
       });
 
       if (updatedGroupInfo.errorMessage) {
@@ -227,7 +230,7 @@ const groupController = {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
-      const { quantity } = req.body;
+      const { quantity, paymentMethod } = req.body;
 
       // const checkState = await groupService.checkState({ groupId });
       // if (checkState === -1) {
@@ -239,6 +242,7 @@ const groupController = {
         userId,
         groupId,
         quantity,
+        paymentMethod,
       });
 
       if (UpdatedGroup.errorMessage) {
