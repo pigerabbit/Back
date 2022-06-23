@@ -39,7 +39,7 @@ class Group {
   }
 
   static async findAllByProductId({ productId }) {
-    const groups = await GroupModel.find({ productId, state: 0 })
+    const groups = await GroupModel.find({ productId })
       .populate("productInfo")
       .populate({
         path: "participants",
