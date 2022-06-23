@@ -84,7 +84,10 @@ class Product {
     const len = await ProductModel.countDocuments({ category, removed: false });
     const totalPage = Math.ceil(len / perPage);
 
-    const resultList = await ProductModel.find({ category, removed: false })
+    const resultList = await ProductModel.find({
+      category: { $regex: `^${category}` },
+      removed: false
+    })
       .populate("userInfo", "business")
       .sort({ views: -1 })
       .select("-__v")
@@ -106,7 +109,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
-      category: { $regex: category },
+      category: { $regex: `^${category}` },
       removed: false,
     })
       .populate("userInfo", "business")
@@ -127,7 +130,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
-      category: { $regex: category },
+      category: { $regex: `^${category}` },
       removed: false,
     })
       .populate("userInfo", "business")
@@ -148,7 +151,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
-      category: { $regex: category },
+      category: { $regex: `^${category}` },
       removed: false,
     })
       .sort({ views: -1, _id: 1 })
@@ -170,7 +173,7 @@ class Product {
     const totalPage = Math.ceil(len / perPage);
 
     const resultList = await ProductModel.find({
-      category: { $regex: category },
+      category: { $regex: `^${category}` },
       removed: false,
     })
       .populate("userInfo", "business")
