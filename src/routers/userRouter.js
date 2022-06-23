@@ -30,7 +30,7 @@ userRouter.get("/users/current", login_required, userController.getCurrentUser);
 
 userRouter.put("/users/:id", login_required, userController.editUser);
 
-userRouter.get("/users/:id", login_required, userController.getUser);
+userRouter.get("/users/:id", userController.getUser);
 
 userRouter.put(
   "/users/:id/changePassword",
