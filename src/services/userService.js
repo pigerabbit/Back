@@ -151,9 +151,9 @@ class userService {
       const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
       return { errorMessage };
     }
-
-    if (toUpdate.address !== undefined) {
-      coordinates = await addressToXY(toUpdate.address);
+    const address = toUpdate.address;
+    if (address !== undefined && address !== null) {
+      coordinates = await addressToXY(address);
     }
 
     const locationXY = {
