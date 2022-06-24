@@ -158,7 +158,7 @@ class userService {
 
     const locationXY = {
       type: "Point",
-      coordinates: coordinates,
+      coordinates: user.locationXY.coordinates,
     };
     const updateLocationXY = { locationXY };
     const updatedLocationXY = await User.updateAll({
@@ -205,6 +205,7 @@ class userService {
         setter: business,
       });
     }
+    await User.updateAll({ userId, locationXY: user.locationXY });
 
     const updatedUser = await User.updateAll({ userId, setter: toUpdate });
     const resultUser = getRequiredInfoFromData(updatedUser);
