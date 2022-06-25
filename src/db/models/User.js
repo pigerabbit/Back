@@ -116,20 +116,24 @@ export class User {
   static async updateAlert({
     userId,
     from,
+    productId,
     sendId,
     image,
     type,
     groupName,
     content,
+    seller,
   }) {
     const newAlert = {
       from,
+      productId,
       sendId,
       image,
       type,
       groupName,
       content,
       removed: false,
+      seller,
     };
     const updateAlert = await UserModel.findOneAndUpdate(
       { id: userId },

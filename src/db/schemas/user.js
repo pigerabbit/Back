@@ -7,6 +7,10 @@ const alertSchema = new Schema(
       type: String,
       required: true,
     },
+    productId: {
+      type: String,
+      required: true,
+    },
     sendId: {
       type: String,
       required: true,
@@ -26,6 +30,11 @@ const alertSchema = new Schema(
     content: {
       type: String,
       required: true,
+    },
+    seller: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
     removed: {
       type: Boolean,

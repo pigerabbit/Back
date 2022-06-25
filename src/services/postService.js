@@ -45,9 +45,11 @@ class PostService {
       await User.updateAlert({
         userId: userId,
         from: type,
-        image: images,
+        productId: receiver,
         sendId: receiver, // productId
+        image: images,
         content: `'${name}' 상품에 문의가 생성되었습니다.`,
+        seller: true,
       });
       
     } else if (type === "groupChat") { 
@@ -59,21 +61,25 @@ class PostService {
       authorizedUsers.map(async (v) => await User.updateAlert({
         userId: v,
         from: type,
-        image: group.productInfo.images,
+        productId: group.productId,
         sendId: receiver, // groupId
+        image: group.productInfo.images,
         content: `'${groupName}'에 공동 구매 댓글이 생성되었습니다.`,
+        seller: false,
       }));
     } else if (type === "review") {
       authorizedUsers = [];
 
       // 후기가 생겼다면 상품 판매자에게 알림
-      const { userId, name, images } = await Product.findProduct({ id: receiver });
+      const { userId, id, name, images } = await Product.findProduct({ id: receiver });
       await User.updateAlert({
         userId: userId,
         from: type,
-        image: images,
+        productId: id,
         sendId: receiver, // productId
+        image: images,
         content: `'${name}' 상품에 후기가 생성되었습니다.`,
+        seller: true,
       });
 
     } else if (type === "comment") { // 댓글일 때 postId가 있는지 확인 => 없다면 에러
@@ -87,7 +93,7 @@ class PostService {
       const addCommentCount = post.commentCount + 1;
       const toUpdate = { commentCount: addCommentCount, reply: true };
       post = await Post.update({ postId: updateId, toUpdate });
-      const { images } = await Product.findProduct({ id: post.receiver });
+      const { id, images } = await Product.findProduct({ id: post.receiver });
       // 댓글이 추가되었다면 글 쓴 유저에게 알림
       if (writer !== post.writer) {
         const toUpdate = { reply: true };
@@ -95,9 +101,11 @@ class PostService {
         await User.updateAlert({
           userId: post.writer,
           from: type,
-          image: images,
+          productId: id,
           sendId: post.postId,
+          image: images,
           content: `'${post.title}' 글에 댓글이 생성되었습니다.`,
+          seller: false,
         });
       }
     } else { 

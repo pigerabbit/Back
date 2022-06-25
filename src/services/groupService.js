@@ -291,8 +291,8 @@ export class groupService {
       return { errorMessage };
     }
 
-    console.log("group =====>", group);
     let content = "";
+    let seller = false;
     if (toUpdate.state !== null) {
       switch (toUpdate.state) {
         case "1":
@@ -325,12 +325,13 @@ export class groupService {
         await User.updateAlert({
           userId: v.userId,
           from: "group",
+          productId: productId,
           sendId: groupId,
           image: group.productInfo.images,
           type: group.groupType,
           groupName: group.groupName,
           content: content,
-        });
+          seller: false,
       });
     }
 
@@ -663,11 +664,13 @@ export class groupService {
         await User.updateAlert({
           userId: v.userId,
           from: "product",
+          productId: product.id,
           sendId: product.id,
           image: product.images,
           type: v.groupType,
           groupName: v.groupName,
           content: `판매자의 판매 중단으로 공동구매가 취소되었습니다.`,
+          seller: false,
         });
       });
     });
