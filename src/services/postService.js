@@ -100,7 +100,7 @@ class PostService {
         await Post.update({ postId: updateId, toUpdate });
         await User.updateAlert({
           userId: post.writer,
-          from: type,
+          from: post.type,
           productId: id,
           sendId: post.postId,
           image: images,
