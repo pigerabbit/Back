@@ -332,11 +332,11 @@ export class groupService {
           groupName: group.groupName,
           content: content,
           seller: false,
+        });
       });
+      const updatedGroup = await Group.updateAll({ groupId, setter: toUpdate });
+      return updatedGroup;
     }
-
-    const updatedGroup = await Group.updateAll({ groupId, setter: toUpdate });
-    return updatedGroup;
   }
 
   static async getGroupInfo({ userId, groupId }) {
