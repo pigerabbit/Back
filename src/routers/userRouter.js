@@ -40,7 +40,6 @@ userRouter.put(
 
 userRouter.post(
   "/users/email/:email/resetPassword",
-  login_required,
   userController.resetPassword
 );
 
