@@ -239,7 +239,7 @@ class userService {
   static async nodeMailer({ email, name, password }) {
     const message = sendMail(
       email,
-      "소공소공 임시 비밀번호입니다.",
+      "동구라미 임시 비밀번호입니다.",
       `안녕하세요 ${name}님, 임시 비밀번호는: ${password} 입니다. 로그인 후 비밀번호를 꼭 변경해주세요!`
     );
 
