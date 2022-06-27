@@ -1,6 +1,6 @@
-import { Toggle } from "../db";
+import { Toggle } from "../db/mongodb";
 import crypto from "crypto";
-import { ToggleModel } from "../db/schemas/toggle";
+import { ToggleModel } from "../db/mongodb/schemas/toggle";
 
 class toggleService {
   static async addToggle({ userId }) {

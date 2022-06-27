@@ -1,9 +1,9 @@
-import { Topic } from "../db/index.js";
+import { Topic } from "../db/mongodb/index.js";
 
 class TopicService {
   /** 검색어 추가
-   * 
-   * @param {String} search - 검색어 
+   *
+   * @param {String} search - 검색어
    * @returns createdTopic
    */
   static async addTopic({ word }) {
@@ -29,6 +29,5 @@ class TopicService {
     return topicList;
   }
 }
-
 
 export { TopicService };

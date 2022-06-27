@@ -1,13 +1,13 @@
-import { Group, Product, User } from "../db";
+import { Group, Product, User } from "../db/mongodb";
 import crypto from "crypto";
-import { GroupModel } from "../db/schemas/group";
+import { GroupModel } from "../db/mongodb/schemas/group";
 import { getDateDiff, nowDate } from "../utils/date-calculator.js";
-import { ToggleModel } from "../db/schemas/toggle.js";
+import { ToggleModel } from "../db/mongodb/schemas/toggle.js";
 import { withToggleInfo } from "../utils/withToggleInfo";
 import { addressToXY } from "../utils/addressToXY.js";
 import { paymentService } from "./paymentService";
 import { ProductService } from "./productService";
-import { PaymentModel } from "../db/schemas/payment";
+import { PaymentModel } from "../db/mongodb/schemas/payment";
 import { dueDateFtn } from "../utils/date-calculator";
 
 export class groupService {
@@ -29,11 +29,11 @@ export class groupService {
 
     const minPurchaseQty = isProduct?.minPurchaseQty;
     const term = isProduct?.term;
-    
-    if (!minPurchaseQty) { 
+
+    if (!minPurchaseQty) {
       const errorMessage = "product가 존재하지 않습니다.";
       return { errorMessage };
-    } 
+    }
 
     const user = await User.findById({ userId });
     const userObjectId = user._id;
@@ -775,9 +775,12 @@ export class groupService {
       },
     ]);
 
-    if (len === 0) { 
+    if (len === 0) {
       const data = false;
-      let groupList = await GroupModel.find({ state: 0, groupType: "post" }).populate("productInfo").limit(20).lean();
+      let groupList = await GroupModel.find({ state: 0, groupType: "post" })
+        .populate("productInfo")
+        .limit(20)
+        .lean();
       const toggleInfo = await ToggleModel.findOne({ userId });
 
       if (!toggleInfo) {

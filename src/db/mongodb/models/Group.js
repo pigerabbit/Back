@@ -1,5 +1,5 @@
 import { GroupModel } from "../schemas/group";
-import { nextOneDay, nowDate } from "../../utils/date-calculator.js";
+import { nextOneDay, nowDate } from "../../../utils/date-calculator.js";
 
 class Group {
   static async create({ newGroup }) {

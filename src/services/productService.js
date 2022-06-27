@@ -1,15 +1,15 @@
-import { Product } from "../db/index.js";
-import { User } from "../db/index.js";
-import { Post } from "../db/index.js";
-import { Group } from "../db/index.js";
+import { Product } from "../db/mongodb/index.js";
+import { User } from "../db/mongodb/index.js";
+import { Post } from "../db/mongodb/index.js";
+import { Group } from "../db/mongodb/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromProductData } from "../utils/product";
-import { ToggleModel } from "../db/schemas/toggle.js";
+import { ToggleModel } from "../db/mongodb/schemas/toggle.js";
 import { productsWithToggleInfo } from "../utils/productsWithToggleInfo";
 
 class ProductService {
   /** 판매 상품 생성 함수
-   * 
+   *
    * @param {Strings} userId - 유저 Id
    * @param {Strings} images - 이미지
    * @param {Strings} category - 상품 카테고리
@@ -25,7 +25,7 @@ class ProductService {
    * @param {Strings} detail - 상품 상세 설명
    * @param {Strings} detailImg - 상품 상세 설명 사진
    * @param {Strings} shippingInfo - 배송 안내
-   * @return {Object} 생성된 상품 정보 
+   * @return {Object} 생성된 상품 정보
    */
   static async addProduct({
     userId,
@@ -42,7 +42,7 @@ class ProductService {
     detail,
     shippingInfo,
     term,
-  }) { 
+  }) {
     const id = crypto.randomUUID();
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
     const user = await User.findById({ userId });

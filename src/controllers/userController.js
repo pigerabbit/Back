@@ -164,7 +164,7 @@ const userController = {
           resultUser: currentUserInfo,
         },
       };
-      
+
       res.json(body);
     } catch (error) {
       next(error);

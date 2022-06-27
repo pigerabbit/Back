@@ -1,10 +1,10 @@
-import { User } from "../db";
+import { User } from "../db/mongodb";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import sendMail from "../utils/send-mail";
 import { getRequiredInfoFromData } from "../utils/user";
-import { UserModel } from "../db/schemas/user";
+import { UserModel } from "../db/mongodb/schemas/user";
 import { toggleService } from "../services/toggleService";
 import { addressToXY } from "../utils/addressToXY.js";
 
@@ -124,7 +124,7 @@ class userService {
   static async getUserInfo({ userId }) {
     const user = await User.findById({ userId });
 
-    // db에서 찾지 못한 경우, 에러 메시지 반환 
+    // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!user) {
       const errorMessage =
         "해당 유저는 가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
@@ -338,11 +338,11 @@ class userService {
           alertsExist: false,
           viewAlertTime: Date.now(),
         },
-      },
+      }
     );
-    
+
     let alertList = await User.getAlertList({ userId });
-      
+
     alertList[0]?.alertList.sort((a, b) => {
       return b.createdAt - a.createdAt;
     });

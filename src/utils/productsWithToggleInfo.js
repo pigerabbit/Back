@@ -1,4 +1,4 @@
-import { ToggleModel } from "../db/schemas/toggle.js";
+import { ToggleModel } from "../db/mongodb/schemas/toggle.js";
 
 const productsWithToggleInfo = async (userId, arr) => {
   const toggleInfo = await ToggleModel.findOne({ userId });

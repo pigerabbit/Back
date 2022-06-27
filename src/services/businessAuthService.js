@@ -1,5 +1,5 @@
-import { UserModel } from "../db/schemas/user";
-import { User } from "../db";
+import { UserModel } from "../db/mongodb/schemas/user";
+import { User } from "../db/mongodb";
 import { getRequiredInfoFromData } from "../utils/user";
 
 class businessAuthService {
@@ -15,11 +15,12 @@ class businessAuthService {
       businessName: toUpdate.businessName,
     });
 
-    if (businessNameList.length !== 0) { 
-      const errorMessage = "이미 존재하는 상호명입니다. 다른 상호명을 입력해주십시오.";
+    if (businessNameList.length !== 0) {
+      const errorMessage =
+        "이미 존재하는 상호명입니다. 다른 상호명을 입력해주십시오.";
       return { errorMessage };
     }
-    
+
     const updatedBusiness = await UserModel.findOneAndUpdate(
       { id: userId },
       {

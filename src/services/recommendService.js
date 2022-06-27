@@ -1,7 +1,7 @@
-import { ToggleModel } from "../db/schemas/toggle.js";
-import { ProductModel } from "../db/schemas/product.js";
-import { GroupModel } from "../db/schemas/group.js";
-import { Group } from "../db/index.js";
+import { ToggleModel } from "../db/mongodb/schemas/toggle.js";
+import { ProductModel } from "../db/mongodb/schemas/product.js";
+import { GroupModel } from "../db/mongodb/schemas/group.js";
+import { Group } from "../db/mongodb/index.js";
 import { productsWithToggleInfo } from "../utils/productsWithToggleInfo";
 import { withToggleInfo } from "../utils/withToggleInfo";
 

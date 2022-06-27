@@ -1,6 +1,6 @@
-import { Payment, Group, User } from "../db";
+import { Payment, Group, User } from "../db/mongodb";
 import crypto from "crypto";
-import { PaymentModel } from "../db/schemas/payment";
+import { PaymentModel } from "../db/mongodb/schemas/payment";
 
 export class paymentService {
   static async addPayment({ userId, groupId, used, voucher, paymentMethod }) {
