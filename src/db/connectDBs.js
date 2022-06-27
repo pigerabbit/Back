@@ -82,6 +82,7 @@ const redisClient = redis.createClient({
   password: process.env.REDIS_PW,
 });
 
+redisClient.connect();
 redisClient.on("error", (err) => {
   console.error(err);
 });
