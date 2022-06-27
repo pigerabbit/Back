@@ -2,7 +2,7 @@ import "dotenv/config";
 import { app } from "./src/app";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import { sequelize } from "./";
+// import { sequelize } from "./";
 
 const PORT = process.env.SERVER_PORT || 5000;
 

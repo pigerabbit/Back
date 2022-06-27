@@ -3,6 +3,10 @@
 // import Sequelize from "sequelize";
 // import postsShema from "./schemas/posts.js";
 // import dotenv from "dotenv";
+import sequelize from ''.....
+import postsShema from "./schemas/posts.js";
+
+
 
 // dotenv.config();
 // const db = {};
@@ -16,9 +20,11 @@
 //   dialect: "mysql",
 // });
 
-// db.sequelize = sequelize;
-// db.Sequelize = Sequelize;
+const db = {};
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-// db.Posts = postsShema(sequelize, Sequelize);
+db.Posts = postsShema(sequelize, Sequelize);
 
-// module.exports = db;
+module.exports = db;
+
