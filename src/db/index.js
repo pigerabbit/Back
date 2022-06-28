@@ -23,8 +23,10 @@ import { Product } from "./mongodb/models/Product";
 import { Toggle } from "./mongodb/models/Toggle";
 import { Topic } from "./mongodb/models/Topic";
 import { Payment } from "./mongodb/models/Payment";
+// import { Post } from "./mongodb/models/Post";
+import { Post } from "./mysql/models/Post";
 
-export { User, Group, Product, Toggle, Topic, Payment };
+export { User, Group, Product, Toggle, Topic, Payment, Post };
 
 /**
  * DB 스키마 정의, model export 하는 파일

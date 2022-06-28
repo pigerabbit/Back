@@ -3,7 +3,7 @@
 // import Sequelize from "sequelize";
 // import postsShema from "./schemas/posts.js";
 // import dotenv from "dotenv";
-import sequelize from ''.....
+import sequelize from 'sequelize';
 import postsShema from "./schemas/posts.js";
 
 

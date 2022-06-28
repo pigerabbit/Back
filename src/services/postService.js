@@ -110,7 +110,6 @@ class PostService {
     const newPost = {
       postId,
       type,
-      authorizedUsers,
       writer,
       receiver,
       title,
@@ -159,17 +158,17 @@ class PostService {
       };
     }
 
-    if (
-      post.type !== "review" &&
-      post.type !== "comment" &&
-      post.authorizedUsers.indexOf(userId) === -1
-    ) {
-      const errorMessage = "글을 볼 수 있는 권한이 없습니다";
-      return {
-        status: 403,
-        errorMessage,
-      };
-    }
+    // if (
+    //   post.type !== "review" &&
+    //   post.type !== "comment" &&
+    //   post.authorizedUsers.indexOf(userId) === -1
+    // ) {
+    //   const errorMessage = "글을 볼 수 있는 권한이 없습니다";
+    //   return {
+    //     status: 403,
+    //     errorMessage,
+    //   };
+    // }
 
     if (post.type === "review" || post.type === "cs") {
       const commentList = await Post.findCommentList({ receiver: postId });
