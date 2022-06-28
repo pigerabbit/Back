@@ -168,7 +168,7 @@ postRouter.get(
 );
 
 postRouter.get(
-  "/review",
+  "/reviews",
   postController.getReviewList
 )
 
