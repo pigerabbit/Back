@@ -15,20 +15,9 @@
  * import * as DBs from connectDBs.js
  */
 
-// import { User } from "./mongodb/models/User";
-// import { Group } from "./mongodb/models/Group";
-// import { Product } from "./mongodb/models/Product";
-// import { Toggle } from "./mongodb/models/Toggle";
-// import { Topic } from "./mongodb/models/Topic";
-// import { Payment } from "./mongodb/models/Payment";
-
 import mongoose from "mongoose";
 import Sequelize from "sequelize";
-import redis from "redis";
-
-dotenv.config();
-
-console.log("====>", process.env.MONGO_DB_URL); // undefined
+import * as redis from "redis";
 
 const MONGO_DB_URL =
   "mongodb+srv://pigerabbit:forcarrots!@pigerabbit.7lzg5.mongodb.net/?retryWrites=true&w=majority" ||
@@ -79,7 +68,7 @@ const redisClient = redis.createClient({
   host: process.env.REDIS_DB_HOST,
   port: process.env.REDIS_DB_PORT,
   // db: process.env.REDIS_DB,
-  password: process.env.REDIS_PW,
+  // password: process.env.REDIS_PW,
 });
 
 redisClient.connect();
