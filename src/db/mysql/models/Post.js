@@ -21,7 +21,6 @@ class Post {
    * @returns {Object} createNewPost
    */
   static async create({ newPost }) {
-    console.log("여기!");
     // const createNewPost = await sequelize.query(`
     //   INSERT INTO posts (postId) VALUES ('test2');
     // `,  {
@@ -46,12 +45,6 @@ class Post {
   //     .sort({ createdAt: -1 })
   //     .lean();
     
-  //!  처음부터 SELECT로 원하는 컬럼을 고르느냐, EXCEPT를 사용해서 빼느냐 어느 것이 성능 면에서 좋을지 궁금합니다! => 완전 다른 부분
-
-    // 방법1.1
-    // WHERE 절의 receiver = receiver와 같은 코드가 맞는걸까요..?
-    // 앞의 receiver는 컬럼명, 뒤의 receiver는 받아온 변수명
-
     const postList11 = await sequelize.query(`
       SELECT * EXCEPT SELECT _id, __v, updatedAt
       FROM posts
@@ -111,7 +104,7 @@ class Post {
     //   .sort({ createdAt: -1 })
     //   .lean();
 
-    const postList = await PostModel.findAll({
+    const postList = await Posts.findAll({
       attributes: [
         'postId',
         'type',
@@ -144,7 +137,7 @@ class Post {
     // )
     //   .lean();
 
-    const post = await PostModel.findOne({
+    const post = await Posts.findOne({
       attributes: [
         'postId',
         'type',
@@ -181,7 +174,7 @@ class Post {
     //   .select('-updatedAt')
     //   .lean();
 
-    const updatedPost = await Post.update(
+    const updatedPost = await Posts.update(
       {
         toUpdate,
       },
@@ -210,7 +203,7 @@ class Post {
         // )
         //   .sort({ createdAt: -1 })
         //   .lean();
-        postList = await PostModel.findAll({
+        postList = await Posts.findAll({
           attributes: [
             'postId',
             'type',
@@ -238,7 +231,7 @@ class Post {
           // )
           //   .sort({ createdAt: -1 })
           //   .lean();
-          postList = await PostModel.findAll({
+          postList = await Posts.findAll({
             attributes: [
               'postId',
               'type',
