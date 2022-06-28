@@ -7,7 +7,6 @@ import sequelize from 'sequelize';
 import postsShema from "./schemas/posts.js";
 
 
-
 // dotenv.config();
 // const db = {};
 
@@ -25,6 +24,7 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.Posts = postsShema(sequelize, Sequelize);
+console.log("db", db);
 
 module.exports = db;
 

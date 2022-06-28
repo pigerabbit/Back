@@ -34,7 +34,7 @@ export { User, Group, Product, Toggle, Topic, Payment, Post };
  *
  * 파일 4개로 분리
  * 1. mongodb 접속하는 모듈
- * 2. mysql 접속하는 ㅁ도류
+ * 2. mysql 접속하는 모듈
  * 3. mongodb model export 하는 모듈
  * 4. mysql model export 모듈
  */
