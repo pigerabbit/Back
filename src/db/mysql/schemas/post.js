@@ -1,4 +1,3 @@
-import * as Sequelize from "sequelize";
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
     "posts",
@@ -34,22 +33,32 @@ module.exports = function (sequelize, DataTypes) {
       },
       commentCount: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
+        defaultValue: 0,
       },
       reply: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
+        defaultValue: 0,
       },
+      //! isRemoved로 사용할 것
       removed: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
+        defaultValue: 0,
       },
+      // test: {
+      //   type: DataTypes.INTEGER,
+      //   allowNull: true,
+      //   defaultValue: 100,
+      // }
     },
     {
       sequelize,
       tableName: "posts",
       timestamps: false,
       paranoid: true,
+      charset: "utf8",
     }
   );
 };

@@ -1,4 +1,4 @@
-import { Post } from "../db/mongodb/index.js";
+import { Post } from "../db/index.js";
 import { User } from "../db/mongodb/index.js";
 import { Product } from "../db/mongodb/index.js";
 import { Group } from "../db/mongodb/index.js";

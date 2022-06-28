@@ -18,6 +18,9 @@
 import mongoose from "mongoose";
 import Sequelize from "sequelize";
 import * as redis from "redis";
+import posts from './mysql/schemas/post';
+
+const {QueryTypes} = Sequelize;
 
 const MONGO_DB_URL =
   "mongodb+srv://pigerabbit:forcarrots!@pigerabbit.7lzg5.mongodb.net/?retryWrites=true&w=majority" ||
@@ -44,20 +47,31 @@ MONGODB.on("error", (error) =>
 const sequelize = new Sequelize({
   username: process.env.MYSQL_DB_USERNAME,
   password: process.env.MYSQL_DB_PASSWD,
-  database: process.env.MYSQL_DB_DB_NAME,
+  database: process.env.MYSQL_DB_NAME,
   host: process.env.MYSQL_DB_HOST,
   port: process.env.MYSQL_DB_PORT,
   dialect: "mysql",
 });
 
+/**
+ * force : 초기 설계
+ * alter : 개발 성숙기
+ * 
+ */
 sequelize
-  .sync({ force: true })
+  .sync()
   .then(() => {
     console.log("🐬 데이터베이스가 성공적으로 연결되었습니다.");
   })
   .catch((err) => {
     console.log(err);
   });
+
+  const db = {};
+  db.sequelize = sequelize;
+  db.Sequelize = Sequelize;
+  db.QueryTypes = QueryTypes;
+  db.Posts = posts(sequelize, Sequelize);
 
 // MYSQLDB.sequelize = sequelize;
 // MYSQLDB.Sequelize = Sequelize;
@@ -79,3 +93,5 @@ redisClient.on("error", (err) => {
 redisClient.on("ready", () => {
   console.log("redis is ready");
 });
+
+export { sequelize, db };
