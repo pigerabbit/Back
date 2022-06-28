@@ -1,48 +1,97 @@
-# 레이서 포트폴리오 서비스
+# "동구라미"
 
-이 프로젝트는 자기자신의 포트폴리오를 작성하고, 또한 다른 사람의 포트폴리오를 확인할 수 있는 웹 서비스입니다. \
-웹 구현 예시: http://34.64.140.205/
+## 1. 프로젝트 개요
 
-> 위 IP 주소는 프로젝트 진행 기간에만 유효합니다.
+1-1. 문제 정의
+- 코로나 19 영향으로 인한 지역 경제 침체
+- 오프라인 판매 정체세
+- 높아지는 플랫폼 수수료
 
-**5개 MVP**로 구성됩니다.
+1-2. 프로젝트 주제
+- 공동구매 중개 플랫폼 ‘동구라미’ 제작
 
-- User (회원가입, 로그인 등 사용자 관련)
-- Award (포트폴리오 중 상장 이력 관련)
-- Certificate (포트폴리오 중 자격증 관련)
-- Project (포트폴리오 중 프로젝트 관련)
-- Education (포트폴리오 중 교육, 학교 관련)
+1-3. 목표 
 
-## 주요 사용 기술
+    1. 지역경제 활성화를 도모
 
-1. 프론트엔드
+    2. 소상공인을 위한 온라인 판로 지원
 
-- React (create-react-app으로 구현되었습니다.)
-- React Bootstrap
-- axios
 
-2. 백엔드
 
-- Express (nodemon, babel-node로 실행됩니다.)
-- Mongodb, Mongoose
+## 2. 기술 스택 
 
-## 설치 방법
 
-1. 프론트 엔드 서버 실행
+- 프론트엔드
+    * React, Redux, axios
+- 백엔드
+    - Node.js
+    - Database : MongoDB, MySQL, S3, Redis
+    - API : Kakao map API, 공공데이터포털 API
+    - module : nodemailer
 
-```bash
-cd front
-yarn
-yarn start
-```
+## 3. 아키텍처
+* 프로젝트 구조도
 
-2. 백엔드 서버 실행
+<img src="https://user-images.githubusercontent.com/97489259/176107280-dd3d7edc-96a4-4f8f-9973-c455da0ca7c3.png" width="60%" height="50%" />
 
-```bash
-back 폴더 내부 README 참고
-```
+
+* 서비스 흐름도
+    * 구매자 흐름도
+
+    <img src="https://user-images.githubusercontent.com/97489259/176107326-4bf96313-8568-42d0-bd16-8c40947ac526.png"  width="90%" height="90%"  />
+
+
+
+    * 판매자 흐름도
+
+    <img src="https://user-images.githubusercontent.com/97489259/176107345-a1f60f1f-bae4-428c-9d2f-1a1a7371f26b.png"  width="90%" height="90%"  />
+
+## 4. 서비스 소개
+
+1) 메인 기능
+- 사업자 등록 여부 확인
+- 공동구매 참여
+- 공동구매 개설
+- 내가 참여한 / 개설한 공구 확인
+- 내가 개설한 공구 중지
+- 결제 정보 확인
+- 이용권 QR 코드
+- 판매 상품 등록 및 관리
+- 판매 상품에 대한 공구 확인
+- 관심있는 공동구매 추천
+- 상품 best 10
+- 근처 공동구매 추천
+- 마감 임박 공동구매 추천
+
+<img src="https://user-images.githubusercontent.com/97489259/176107376-d2afbef2-2c88-48a6-9fb7-36d18d139154.png"  width="100%" height="100%"  />
+
+<img src="https://user-images.githubusercontent.com/97489259/176107418-d4e8fef6-7f62-451d-a6a7-2c850bb7835d.png"  width="100%" height="100%"  />
+
+<img src="https://user-images.githubusercontent.com/97489259/176107445-2b210a9d-741b-4ddb-adbe-6aa2b4e4668d.png"  width="100%" height="100%"  />
+
+<img src="https://user-images.githubusercontent.com/97489259/176107469-5561e126-a0ae-4796-a984-2a8ee3720788.png"  width="100%" height="100%"  />
+
+### 2) 서브기능
+
+- 회원가입, 로그인, 회원정보 수정
+- 내가 작성한 문의 / 후기 확인
+- 상품 / 공동구매 찜하기
+- 상품 / 공동구매 상세 정보
+- 알림 기능 구현
+- 검색 기능
+    - 인기 검색어, 최근 검색어, 최근 본 상품
+    - 검색 기록 확인
+- 글 작성 기능
+    - 문의 / 후기
+    - 판매자 답변
+    - 공동구매 댓글
 
 ---
+### 5. 팀원 소개
 
-본 프로젝트에서 제공하는 모든 코드 등의는 저작권법에 의해 보호받는 ㈜엘리스의 자산이며, 무단 사용 및 도용, 복제 및 배포를 금합니다.
-Copyright 2022 엘리스 Inc. All rights reserved.
+| 배서영 | FE |
+| --- | --- |
+| 선민경 | FE |
+| 임은나 | FE |
+| 안지우 | BE |
+| 최재익 | BE / 팀장 |
