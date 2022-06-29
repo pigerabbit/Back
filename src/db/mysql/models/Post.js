@@ -24,7 +24,7 @@ class Post {
    * @returns {Object} postList
    */
   static async findPostList({ receiver, type }) {
-    const postList = await PostModel.findAll({
+    const postList = await Posts.findAll({
       where: {
         receiver,
         type,
@@ -184,27 +184,26 @@ class Post {
     //   return b.total_pop - a.total_pop;
     // });
 
-    // console.log("reviewList", reviewList);
+    // const reviewList = await Posts.findAll({
+    //   attributes: [
+    //     'postId',
+    //     [sequelize.fn("COUNT", sequelize.col("postId")), "reviewCount"],
+    //   ],
+    //   group: "receiver",
+    //   orderby: ["reviewCount"],
+    // });
 
-    const reviewList = await Posts.findAll({
-      attributes: [
-        'postId',
-        [sequelize.fn("COUNT", sequelize.col("postId")), "reviewCount"],
-      ],
-      group: "receiver",
-    });
-
-    // const reviewList = await sequelize.query(`
-    //   SELECT *, COUNT('receiver') AS "reviewCount"
-    //   FROM posts
-    //   WHERE type = "review"
-    //   GROUP BY receiver
-    //   ORDER BY reviewCount desc
-    // `
-    //   , {
-    //     type: Sequelize.QueryTypes.SELECT,
-    //     raw: true,
-    //   });
+    const reviewList = await sequelize.query(`
+      SELECT *, COUNT('receiver') AS "reviewCount"
+      FROM posts
+      WHERE type = "review"
+      GROUP BY receiver
+      ORDER BY reviewCount desc
+    `
+      , {
+        type: Sequelize.QueryTypes.SELECT,
+        raw: true,
+      });
     
     return reviewList;
   }

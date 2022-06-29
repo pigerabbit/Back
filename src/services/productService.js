@@ -1,6 +1,6 @@
 import { Product } from "../db/mongodb/index.js";
 import { User } from "../db/mongodb/index.js";
-import { Post } from "../db/mongodb/index.js";
+import { Post } from "../db/mysql/models/Post.js";
 import { Group } from "../db/mongodb/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromProductData } from "../utils/product";
