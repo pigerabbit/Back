@@ -105,17 +105,6 @@ class Post {
     //   .lean();
 
     const postList = await Posts.findAll({
-      attributes: [
-        'postId',
-        'type',
-        'writer',
-        'receiver',
-        'title',
-        'content',
-        'postImg',
-        'commentCount',
-        'reply',
-      ], 
       where: {
         receiver,
         removed: 0,
@@ -137,28 +126,17 @@ class Post {
     // )
     //   .lean();
 
-    // const post = await Posts.findOne({
-    //   attributes: [
-    //     'postId',
-    //     'type',
-    //     'writer',
-    //     'receiver',
-    //     'title',
-    //     'content',
-    //     'postImg',
-    //     'commentCount',
-    //     'reply',
-    //   ],
-    //   where: {
-    //     postId,
-    //   },
-    // });
+    const post = await Posts.findOne({
+      where: {
+        postId,
+      },
+    });
 
     //! 왜 안 돼!
-    let sql = 'SELECT * FROM posts WHERE postId = ?';
-    const post = await sequelize.query(sql, 
-      [ postId ],
-    );
+    // let sql = 'SELECT * FROM posts WHERE postId = ?';
+    // const post = await sequelize.query(sql, 
+    //   [ postId ],
+    // );
 
     // const post = await sequelize.query(`
     //   SELECT * 
@@ -192,7 +170,15 @@ class Post {
       where: {
         postId,
       }
-    }); 
+      }); 
+    
+    updatedPost = await Posts.findOne(
+      {
+        where: {
+          postId,
+        },
+      }
+    );
     
    //! 수정 필요
     // updatedPost = await sequelize.query(`
@@ -220,18 +206,6 @@ class Post {
         //   .sort({ createdAt: -1 })
         //   .lean();
         postList = await Posts.findAll({
-          attributes: [
-            'postId',
-            'type',
-            'writer',
-            'receiver',
-            'title',
-            'content',
-            'postImg',
-            'commentCount',
-            'reply',
-            'removed'
-          ],
           where: {
             type: option,
             writer,
