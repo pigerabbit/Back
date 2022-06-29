@@ -36,6 +36,10 @@ const paymentController = {
       const voucher = req.body.voucher ?? null;
       const paymentMethod = req.body.paymentMethod ?? null;
 
+      if (voucher < 0) {
+        throw new Error("남은 사용권 개수가 0보다 작을 수 없습니다.");
+      }
+
       const payment = await paymentService.setPayment({
         paymentId,
         dueDate,
