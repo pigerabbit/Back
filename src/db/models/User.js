@@ -7,7 +7,7 @@ export class User {
   }
 
   static async isEmailExists({ email, type }) {
-    return await UserModel.exists({ email, type });
+    return await UserModel.findOne({ email, type });
   }
 
   // static async findByEmail({ email, type }) {
