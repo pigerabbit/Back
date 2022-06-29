@@ -772,7 +772,7 @@ export class groupService {
 
     if (len === 0) { 
       const data = false;
-      let groupList = await GroupModel.find({ state: 0, groupType: "post" }).populate("productInfo").limit(20).lean();
+      let groupList = await GroupModel.find({ state: 0, groupType: "normal" }).populate("productInfo").limit(20).lean();
       const toggleInfo = await ToggleModel.findOne({ userId });
 
       if (!toggleInfo) {
