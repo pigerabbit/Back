@@ -47,6 +47,12 @@
 
     <img src="https://user-images.githubusercontent.com/97489259/176107345-a1f60f1f-bae4-428c-9d2f-1a1a7371f26b.png"  width="90%" height="90%"  />
 
+
+* [와이어프레임](https://www.figma.com/file/OmuTNn55BVFe7QwGL69KxK?embed_host=notion&kind=&node-id=0%3A1&viewer=1)
+<img src="https://user-images.githubusercontent.com/97489259/176350825-f404958f-4d2f-4ec7-9eeb-c241b441d3e0.png" width="65%" height="65%" />
+
+
+
 ## 4. 서비스 소개
 
 1) 메인 기능
@@ -64,13 +70,13 @@
 - 근처 공동구매 추천
 - 마감 임박 공동구매 추천
 
-<img src="https://user-images.githubusercontent.com/97489259/176107376-d2afbef2-2c88-48a6-9fb7-36d18d139154.png"  width="100%" height="100%"  />
+<img src="https://user-images.githubusercontent.com/97489259/176107376-d2afbef2-2c88-48a6-9fb7-36d18d139154.png"  width="70%" height="90%"  />
 
-<img src="https://user-images.githubusercontent.com/97489259/176107418-d4e8fef6-7f62-451d-a6a7-2c850bb7835d.png"  width="100%" height="100%"  />
+<img src="https://user-images.githubusercontent.com/97489259/176107418-d4e8fef6-7f62-451d-a6a7-2c850bb7835d.png"  width="70%" height="90%"  />
 
-<img src="https://user-images.githubusercontent.com/97489259/176107445-2b210a9d-741b-4ddb-adbe-6aa2b4e4668d.png"  width="100%" height="100%"  />
+<img src="https://user-images.githubusercontent.com/97489259/176107445-2b210a9d-741b-4ddb-adbe-6aa2b4e4668d.png"  width="70%" height="90%"  />
 
-<img src="https://user-images.githubusercontent.com/97489259/176107469-5561e126-a0ae-4796-a984-2a8ee3720788.png"  width="100%" height="100%"  />
+<img src="https://user-images.githubusercontent.com/97489259/176107469-5561e126-a0ae-4796-a984-2a8ee3720788.png"  width="70%" height="90%"  />
 
 ### 2) 서브기능
 
