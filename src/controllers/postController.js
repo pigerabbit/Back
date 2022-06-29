@@ -52,7 +52,6 @@ const postController = {
         content,
         postImg,
       };
-      console.log(toUpdate);
       const updatedPost = await PostService.setPost({
         writer,
         postId,

@@ -41,7 +41,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         defaultValue: 0,
       },
-      //! isRemoved로 사용할 것
       removed: {
         type: DataTypes.INTEGER,
         allowNull: false,

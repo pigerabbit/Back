@@ -51,10 +51,10 @@ class Post {
       WHERE "receiver" = ${receiver}, type = type, removed = false
     `
       , {
-          type: Sequelize.QueryTypes.INSERT,
-          raw: true,
+        type: Sequelize.QueryTypes.INSERT,
+        raw: true,
       }
-    )
+    );
     return postList11;
 
     
@@ -137,22 +137,34 @@ class Post {
     // )
     //   .lean();
 
-    const post = await Posts.findOne({
-      attributes: [
-        'postId',
-        'type',
-        'writer',
-        'receiver',
-        'title',
-        'content',
-        'postImg',
-        'commentCount',
-        'reply',
-      ],
-      where: {
-        postId,
-      },
-    });
+    // const post = await Posts.findOne({
+    //   attributes: [
+    //     'postId',
+    //     'type',
+    //     'writer',
+    //     'receiver',
+    //     'title',
+    //     'content',
+    //     'postImg',
+    //     'commentCount',
+    //     'reply',
+    //   ],
+    //   where: {
+    //     postId,
+    //   },
+    // });
+
+    //! 왜 안 돼!
+    let sql = 'SELECT * FROM posts WHERE postId = ?';
+    const post = await sequelize.query(sql, 
+      [ postId ],
+    );
+
+    // const post = await sequelize.query(`
+    //   SELECT * 
+    // FROM posts 
+    // WHERE postId = ${postId}
+    // `);
     
     return post;
   }
@@ -174,16 +186,20 @@ class Post {
     //   .select('-updatedAt')
     //   .lean();
 
-    const updatedPost = await Posts.update(
-      {
-        toUpdate,
-      },
-      {
-        where: {
-          postId,
-        }
-      },
-    ); 
+    let updatedPost = await Posts.update(
+      toUpdate,
+    {
+      where: {
+        postId,
+      }
+    }); 
+    
+   //! 수정 필요
+    // updatedPost = await sequelize.query(`
+    //   SELECT *
+    //   FROM posts
+    //   WHERE postId = ${postId}
+    // `);
 
     return updatedPost;
   }

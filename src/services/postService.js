@@ -4,6 +4,7 @@ import { Product } from "../db/mongodb/index.js";
 import { Group } from "../db/mongodb/index.js";
 import crypto from "crypto";
 import { getRequiredInfoFromPostData } from "../utils/post";
+import { PinpointSMSVoiceV2 } from "aws-sdk";
 
 class PostService {
   /** 글 저장 함수
@@ -195,7 +196,6 @@ class PostService {
         errorMessage,
       };
     }
-
     if (post.writer !== writer) {
       const errorMessage = "글을 쓴 유저만 수정이 가능합니다.";
       return {
@@ -218,7 +218,7 @@ class PostService {
       }
     });
 
-    const updatedPost = await Post.update({ postId, toUpdate });
+    let updatedPost = await Post.update({ postId, toUpdate });
 
     if (post.type === "review" || post.type === "cs") {
       const commentList = await Post.findCommentList({ receiver: postId });
