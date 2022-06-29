@@ -361,6 +361,7 @@ const groupController = {
 
       const body = {
         success: true,
+        data: true,
         payload: groupList,
       };
 

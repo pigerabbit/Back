@@ -296,7 +296,6 @@ export class groupService {
     if (toUpdate.state !== null) {
       switch (toUpdate.state) {
         case "1":
-          console.log("case 1");
           content = "공구 인원이 달성되었습니다. 결제를 시작합니다.";
           break;
         case "-1":
@@ -388,11 +387,9 @@ export class groupService {
         "해당 그룹은 생성 내역이 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-    console.log("group:", group);
     const productId = group.productId;
 
     const product = await Product.findProduct({ id: productId });
-    console.log("product:", product);
 
     const participants = group.participants;
     const numberOfParticipants = participants.length;
@@ -733,13 +730,8 @@ export class groupService {
 
     const len = list.length;
 
-    console.log("len =====>", len);
-
     // 랜덤 페이지 생성 (최댓값 포함 X)
     const page = Math.floor(Math.random() * (len / perPage)) + 1;
-    console.log("page =====>", page);
-    console.log("x =====>", parseFloat(user.locationXY.coordinates[0]));
-    console.log("x =====>", parseFloat(user.locationXY.coordinates[0]));
 
     const groupList = await GroupModel.aggregate([
       {
@@ -780,7 +772,7 @@ export class groupService {
 
     if (len === 0) { 
       const data = false;
-      let groupList = await GroupModel.find({ state: 0, groupType: "post" }).populate("productInfo").limit(20).lean();
+      let groupList = await GroupModel.find({ state: 0, groupType: "normal" }).populate("productInfo").limit(20).lean();
       const toggleInfo = await ToggleModel.findOne({ userId });
 
       if (!toggleInfo) {
