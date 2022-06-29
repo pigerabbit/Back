@@ -56,7 +56,7 @@ app.use(paymentRouter);
 app.use(errorMiddleware);
 
 // .env가 있는지 확인
-["SERVER_PORT", "JWT_SECRET_KEY"].forEach((k) => {
+["SERVER_PORT", "MONGODB_URL", "JWT_SECRET_KEY"].forEach((k) => {
   if (!(k in process.env)) {
     throw new Error(`.env 파일이 빠진 것 같아요! 체크체크!`);
   }
