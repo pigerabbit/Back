@@ -253,7 +253,7 @@ class PostService {
       };
     }
 
-    if (post.removed === true) {
+    if (post.removed === 1) {
       const errorMessage = "이미 삭제된 글입니다.";
       return {
         status: 400,
@@ -314,7 +314,7 @@ class PostService {
     }
 
     let postList = await Post.findPostListByWriter({ writer, option, reply });
-    console.log("전 :", postList);
+    postList.reverse();
     if (option === "cs") {
       let posts = postList;
       postList = [];
@@ -324,7 +324,6 @@ class PostService {
           return { post: v, commentList: comment };
         })
       );
-      console.log("service: ", postList);
       return { postList };
     }
 
