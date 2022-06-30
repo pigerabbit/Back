@@ -173,9 +173,8 @@ const postController = {
     try {
       const writer = req.currentUserId;
       const postId = req.params.postId;
-      const groupId = req.body.groupId ?? null;
 
-      const deletedPost = await PostService.deletePost({ writer, postId, groupId });
+      const deletedPost = await PostService.deletePost({ writer, postId });
 
       if (deletedPost.errorMessage) {
         const body = {

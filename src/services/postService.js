@@ -242,7 +242,7 @@ class PostService {
    * @param {String} postId - 글 id
    * @returns {Object} deletedPost
    */
-  static async deletePost({ writer, postId, groupId }) {
+  static async deletePost({ writer, postId }) {
     let post = await Post.findPostContent({ postId });
     
     if (!post) {
@@ -270,7 +270,7 @@ class PostService {
     }
 
     if (post.type === "review") { 
-      await groupService.setReview({ groupId, userId: writer, review: false });
+      await groupService.setReview({ groupId: post.groupId, userId: writer, review: false });
     }
 
     let toUpdate = {};
