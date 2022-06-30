@@ -29,11 +29,11 @@ export class groupService {
 
     const minPurchaseQty = isProduct?.minPurchaseQty;
     const term = isProduct?.term;
-    
-    if (!minPurchaseQty) { 
+
+    if (!minPurchaseQty) {
       const errorMessage = "product가 존재하지 않습니다.";
       return { errorMessage };
-    } 
+    }
 
     const user = await User.findById({ userId });
     const userObjectId = user._id;
@@ -213,6 +213,37 @@ export class groupService {
 
     if (index > -1) {
       participantsInfo[index]["payment"] = payment;
+    } else {
+      const errorMessage =
+        "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+    newValue = participantsInfo;
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedParticipants;
+  }
+
+  static async setReview({ groupId, userId, review }) {
+    let groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage =
+        "정보가 없습니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let participantsInfo = groupInfo.participants;
+    let newValue = {};
+
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
+    if (index > -1) {
+      participantsInfo[index]["review"] = review;
     } else {
       const errorMessage =
         "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
@@ -770,9 +801,12 @@ export class groupService {
       },
     ]);
 
-    if (len === 0) { 
+    if (len === 0) {
       const data = false;
-      let groupList = await GroupModel.find({ state: 0, groupType: "normal" }).populate("productInfo").limit(20).lean();
+      let groupList = await GroupModel.find({ state: 0, groupType: "normal" })
+        .populate("productInfo")
+        .limit(20)
+        .lean();
       const toggleInfo = await ToggleModel.findOne({ userId });
 
       if (!toggleInfo) {
