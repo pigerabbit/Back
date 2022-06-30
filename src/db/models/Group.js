@@ -49,6 +49,7 @@ class Group {
         path: "participants",
         populate: { path: "userInfo" },
       })
+      .sort({ createdAt: 1 })
       .lean();
     return groups;
   }
@@ -60,6 +61,7 @@ class Group {
         path: "participants",
         populate: { path: "payment" },
       })
+      .sort({ createdAt: 1 })
       .lean();
     return groups;
   }
@@ -93,7 +95,7 @@ class Group {
         { state: 0 },
         {
           remainedPersonnel: {
-            $gte: 1,
+            $lte: 3,
           },
         },
       ],
