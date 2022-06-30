@@ -9,6 +9,7 @@ const postController = {
         receiver,
         title,
         content,
+        groupId,
       } = req.body;
 
       const createdPost = await PostService.addPost({
@@ -16,7 +17,8 @@ const postController = {
         writer,
         receiver,
         title,
-        content,
+        content, 
+        groupId,
       });
 
       if (createdPost.errorMessage) {

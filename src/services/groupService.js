@@ -730,7 +730,7 @@ export class groupService {
   }
 
   static async findNearGroupList({ userId }) {
-    const perPage = 3;
+    const perPage = 100000;
     const user = await User.findById({ userId });
     const list = await GroupModel.aggregate([
       {
@@ -777,7 +777,13 @@ export class groupService {
             ],
           },
           distanceField: "distance",
-          query: { state: 0, groupType: "local" },
+          query: {
+            state: 0, 
+            $or : [
+              {groupType : 'local'},
+              {groupType : 'coupon'}
+            ],
+          },
         },
       },
       {
