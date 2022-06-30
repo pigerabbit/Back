@@ -95,7 +95,7 @@ class Group {
         { state: 0 },
         {
           remainedPersonnel: {
-            $gte: 1,
+            $lte: 3,
           },
         },
       ],
