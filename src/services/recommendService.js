@@ -204,6 +204,6 @@ export class recommendService {
     // console.log("paginatedList:", paginatedList);
 
     // return paginatedList;
-    return resultList;
+    return resultList.slice(0, 10);
   }
 }
