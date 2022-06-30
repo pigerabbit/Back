@@ -18,7 +18,8 @@ const postController = {
         title,
         content,
       });
-
+      
+      // 서비스에서 throw error instanceof를 사용해서 에러가 맞다면 return res.status(status_code);
       if (createdPost.errorMessage) {
         const body = {
           success: false,

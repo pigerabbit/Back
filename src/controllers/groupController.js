@@ -392,7 +392,8 @@ const groupController = {
   getGroupsByLocations: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const groupList = await groupService.findNearGroupList({ userId });
+      const distanceOption = req.query.option ?? "5000";
+      const groupList = await groupService.findNearGroupList({ userId, distanceOption });
       if (groupList.data === false) {
         const body = {
           success: true,
