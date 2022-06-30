@@ -54,10 +54,10 @@ export class groupService {
     }
 
     if (remainedPersonnel === 0) {
-      state = 1;
+      state = 5;
     }
 
-    const coordinates = await addressToXY(location);
+    const coordinates = await addressToXY(location.split('('));
 
     const participants = {
       participantId: participantId,
@@ -175,7 +175,7 @@ export class groupService {
 
     let state;
     if (updatedRemainedPersonnel === 0) {
-      state = 1;
+      state = 5;
     } else {
       state = groupInfo.state;
     }
@@ -514,7 +514,7 @@ export class groupService {
 
     let state;
     if (updatedRemainedPersonnel === 0) {
-      state = 1;
+      state = 5;
     }
 
     newValue = participantsInfo;

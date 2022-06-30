@@ -50,7 +50,7 @@ class userService {
     }
 
     // 주소를 통해 좌표값 구하기
-    const coordinates = await addressToXY(address);
+    const coordinates = await addressToXY(address.split('(')[0]);
 
     const newUser = {
       id,
@@ -153,7 +153,7 @@ class userService {
     }
     const address = toUpdate.address;
     if (address !== undefined && address !== null) {
-      coordinates = await addressToXY(address);
+      coordinates = await addressToXY(address.split('(')[0]);
     }
 
     const locationXY = {
