@@ -190,17 +190,20 @@ export class recommendService {
     }
 
     const resultList = await withToggleInfo(toggleInfo2.groups, newList);
+    console.log("resultList:", resultList);
 
-    function paginate(array, page_size, page_number) {
-      // human-readable page numbers usually start with 1, so we reduce 1 in the first argument
-      return array.slice(
-        (page_number - 1) * page_size,
-        page_number * page_size
-      );
-    }
+    // function paginate(array, page_size, page_number) {
+    //   // human-readable page numbers usually start with 1, so we reduce 1 in the first argument
+    //   return array.slice(
+    //     (page_number - 1) * page_size,
+    //     page_number * page_size
+    //   );
+    // }
 
-    const paginatedList = paginate(resultList, perPage, page);
+    // const paginatedList = paginate(resultList, perPage, page);
+    // console.log("paginatedList:", paginatedList);
 
-    return paginatedList;
+    // return paginatedList;
+    return resultList;
   }
 }
