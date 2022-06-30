@@ -57,7 +57,7 @@ export class groupService {
       state = 5;
     }
 
-    const coordinates = await addressToXY(location);
+    const coordinates = await addressToXY(location.split('('));
 
     const participants = {
       participantId: participantId,
