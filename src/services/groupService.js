@@ -57,7 +57,7 @@ export class groupService {
       state = 5;
     }
 
-    const coordinates = await addressToXY(location.split('('));
+    const coordinates = await addressToXY(location.split("("));
 
     const participants = {
       participantId: participantId,
@@ -351,16 +351,16 @@ export class groupService {
           content = "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.";
           break;
       }
-      group.participants.map(async (v) => {
+      groupInfo.participants.map(async (v) => {
         await User.updateAlert({
           userId: v.userId,
           from: "group",
-          productId: productId,
-          sendId: groupId,
-          image: group.productInfo.images,
-          type: group.groupType,
-          groupName: group.groupName,
-          content: content,
+          productId: groupInfo.productId,
+          sendId: groupInfo.groupId,
+          image: groupInfo.productInfo.images,
+          type: groupInfo.groupType,
+          groupName: groupInfo.groupName,
+          content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
           seller: false,
         });
       });
@@ -569,6 +569,20 @@ export class groupService {
           { $set: { state: "-6" } },
           { returnOriginal: false }
         );
+
+        groupInfo.participants.map(async (v) => {
+          await User.updateAlert({
+            userId: v.userId,
+            from: "group",
+            productId: groupInfo.productId,
+            sendId: groupInfo.groupId,
+            image: groupInfo.productInfo.images,
+            type: groupInfo.groupType,
+            groupName: groupInfo.groupName,
+            content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
+            seller: false,
+          });
+        });
       }
       updatedRemainedPersonnel =
         groupInfo.remainedPersonnel + participantsInfo[index].quantity;
@@ -711,20 +725,33 @@ export class groupService {
       const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
       return { errorMessage };
     }
-    const productId = groupInfo.productId;
-    const productInfo = await Product.findProduct({ id: productId });
-    const sellerId = productInfo.userId;
 
-    if (sellerId !== userId) {
-      const errorMessage = "판매자가 아닙니다.";
+    const managerId = groupInfo.participants[0].userId;
+
+    if (managerId !== userId) {
+      const errorMessage = "공구장이 아닙니다.";
       return { errorMessage };
     }
 
     const updatedGroup = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { state: "-7" } },
+      { $set: { state: "-6" } },
       { returnOriginal: false }
     );
+
+    groupInfo.participants.map(async (v) => {
+      await User.updateAlert({
+        userId: v.userId,
+        from: "group",
+        productId: groupInfo.productId,
+        sendId: groupInfo.groupId,
+        image: groupInfo.productInfo.images,
+        type: groupInfo.groupType,
+        groupName: groupInfo.groupName,
+        content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
+        seller: false,
+      });
+    });
 
     return updatedGroup;
   }
@@ -778,11 +805,8 @@ export class groupService {
           },
           distanceField: "distance",
           query: {
-            state: 0, 
-            $or : [
-              {groupType : 'local'},
-              {groupType : 'coupon'}
-            ],
+            state: 0,
+            $or: [{ groupType: "local" }, { groupType: "coupon" }],
           },
         },
       },
