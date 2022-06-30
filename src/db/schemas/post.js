@@ -8,6 +8,10 @@ const PostSchema = new Schema(
       unique: true,
       required: true,
     },
+    groupId: {
+      type: String,
+      required: false,
+    },
     type: {
       type: String,
       required: true,
