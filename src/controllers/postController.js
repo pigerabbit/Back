@@ -9,6 +9,7 @@ const postController = {
         receiver,
         title,
         content,
+        groupId,
       } = req.body;
 
       const createdPost = await PostService.addPost({
@@ -16,7 +17,8 @@ const postController = {
         writer,
         receiver,
         title,
-        content,
+        content, 
+        groupId,
       });
 
       if (createdPost.errorMessage) {
@@ -171,8 +173,9 @@ const postController = {
     try {
       const writer = req.currentUserId;
       const postId = req.params.postId;
+      const groupId = req.body.groupId ?? null;
 
-      const deletedPost = await PostService.deletePost({ writer, postId });
+      const deletedPost = await PostService.deletePost({ writer, postId, groupId });
 
       if (deletedPost.errorMessage) {
         const body = {

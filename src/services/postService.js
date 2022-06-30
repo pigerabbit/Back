@@ -2,6 +2,7 @@ import { Post } from "../db/index.js";
 import { User } from "../db/index.js";
 import { Product } from "../db/index.js";
 import { Group } from "../db/index.js";
+import { groupService } from "./groupService.js";
 import crypto from "crypto";
 import { getRequiredInfoFromPostData } from "../utils/post";
 
@@ -22,6 +23,7 @@ class PostService {
     receiver,
     title,
     content,
+    groupId,
   }) {
     const postId = crypto.randomUUID();
     let authorizedUsers = [];
@@ -82,6 +84,8 @@ class PostService {
         seller: true,
       });
 
+      await groupService.setReview({ groupId, userId: writer, review: true });
+
     } else if (type === "comment") { // 댓글일 때 postId가 있는지 확인 => 없다면 에러
       authorizedUsers = [];
       post = await Post.findPostContent({ postId: receiver });
@@ -115,6 +119,7 @@ class PostService {
 
     const newPost = {
       postId,
+      groupId,
       type,
       authorizedUsers,
       writer,
@@ -237,7 +242,7 @@ class PostService {
    * @param {String} postId - 글 id
    * @returns {Object} deletedPost
    */
-  static async deletePost({ writer, postId }) {
+  static async deletePost({ writer, postId, groupId }) {
     let post = await Post.findPostContent({ postId });
     
     if (!post) {
@@ -262,6 +267,10 @@ class PostService {
         status: 400,
         errorMessage,
       };
+    }
+
+    if (post.type === "review") { 
+      await groupService.setReview({ groupId, userId: writer, review: false });
     }
 
     let toUpdate = {};

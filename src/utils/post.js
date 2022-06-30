@@ -2,6 +2,7 @@ export function getRequiredInfoFromPostData(data) {
   if (data.type === "cs") {
     return {
       postId: data.postId,
+      groupId: data.groupId,
       type: data.type,
       authorizedUsers: data.authorizedUsers,
       writer: data.writer,
@@ -17,6 +18,7 @@ export function getRequiredInfoFromPostData(data) {
   } else { 
     return {
       postId: data.postId,
+      groupId: data.groupId,
       type: data.type,
       authorizedUsers: data.authorizedUsers,
       writer: data.writer,
