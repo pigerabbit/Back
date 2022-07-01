@@ -21,8 +21,8 @@ const alertController = {
   deleteAlert: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const sendId = req.params.sendId;
-      await userService.deleteAlertList({ userId, sendId });
+      const alertId = req.params.alertId;
+      await userService.deleteAlertList({ userId, alertId });
 
       const body = {
         success: true,

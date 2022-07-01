@@ -363,8 +363,8 @@ class userService {
    * @param {String} userId - param으로 받은 유저 아이디
    * @returns alertList
    */
-  static async deleteAlertList({ userId, sendId }) {
-    console.log("user service sendId ==>", sendId);
+  static async deleteAlertList({ userId, alertId }) {
+    console.log("user service sendId ==>", alertId);
     const user = await User.findById({ userId });
     if (!user || user === null) {
       const errorMessage = "해당 유저가 존재하지 않습니다.";
@@ -376,7 +376,7 @@ class userService {
       return { errorMessage };
     }
 
-    const alertList = await User.deleteAlertList({ sendId });
+    const alertList = await User.deleteAlertList({ alertId });
     return alertList;
   }
 
