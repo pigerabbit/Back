@@ -133,7 +133,10 @@ class Post {
     let reviewList = await PostModel.aggregate([
       {
         $match:
-          { type: 'review' },
+        {
+          type: 'review',
+          removed: false,
+        },
       },
       {
         $group: {
@@ -146,7 +149,7 @@ class Post {
     reviewList = reviewList.sort((a, b) => {
       return b.total_pop - a.total_pop;
     });
-
+    console.log("reviewList =========", reviewList);
     return reviewList;
   }
 }
