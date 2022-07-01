@@ -104,7 +104,7 @@ class oauthService {
     });
 
     const email = kakaoData.data.kakao_account.email || "이메일 동의 안함";
-    const user = await User.findByEmail({ email });
+    let user = await User.findByEmail({ email });
 
     // 가입여부 확인. 가입된 정보 없는 경우 회원가입
     if (!user) {
