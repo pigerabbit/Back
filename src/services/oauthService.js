@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { getRequiredInfoFromData } from "../utils/user";
 import { toggleService } from "../services/toggleService";
 import { addressToXY } from "../utils/addressToXY.js";
+import axios from "axios";
 
 class oauthService {
   static async addUser({ email }) {
