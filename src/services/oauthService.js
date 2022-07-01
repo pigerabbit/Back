@@ -8,18 +8,24 @@ import { addressToXY } from "../utils/addressToXY.js";
 import axios from "axios";
 
 class oauthService {
-  static async addUser({ email }) {
+  static async addUser({ email, nickname }) {
     // 기본 프로필
     const imageLink = process.env.initial_image;
 
     // id 는 유니크 값 부여
     const id = crypto.randomUUID();
 
-    // id를 활용해 임시 비밀번호 생성
-    const password = id.replace(/\-/g, "");
+    // Date.now()를 활용해 임시 비밀번호 생성
+    const password = Date.now();
+
+    let name = nickname + "_" + Date.now();
+
+    if (email === "이메일 동의 안함") {
+      email = Date.now();
+    }
 
     // 비밀번호 해쉬화
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = bcrypt.hash(password, 10);
 
     const userId = id;
     const newToggle = await toggleService.addToggle({
@@ -36,7 +42,7 @@ class oauthService {
 
     const newUser = {
       id,
-      name: `임시 비밀번호: ${password}`,
+      name,
       email,
       password: hashedPassword,
       address,
@@ -103,12 +109,14 @@ class oauthService {
       headers: { Authorization: `Bearer ${kakaoToken}` },
     });
 
-    const email = kakaoData.data.kakao_account.email || "이메일 동의 안함";
+    let email = kakaoData.data.kakao_account.email || "이메일 동의 안함";
+    const nickname = kakaoData.data.properties.nickname;
+
     let user = await User.findByEmail({ email });
 
     // 가입여부 확인. 가입된 정보 없는 경우 회원가입
     if (!user) {
-      user = await oauthService.addUser({ email });
+      user = await oauthService.addUser({ email, nickname });
     }
 
     // 토큰을 가져오기 위해 회원 정보 불러오기
