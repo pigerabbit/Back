@@ -6,7 +6,7 @@ const oauthRouter = Router();
 
 oauthRouter.post("/oauth/login", oauthController.login);
 
-oauthRouter.get("/users/login/kakao", async (req, res, next) => {
+oauthRouter.get("/oauth/login/kakao", async (req, res, next) => {
   try {
     const code = req.query.code;
 
@@ -14,7 +14,7 @@ oauthRouter.get("/users/login/kakao", async (req, res, next) => {
 
     // const redirect_uri = `http://localhost:3000/login/kakao?token=${user.token}`;
     // 배포용으로 수정
-    const redirect_uri = `http://localhost:3000/login/kakao?token=${user.token}`;
+    const redirect_uri = `http://localhost:5000/login/kakao?token=${user.token}`;
     res.status(200).redirect(redirect_uri);
   } catch (err) {
     next(err);
