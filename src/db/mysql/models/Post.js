@@ -58,17 +58,19 @@ class Post {
    * @returns {Object} post
    */
   static async findPostContent({ postId }) { 
-    const post = await Posts.findOne({
-      where: {
-        postId,
-      },
-    });
+    // const post = await Posts.findOne({
+    //   where: {
+    //     postId,
+    //   },
+    // });
 
     //! 왜 안 돼! 위의 쿼리 사용,,,
-    // let sql = 'SELECT * FROM posts WHERE postId = ?';
-    // const post = await sequelize.query(sql, 
-    //   [ postId ],
-    // );
+    let sql = `SELECT * FROM posts WHERE postId = '${postId}'`;
+
+    const post = await sequelize.query(sql, 
+        [ postId ],
+    );
+
 
     // const post = await sequelize.query(`
     //   SELECT * 

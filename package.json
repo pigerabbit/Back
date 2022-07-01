@@ -38,7 +38,7 @@
     "nodemailer": "^6.7.5",
     "redis": "^4.1.0",
     "request": "^2.88.2",
-    "sequelize": "^6.21.1",
+    "sequelize": "^6.21.2",
     "supertest": "^6.1.6",
     "swagger-jsdoc": "^6.2.1",
     "swagger-ui-express": "^4.4.0",

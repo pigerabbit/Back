@@ -6346,10 +6346,10 @@
   "resolved" "https://registry.npmjs.org/sequelize-pool/-/sequelize-pool-7.1.0.tgz"
   "version" "7.1.0"
 
-"sequelize@^6.21.1":
-  "integrity" "sha512-vbRreGOdBFLoGUrSINaNVLnaGZGSjhLq2b80tBezuqxbumMG3V2QkCnsvgggQ+LoRVYxERwWin1BL7YO4b5PSQ=="
-  "resolved" "https://registry.npmjs.org/sequelize/-/sequelize-6.21.1.tgz"
-  "version" "6.21.1"
+"sequelize@^6.21.2":
+  "integrity" "sha512-K0c6j/Y6yfucBL9XYHMVWqYGFShPsj6ZzMrQcOAjqzyE+a1XMBOoTXXjRvJS+fz6cKeh2D3ZqhYDRwN8nfvOMQ=="
+  "resolved" "https://registry.npmjs.org/sequelize/-/sequelize-6.21.2.tgz"
+  "version" "6.21.2"
   dependencies:
     "@types/debug" "^4.1.7"
     "@types/validator" "^13.7.1"
