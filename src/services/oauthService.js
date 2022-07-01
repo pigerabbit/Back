@@ -95,10 +95,9 @@ class oauthService {
   }
 
   static async upsertKakaoUser({ code }) {
-    const KAKAO_CLIENT_id = "1151db674b1e7bb224e211714cc6d764";
-    // const KAKAO_REDIRECT_URL = "http://localhost:5000/users/login/kakao";
-    // 배포용으로 수정
-    const KAKAO_REDIRECT_URL = "http://localhost:5000/login/kakao";
+    const KAKAO_CLIENT_id = process.env.KAKAO_ID;
+    const KAKAO_REDIRECT_URL = process.env.KAKAO_REDIRECT_URL_IN_SERVICE;
+
     //카카오 토큰 받기
     const ret = await axios.post(
       `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${KAKAO_CLIENT_id}&redirect_uri=${KAKAO_REDIRECT_URL}&code=${code}`
