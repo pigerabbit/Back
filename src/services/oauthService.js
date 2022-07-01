@@ -16,16 +16,18 @@ class oauthService {
     const id = crypto.randomUUID();
 
     // Date.now()를 활용해 임시 비밀번호 생성
-    const password = Date.now();
+    const uuid = String(Date.now());
 
-    let name = nickname + "_" + Date.now();
+    const password = uuid;
+
+    let name = nickname + "_" + uuid;
 
     if (email === "이메일 동의 안함") {
-      email = Date.now();
+      email = uuid;
     }
 
     // 비밀번호 해쉬화
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const userId = id;
     const newToggle = await toggleService.addToggle({
