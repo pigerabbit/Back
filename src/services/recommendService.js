@@ -73,7 +73,6 @@ export class recommendService {
       .lean();
 
     const hotProductList = await Group.findProductSortByGroups();
-    console.log("hotProductList:", hotProductList);
 
     let resultList = [];
     let jjaProductList = [...productList];
@@ -190,7 +189,6 @@ export class recommendService {
     }
 
     const resultList = await withToggleInfo(toggleInfo2.groups, newList);
-    console.log("resultList:", resultList);
 
     // function paginate(array, page_size, page_number) {
     //   // human-readable page numbers usually start with 1, so we reduce 1 in the first argument

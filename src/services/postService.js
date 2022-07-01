@@ -2,6 +2,7 @@ import { Post } from "../db/index.js";
 import { User } from "../db/index.js";
 import { Product } from "../db/index.js";
 import { Group } from "../db/index.js";
+import { userService } from "./userService.js";
 import { groupService } from "./groupService.js";
 import crypto from "crypto";
 import { getRequiredInfoFromPostData } from "../utils/post";
@@ -49,6 +50,7 @@ class PostService {
         from: type,
         productId: receiver,
         sendId: receiver, // productId
+        postId,
         image: images,
         content: `'${name}' 상품에 문의가 생성되었습니다.`,
         seller: true,
@@ -60,15 +62,20 @@ class PostService {
       const groupName = group.groupName;
 
       // 공동 구매 댓글이 생겼다면 공동구매 참여자 전원에게 알림
-      authorizedUsers.map(async (v) => await User.updateAlert({
-        userId: v,
-        from: type,
-        productId: group.productId,
-        sendId: receiver, // groupId
-        image: group.productInfo.images,
-        content: `'${groupName}'에 공동 구매 댓글이 생성되었습니다.`,
-        seller: false,
-      }));
+      authorizedUsers.map(async (v) => {
+        if (v !== writer) { 
+          await User.updateAlert({
+            userId: v,
+            from: type,
+            productId: group.productId,
+            sendId: receiver, // groupId
+            postId,
+            image: group.productInfo.images,
+            content: `'${groupName}'에 공동 구매 댓글이 생성되었습니다.`,
+            seller: false,
+          });
+        }
+      });
     } else if (type === "review") {
       authorizedUsers = [];
 
@@ -79,6 +86,7 @@ class PostService {
         from: type,
         productId: id,
         sendId: receiver, // productId
+        postId,
         image: images,
         content: `'${name}' 상품에 후기가 생성되었습니다.`,
         seller: true,
@@ -107,6 +115,7 @@ class PostService {
           from: post.type,
           productId: id,
           sendId: post.postId,
+          postId,
           image: images,
           content: `'${post.title}' 글에 댓글이 생성되었습니다.`,
           seller: false,
@@ -269,6 +278,26 @@ class PostService {
       };
     }
 
+    // 글의 type이 후기나 문의라면, 삭제될 때 후기/문의 생성 알림 삭제
+    if (post.type === "review" || post.type === "cs") { 
+      console.log("여기1");
+      const product = await Product.findProduct({ id: post.receiver });
+      console.log("product ==>", product);
+      console.log("post ==>", post);
+      userService.deleteAlertListByPostId({ userId: product.userId, postId: post.postId });
+    }
+
+    // 글의 type이 공구 채팅이라면, 삭제될 때 그룹 전체에게 댓글 생성 알림 삭제
+    if (post.type === "groupChat") { 
+      console.log("groupId ==>", post.receiver);
+      const group = await groupService.getGroupInfoByGroupId({ groupId: post.receiver });
+      console.log("group", group);
+      group.participants.map((v) => {
+        userService.deleteAlertListByPostId({ userId: v.userId, postId: post.postId });
+      });
+    }
+
+    // 리뷰는 2번 이상 작성할 수 없음. 리뷰를 작성했다면 더이상 못하게 함
     if (post.type === "review") { 
       await groupService.setReview({ groupId: post.groupId, userId: writer, review: false });
     }

@@ -3,6 +3,10 @@ import { stringify } from "uuid";
 
 const alertSchema = new Schema(
   {
+    alertId: {
+      type: String,
+      required: true,
+    },
     from: {
       type: String,
       required: true,
@@ -14,6 +18,10 @@ const alertSchema = new Schema(
     sendId: {
       type: String,
       required: true,
+    },
+    postId: {
+      type: String,
+      required: false,
     },
     image: {
       type: String,
