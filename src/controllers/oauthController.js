@@ -10,15 +10,11 @@ const oauthController = {
       const user = await User.findByEmail({ email });
       let newUser = "";
 
-      if (!user && isEmailValid) {
+      if (!user) {
         // 이름, 비밀번호, 주소, 전화번호는 임시로 지정
         newUser = await oauthService.addUser({
           email,
         });
-      }
-
-      if (!isEmailValid) {
-        throw new Error("유효하지 않은 이메일입니다.");
       }
 
       if (newUser.errorMessage) {

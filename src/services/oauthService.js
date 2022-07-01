@@ -87,11 +87,10 @@ class oauthService {
   }
 
   static async upsertKakaoUser({ code }) {
-    const KAKAO_CLIENT_id = "65f9f7bd7bfa363ccc6e500401314239";
+    const KAKAO_CLIENT_id = "1151db674b1e7bb224e211714cc6d764";
     // const KAKAO_REDIRECT_URL = "http://localhost:5000/users/login/kakao";
     // 배포용으로 수정
-    const KAKAO_REDIRECT_URL =
-      "http://elice-kdt-ai-4th-team03.elicecoding.com:5000/users/login/kakao";
+    const KAKAO_REDIRECT_URL = "http://localhost:5000/login/kakao";
     //카카오 토큰 받기
     const ret = await axios.post(
       `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${KAKAO_CLIENT_id}&redirect_uri=${KAKAO_REDIRECT_URL}&code=${code}`
@@ -104,37 +103,24 @@ class oauthService {
       headers: { Authorization: `Bearer ${kakaoToken}` },
     });
 
-    // const userData = {
-    //   id: kakaoData.data.id,
-    //   email: kakaoData.data.kakao_account.email || "이메일 동의 안함",
-    //   name: kakaoData.data.kakao_account.profile.nickname,
-    //   password: "kakao",
-    // };
-    // let user;
-    // const isUserExist = await User.findById({ id: userData.id });
-    // if (isUserExist) {
-    //   //최초 로그인 아님, 디비 기존 정보 업데이트
-    //   user = await User.update({ id: userData.id, toUpdate: userData });
-    // } else {
-    //   //최초 로그인, 디비에 새로 생성
-    //   user = await User.create({ newUser: userData });
-    // }
+    const email = kakaoData.data.kakao_account.email || "이메일 동의 안함";
+    const user = await User.findByEmail({ email });
 
-    // // 로그인 성공 -> JWT 웹 토큰 생성
-    // const secretKey = process.env.JWT_SECRET_KEY || "jwt-secret-key";
-    // const token = jwt.sign({ id: user.id }, secretKey);
+    // 가입여부 확인. 가입된 정보 없는 경우 회원가입
+    if (!user) {
+      user = await oauthService.addUser({ email });
+    }
 
-    // const loginUser = {
-    //   token,
-    //   id: user.id,
-    //   email: user.email,
-    //   name: user.name,
-    //   errorMessage: null,
-    // };
+    // 토큰을 가져오기 위해 회원 정보 불러오기
+    const userInfo = await oauthService.getUser({ email });
 
-    // return loginUser;
+    if (userInfo.errorMessage) {
+      throw new Error(userInfo.errorMessage);
+    }
 
-    return kakaoData;
+    const token = userInfo.token;
+
+    return { token };
   }
 }
 
