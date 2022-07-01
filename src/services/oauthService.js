@@ -22,10 +22,6 @@ class oauthService {
 
     let name = nickname + "_" + uuid;
 
-    if (email === "이메일 동의 안함") {
-      email = uuid;
-    }
-
     // 비밀번호 해쉬화
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -110,7 +106,8 @@ class oauthService {
       headers: { Authorization: `Bearer ${kakaoToken}` },
     });
 
-    let email = kakaoData.data.kakao_account.email || "이메일 동의 안함";
+    // kakao oauth 로그인 시 email 값 대신에 고유값(id)를 넣어줌
+    let email = kakaoData.data.id;
     const nickname = kakaoData.data.properties.nickname;
 
     let user = await User.findByEmail({ email });
@@ -121,6 +118,7 @@ class oauthService {
     }
 
     // 토큰을 가져오기 위해 회원 정보 불러오기
+
     const userInfo = await oauthService.getUser({ email });
 
     if (userInfo.errorMessage) {
