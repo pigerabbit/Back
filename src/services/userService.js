@@ -343,12 +343,18 @@ class userService {
     );
     
     let alertList = await User.getAlertList({ userId });
-      
     alertList[0]?.alertList.sort((a, b) => {
       return b.createdAt - a.createdAt;
     });
 
-    return alertList[0]?.alertList;
+    let resultList = [];
+    alertList[0]?.alertList.map((v) => {
+      if (!v.removed) { 
+        resultList.push(v);
+      }
+    });
+
+    return resultList;
   }
 
   /** 유저 alert 삭제 함수
@@ -358,6 +364,7 @@ class userService {
    * @returns alertList
    */
   static async deleteAlertList({ userId, sendId }) {
+    console.log("user service sendId ==>", sendId);
     const user = await User.findById({ userId });
     if (!user || user === null) {
       const errorMessage = "해당 유저가 존재하지 않습니다.";
@@ -370,6 +377,22 @@ class userService {
     }
 
     const alertList = await User.deleteAlertList({ sendId });
+    return alertList;
+  }
+
+  static async deleteAlertListByPostId({ userId, postId }) { 
+    const user = await User.findById({ userId });
+    if (!user || user === null) {
+      const errorMessage = "해당 유저가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    if (user.deleted === true) {
+      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
+      return { errorMessage };
+    }
+
+    const alertList = await User.deleteAlertListByPostId({ postId });
     return alertList;
   }
 }

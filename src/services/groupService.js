@@ -390,6 +390,19 @@ export class groupService {
     return withToggleInfo(toggleInfo.groups, [group]);
   }
 
+  static async getGroupInfoByGroupId({ groupId }) {
+    const group = await Group.findByGroupId({ groupId });
+
+    // db에서 찾지 못한 경우, 에러 메시지 반환
+    if (!group) {
+      const errorMessage =
+        "해당 그룹은 생성 내역이 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    return group;
+  }
+
   static async getGroupByProductId({ userId, productId, state }) {
     let groups;
     if (state !== null) {
@@ -571,17 +584,19 @@ export class groupService {
         );
 
         groupInfo.participants.map(async (v) => {
-          await User.updateAlert({
-            userId: v.userId,
-            from: "group",
-            productId: groupInfo.productId,
-            sendId: groupInfo.groupId,
-            image: groupInfo.productInfo.images,
-            type: groupInfo.groupType,
-            groupName: groupInfo.groupName,
-            content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
-            seller: false,
-          });
+          if (!v.manager) { 
+            await User.updateAlert({
+              userId: v.userId,
+              from: "group",
+              productId: groupInfo.productId,
+              sendId: groupInfo.groupId,
+              image: groupInfo.productInfo.images,
+              type: groupInfo.groupType,
+              groupName: groupInfo.groupName,
+              content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
+              seller: false,
+            });
+          }
         });
       }
       updatedRemainedPersonnel =
@@ -740,17 +755,19 @@ export class groupService {
     );
 
     groupInfo.participants.map(async (v) => {
-      await User.updateAlert({
-        userId: v.userId,
-        from: "group",
-        productId: groupInfo.productId,
-        sendId: groupInfo.groupId,
-        image: groupInfo.productInfo.images,
-        type: groupInfo.groupType,
-        groupName: groupInfo.groupName,
-        content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
-        seller: false,
-      });
+      if (!v.manager) { 
+        await User.updateAlert({
+          userId: v.userId,
+          from: "group",
+          productId: groupInfo.productId,
+          sendId: groupInfo.groupId,
+          image: groupInfo.productInfo.images,
+          type: groupInfo.groupType,
+          groupName: groupInfo.groupName,
+          content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
+          seller: false,
+        });
+      }
     });
 
     return updatedGroup;

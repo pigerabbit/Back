@@ -78,21 +78,15 @@ export class User {
     const alertList = await UserModel.find(
       {
         id: userId,
-        alertList: {
-          $elemMatch: {
-            removed: false,
-          },
-        },
       },
       { alertList: 1, _id: 0 }
     )
       .sort({ createdAt: -1 })
       .lean();
-    
     return alertList;
   }
 
-  /** 알림 삭제 함수
+  /** sendId로 알림 삭제 함수
    *
    * @param {String} sendId - 알림을 보낸 위치
    * @returns deleteAlert
@@ -100,6 +94,20 @@ export class User {
   static async deleteAlertList({ sendId }) {
     const deleteAlert = await UserModel.updateOne(
       { "alertList.sendId": sendId },
+      { $set: { "alertList.$.removed": true } }
+    );
+
+    return deleteAlert;
+  }
+
+  /** postId로 알림 삭제 함수
+   *
+   * @param {String} sendId - 알림을 보낸 위치
+   * @returns deleteAlert
+   */
+  static async deleteAlertListByPostId({ postId }) { 
+    const deleteAlert = await UserModel.updateOne(
+      { "alertList.postId": postId },
       { $set: { "alertList.$.removed": true } }
     );
 
@@ -118,6 +126,7 @@ export class User {
     from,
     productId,
     sendId,
+    postId,
     image,
     type,
     groupName,
@@ -128,6 +137,7 @@ export class User {
       from,
       productId,
       sendId,
+      postId,
       image,
       type,
       groupName,
