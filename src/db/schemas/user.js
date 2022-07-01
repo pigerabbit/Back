@@ -3,6 +3,10 @@ import { stringify } from "uuid";
 
 const alertSchema = new Schema(
   {
+    alertId: {
+      type: String,
+      required: true,
+    },
     from: {
       type: String,
       required: true,

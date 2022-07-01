@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { UserModel } from "../schemas/user";
 
 export class User {
@@ -91,9 +92,9 @@ export class User {
    * @param {String} sendId - 알림을 보낸 위치
    * @returns deleteAlert
    */
-  static async deleteAlertList({ sendId }) {
+  static async deleteAlertList({ alertId }) {
     const deleteAlert = await UserModel.updateOne(
-      { "alertList.sendId": sendId },
+      { "alertList.alertId": alertId },
       { $set: { "alertList.$.removed": true } }
     );
 
@@ -133,7 +134,9 @@ export class User {
     content,
     seller,
   }) {
+    const alertId = crypto.randomUUID();
     const newAlert = {
+      alertId,
       from,
       productId,
       sendId,
