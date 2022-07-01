@@ -19,6 +19,13 @@ groupRouter.put(
   groupController.updatePayment
 );
 
+// 특정 아이디의 지불 여부 변경
+groupRouter.put(
+  "/groups/:groupId/review",
+  login_required,
+  groupController.updateReview
+);
+
 // 공동구매 정보 변경
 groupRouter.put(
   "/groups/groupId/:groupId",

@@ -10,4 +10,10 @@ recommendRouter.get(
   recommendController.getRecommendation
 );
 
+recommendRouter.get(
+  "/recommendations/group",
+  login_required,
+  recommendController.getRecommendationGroup
+);
+
 export { recommendRouter };

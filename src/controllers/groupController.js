@@ -5,8 +5,15 @@ const groupController = {
   createGroup: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const { groupType, groupName, location, productId, deadline, quantity } =
-        req.body;
+      const {
+        groupType,
+        groupName,
+        location,
+        productId,
+        deadline,
+        quantity,
+        paymentMethod,
+      } = req.body;
 
       const newGroup = await groupService.addGroup({
         userId,
@@ -16,6 +23,7 @@ const groupController = {
         productId,
         deadline,
         quantity,
+        paymentMethod,
       });
 
       if (newGroup.errorMessage) {
@@ -70,6 +78,7 @@ const groupController = {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
       const payment = req.body.payment;
+      const paymentMethod = req.body.paymentMethod;
 
       const checkState = await groupService.checkState({ groupId });
       if (checkState === -1) {
@@ -81,6 +90,44 @@ const groupController = {
         userId,
         groupId,
         payment,
+        paymentMethod,
+      });
+
+      if (updatedGroupInfo.errorMessage) {
+        throw new Error(updatedGroupInfo.errorMessage);
+      }
+
+      const body = {
+        success: true,
+        payload: updatedGroupInfo,
+      };
+
+      res.status(200).json(body);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  updateReview: async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const groupId = req.params.groupId;
+      const review = req.body.review;
+
+      if (review === null) {
+        throw new Error("review 작성 여부(true/false)를 입력해주세요.");
+      }
+
+      const checkState = await groupService.checkState({ groupId });
+      if (checkState === -1) {
+        const errorMessage = "가뭄이 들은 당근밭입니다.";
+        throw new Error(errorMessage);
+      }
+
+      const updatedGroupInfo = await groupService.setReview({
+        userId,
+        groupId,
+        review,
       });
 
       if (updatedGroupInfo.errorMessage) {
@@ -227,7 +274,7 @@ const groupController = {
     try {
       const userId = req.currentUserId;
       const groupId = req.params.groupId;
-      const { quantity } = req.body;
+      const { quantity, paymentMethod } = req.body;
 
       // const checkState = await groupService.checkState({ groupId });
       // if (checkState === -1) {
@@ -239,6 +286,7 @@ const groupController = {
         userId,
         groupId,
         quantity,
+        paymentMethod,
       });
 
       if (UpdatedGroup.errorMessage) {
@@ -344,10 +392,21 @@ const groupController = {
   getGroupsByLocations: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
-      const groupList = await groupService.findNearGroupList({ userId });
+      const distanceOption = req.query.option ?? "5000";
+      const groupList = await groupService.findNearGroupList({ userId, distanceOption });
+      if (groupList.data === false) {
+        const body = {
+          success: true,
+          data: groupList.data,
+          payload: groupList.groupList,
+        };
+
+        return res.status(200).send(body);
+      }
 
       const body = {
         success: true,
+        data: true,
         payload: groupList,
       };
 

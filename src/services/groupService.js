@@ -1,10 +1,14 @@
 import { Group, Product, User } from "../db";
 import crypto from "crypto";
 import { GroupModel } from "../db/schemas/group";
-import { nowDate } from "../utils/date-calculator.js";
+import { getDateDiff, nowDate } from "../utils/date-calculator.js";
 import { ToggleModel } from "../db/schemas/toggle.js";
 import { withToggleInfo } from "../utils/withToggleInfo";
 import { addressToXY } from "../utils/addressToXY.js";
+import { paymentService } from "./paymentService";
+import { ProductService } from "./productService";
+import { PaymentModel } from "../db/schemas/payment";
+import { dueDateFtn } from "../utils/date-calculator";
 
 export class groupService {
   static async addGroup({
@@ -15,32 +19,52 @@ export class groupService {
     productId,
     deadline,
     quantity,
+    paymentMethod,
   }) {
     const groupId = crypto.randomUUID();
     const participantId = crypto.randomUUID();
-    const { minPurchaseQty } = await Product.findProduct({ id: productId });
+    const isProduct = await Product.findProduct({
+      id: productId,
+    });
+
+    const minPurchaseQty = isProduct?.minPurchaseQty;
+    const term = isProduct?.term;
+
+    if (!minPurchaseQty) {
+      const errorMessage = "product가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    const user = await User.findById({ userId });
+    const userObjectId = user._id;
+
+    if (!user) {
+      const errorMessage = "userId가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
     const remainedPersonnel = minPurchaseQty - quantity;
     const product = await Product.findProduct({ id: productId });
     const productInfo = product._id;
     let state = 0;
-    
+
     if (remainedPersonnel < 0) {
       const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
       return { errorMessage };
     }
 
-    if (remainedPersonnel === 0) { 
-      state = 1;
+    if (remainedPersonnel === 0) {
+      state = 5;
     }
 
-    const coordinates = await addressToXY(location);
-    
+    const coordinates = await addressToXY(location.split("("));
+
     const participants = {
       participantId: participantId,
       userId: userId,
+      userInfo: userObjectId,
       participantDate: nowDate(),
       quantity: quantity,
-      payment: false,
       complete: false,
       manager: true,
       review: false,
@@ -64,8 +88,57 @@ export class groupService {
     };
 
     const createdNewGroup = await Group.create({ newGroup });
+    const groupObjectId = createdNewGroup._id;
 
-    return createdNewGroup;
+    // 결제가 완료되었다고 가정!! (결제 완료 후 payment 추가)
+    const payment = await paymentService.addPayment({
+      groupId: groupObjectId,
+      userId,
+      used: false,
+      voucher: quantity,
+      paymentMethod,
+    });
+
+    const paymentObjectId = payment._id;
+
+    let participantInfo = createdNewGroup.participants;
+    let newValue = {};
+
+    participantInfo[0]["payment"] = paymentObjectId;
+    newValue = participantInfo;
+
+    let updatedParticipants = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    if (state === 1) {
+      const term = product.term;
+
+      const updatedParticipantsWithDueDate =
+        await PaymentModel.findOneAndUpdate(
+          { _id: paymentObjectId },
+          { $set: { dueDate: dueDateFtn(term) } },
+          { returnOriginal: false }
+        );
+    }
+
+    // 공동구매 기간이 지났는데도 state가 0인 경우, state를 -1로 변경
+    const remainedTime = getDateDiff(nowDate(), deadline);
+
+    setTimeout(async () => {
+      const group = await GroupModel.findOne({ groupId });
+      if (group.state === 0) {
+        const updatedGroup = await GroupModel.findOneAndUpdate(
+          { groupId },
+          { $set: { state: -1 } },
+          { returnOriginal: false }
+        );
+      }
+    }, remainedTime);
+
+    return updatedParticipants;
   }
 
   static async setQuantity({ groupId, userId, quantity }) {
@@ -102,8 +175,8 @@ export class groupService {
 
     let state;
     if (updatedRemainedPersonnel === 0) {
-      state = 1;
-    } else { 
+      state = 5;
+    } else {
       state = groupInfo.state;
     }
 
@@ -125,6 +198,68 @@ export class groupService {
   }
 
   static async setPayment({ groupId, userId, payment }) {
+    let groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage =
+        "정보가 없습니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let participantsInfo = groupInfo.participants;
+    let newValue = {};
+
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
+    if (index > -1) {
+      participantsInfo[index]["payment"] = payment;
+    } else {
+      const errorMessage =
+        "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+    newValue = participantsInfo;
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedParticipants;
+  }
+
+  static async setReview({ groupId, userId, review }) {
+    let groupInfo = await Group.findByGroupId({ groupId });
+
+    if (!groupInfo) {
+      const errorMessage =
+        "정보가 없습니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let participantsInfo = groupInfo.participants;
+    let newValue = {};
+
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
+    if (index > -1) {
+      participantsInfo[index]["review"] = review;
+    } else {
+      const errorMessage =
+        "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+    newValue = participantsInfo;
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
+      { groupId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedParticipants;
+  }
+
+  static async setObjectId({ groupId, userId, payment }) {
     let groupInfo = await Group.findByGroupId({ groupId });
 
     if (!groupInfo) {
@@ -186,11 +321,12 @@ export class groupService {
       const errorMessage = "그룹 아이디를 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
+
     let content = "";
+    let seller = false;
     if (toUpdate.state !== null) {
       switch (toUpdate.state) {
         case "1":
-          console.log("case 1");
           content = "공구 인원이 달성되었습니다. 결제를 시작합니다.";
           break;
         case "-1":
@@ -215,21 +351,22 @@ export class groupService {
           content = "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.";
           break;
       }
-      group.participants.map(async (v) => {
+      groupInfo.participants.map(async (v) => {
         await User.updateAlert({
           userId: v.userId,
           from: "group",
-          sendId: groupId,
-          image: group.productInfo.images,
-          type: group.groupType,
-          groupName: group.groupName,
-          content: content,
+          productId: groupInfo.productId,
+          sendId: groupInfo.groupId,
+          image: groupInfo.productInfo.images,
+          type: groupInfo.groupType,
+          groupName: groupInfo.groupName,
+          content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
+          seller: false,
         });
       });
+      const updatedGroup = await Group.updateAll({ groupId, setter: toUpdate });
+      return updatedGroup;
     }
-
-    const updatedGroup = await Group.updateAll({ groupId, setter: toUpdate });
-    return updatedGroup;
   }
 
   static async getGroupInfo({ userId, groupId }) {
@@ -251,6 +388,19 @@ export class groupService {
     }
 
     return withToggleInfo(toggleInfo.groups, [group]);
+  }
+
+  static async getGroupInfoByGroupId({ groupId }) {
+    const group = await Group.findByGroupId({ groupId });
+
+    // db에서 찾지 못한 경우, 에러 메시지 반환
+    if (!group) {
+      const errorMessage =
+        "해당 그룹은 생성 내역이 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    return group;
   }
 
   static async getGroupByProductId({ userId, productId, state }) {
@@ -281,11 +431,9 @@ export class groupService {
         "해당 그룹은 생성 내역이 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-    console.log("group:", group);
     const productId = group.productId;
 
     const product = await Product.findProduct({ id: productId });
-    console.log("product:", product);
 
     const participants = group.participants;
     const numberOfParticipants = participants.length;
@@ -320,11 +468,18 @@ export class groupService {
     return withToggleInfo(toggleInfo.groups, groups);
   }
 
-  static async addParticipants({ userId, groupId, quantity }) {
+  static async addParticipants({ userId, groupId, quantity, paymentMethod }) {
     const groupInfo = await Group.findByGroupId({ groupId });
+    const user = await User.findById({ userId });
+    const userObjectId = user._id;
 
     if (!groupInfo) {
       const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    if (!user) {
+      const errorMessage = "userId가 존재하지 않습니다.";
       return { errorMessage };
     }
 
@@ -338,12 +493,23 @@ export class groupService {
       return { errorMessage };
     } else {
       const participantId = crypto.randomUUID();
+
+      const groupObjectId = groupInfo._id;
+      const payment = await paymentService.addPayment({
+        groupId: groupObjectId,
+        userId,
+        used: false,
+        voucher: quantity,
+        paymentMethod,
+      });
+
       const participant = {
         participantId: participantId,
         userId: userId,
+        userInfo: userObjectId,
         participantDate: nowDate(),
         quantity: quantity,
-        payment: false,
+        payment: payment,
         complete: false,
         manager: false,
         review: false,
@@ -358,10 +524,10 @@ export class groupService {
       const errorMessage = "구매할 수 있는 양을 초과하였습니다.";
       return { errorMessage };
     }
-    
+
     let state;
-    if (updatedRemainedPersonnel === 0) { 
-      state = 1;
+    if (updatedRemainedPersonnel === 0) {
+      state = 5;
     }
 
     newValue = participantsInfo;
@@ -376,6 +542,21 @@ export class groupService {
       },
       { returnOriginal: false }
     );
+
+    if (state === 1) {
+      const productId = groupInfo.productId;
+      const product = await Product.findProduct({ id: productId });
+      const term = product.term;
+      const participants = updatedParticipants.participants;
+
+      participants.forEach(async (v) => {
+        await PaymentModel.findOneAndUpdate(
+          { _id: v.payment },
+          { $set: { dueDate: dueDateFtn(term) } },
+          { returnOriginal: false }
+        );
+      });
+    }
 
     return updatedParticipants;
   }
@@ -401,6 +582,22 @@ export class groupService {
           { $set: { state: "-6" } },
           { returnOriginal: false }
         );
+
+        groupInfo.participants.map(async (v) => {
+          if (!v.manager) { 
+            await User.updateAlert({
+              userId: v.userId,
+              from: "group",
+              productId: groupInfo.productId,
+              sendId: groupInfo.groupId,
+              image: groupInfo.productInfo.images,
+              type: groupInfo.groupType,
+              groupName: groupInfo.groupName,
+              content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
+              seller: false,
+            });
+          }
+        });
       }
       updatedRemainedPersonnel =
         groupInfo.remainedPersonnel + participantsInfo[index].quantity;
@@ -494,8 +691,6 @@ export class groupService {
     }
 
     return withToggleInfo(toggleInfo.groups, groups);
-
-    return groups;
   }
 
   /** 상품이 삭제되면 공구에 참여 중인 유저에게 알림이 가는 함수
@@ -525,12 +720,14 @@ export class groupService {
       firstList.map(async (v) => {
         await User.updateAlert({
           userId: v.userId,
-          from: "group",
+          from: "product",
+          productId: product.id,
           sendId: product.id,
           image: product.images,
           type: v.groupType,
           groupName: v.groupName,
           content: `판매자의 판매 중단으로 공동구매가 취소되었습니다.`,
+          seller: false,
         });
       });
     });
@@ -543,71 +740,295 @@ export class groupService {
       const errorMessage = "groupId에 대한 groupInfo가 존재하지 않습니다.";
       return { errorMessage };
     }
-    const productId = groupInfo.productId;
-    const productInfo = await Product.findProduct({ id: productId });
-    const sellerId = productInfo.userId;
 
-    if (sellerId !== userId) {
-      const errorMessage = "판매자가 아닙니다.";
+    const managerId = groupInfo.participants[0].userId;
+
+    if (managerId !== userId) {
+      const errorMessage = "공구장이 아닙니다.";
       return { errorMessage };
     }
 
     const updatedGroup = await GroupModel.findOneAndUpdate(
       { groupId },
-      { $set: { state: "-7" } },
+      { $set: { state: "-6" } },
       { returnOriginal: false }
     );
+
+    groupInfo.participants.map(async (v) => {
+      if (!v.manager) { 
+        await User.updateAlert({
+          userId: v.userId,
+          from: "group",
+          productId: groupInfo.productId,
+          sendId: groupInfo.groupId,
+          image: groupInfo.productInfo.images,
+          type: groupInfo.groupType,
+          groupName: groupInfo.groupName,
+          content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
+          seller: false,
+        });
+      }
+    });
 
     return updatedGroup;
   }
 
-  static async findNearGroupList({ userId }) {
-    const perPage = 3;
+  static async findNearGroupList({ userId, distanceOption }) {
+    const perPage = 100000;
     const user = await User.findById({ userId });
-    const len = await GroupModel.countDocuments({
-      delete: false,
-      state: 0,
-    });
-    console.log("len =====>", len);
+    let list;
+    let len;
+    let page;
+    let groupList;
 
-    // 랜덤 페이지 생성 (최댓값 포함 X)
-    const page = Math.floor(Math.random() * (len/perPage)) + 1;
-    console.log("page =====>", page);
-    console.log("x =====>", parseFloat(user.locationXY.coordinates[0]));
-    console.log("x =====>", parseFloat(user.locationXY.coordinates[0]));
-    
-    const groupList = await GroupModel.aggregate([
-      {
-        $geoNear: {
-          spherical: true,
-          maxDistance: 50000, // 5km 이내의 공구
-          near: {
-            type: "Point",
-            coordinates: [
-              parseFloat(user.locationXY.coordinates[0]),
-              parseFloat(user.locationXY.coordinates[1]),
-            ],
+    switch (distanceOption) {
+      case "1000":
+        console.log("여기");
+        list = await GroupModel.aggregate([
+          {
+            $geoNear: {
+              spherical: true,
+              maxDistance: 1000, // 1km 이내의 공구
+              near: {
+                type: "Point",
+                coordinates: [
+                  parseFloat(user.locationXY.coordinates[0]),
+                  parseFloat(user.locationXY.coordinates[1]),
+                ],
+              },
+              distanceField: "distance",
+              query: { state: 0, groupType: "local" },
+            },
           },
-          distanceField: "distance",
-          query: { state: 0, groupType: "local" },
-        },
-      },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'productInfo',
-          foreignField: '_id',
-          as: 'productInfo',
-        },
-      },
-      { '$sort': { 'createdAt': -1 } },
-      {
-        '$facet': {
-          data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }] 
-        }
+          {
+            $lookup: {
+              from: "products",
+              localField: "productInfo",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          { $sort: { createdAt: -1 } },
+        ]);
+
+        len = list.length;
+
+        // 랜덤 페이지 생성 (최댓값 포함 X)
+        page = Math.floor(Math.random() * (len / perPage)) + 1;
+
+        groupList = await GroupModel.aggregate([
+          {
+            $geoNear: {
+              spherical: true,
+              maxDistance: 1000, // 1km 이내의 공구
+              near: {
+                type: "Point",
+                coordinates: [
+                  parseFloat(user.locationXY.coordinates[0]),
+                  parseFloat(user.locationXY.coordinates[1]),
+                ],
+              },
+              distanceField: "distance",
+              query: {
+                state: 0,
+                $or: [{ groupType: "local" }, { groupType: "coupon" }],
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productInfo",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          {
+            $unwind: {
+              path: "$productInfo",
+            },
+          },
+          { $sort: { createdAt: -1 } },
+          {
+            $facet: {
+              data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
+            },
+          },
+        ]);
+        break;
+      case "3000":
+        list = await GroupModel.aggregate([
+          {
+            $geoNear: {
+              spherical: true,
+              maxDistance: 3000, // 3km 이내의 공구
+              near: {
+                type: "Point",
+                coordinates: [
+                  parseFloat(user.locationXY.coordinates[0]),
+                  parseFloat(user.locationXY.coordinates[1]),
+                ],
+              },
+              distanceField: "distance",
+              query: { state: 0, groupType: "local" },
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productInfo",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          { $sort: { createdAt: -1 } },
+        ]);
+
+        len = list.length;
+
+        // 랜덤 페이지 생성 (최댓값 포함 X)
+        page = Math.floor(Math.random() * (len / perPage)) + 1;
+
+        groupList = await GroupModel.aggregate([
+          {
+            $geoNear: {
+              spherical: true,
+              maxDistance: 3000, // 3km 이내의 공구
+              near: {
+                type: "Point",
+                coordinates: [
+                  parseFloat(user.locationXY.coordinates[0]),
+                  parseFloat(user.locationXY.coordinates[1]),
+                ],
+              },
+              distanceField: "distance",
+              query: {
+                state: 0,
+                $or: [{ groupType: "local" }, { groupType: "coupon" }],
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productInfo",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          {
+            $unwind: {
+              path: "$productInfo",
+            },
+          },
+          { $sort: { createdAt: -1 } },
+          {
+            $facet: {
+              data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
+            },
+          },
+        ]);
+        break;
+      case "5000":
+        list = await GroupModel.aggregate([
+          {
+            $geoNear: {
+              spherical: true,
+              maxDistance: 5000, // 5km 이내의 공구
+              near: {
+                type: "Point",
+                coordinates: [
+                  parseFloat(user.locationXY.coordinates[0]),
+                  parseFloat(user.locationXY.coordinates[1]),
+                ],
+              },
+              distanceField: "distance",
+              query: { state: 0, groupType: "local" },
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productInfo",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          { $sort: { createdAt: -1 } },
+        ]);
+
+        len = list.length;
+
+        // 랜덤 페이지 생성 (최댓값 포함 X)
+        page = Math.floor(Math.random() * (len / perPage)) + 1;
+
+        groupList = await GroupModel.aggregate([
+          {
+            $geoNear: {
+              spherical: true,
+              maxDistance: 5000, // 5km 이내의 공구
+              near: {
+                type: "Point",
+                coordinates: [
+                  parseFloat(user.locationXY.coordinates[0]),
+                  parseFloat(user.locationXY.coordinates[1]),
+                ],
+              },
+              distanceField: "distance",
+              query: {
+                state: 0,
+                $or: [{ groupType: "local" }, { groupType: "coupon" }],
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productInfo",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          {
+            $unwind: {
+              path: "$productInfo",
+            },
+          },
+          { $sort: { createdAt: -1 } },
+          {
+            $facet: {
+              data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
+            },
+          },
+        ]);
+        break;
+    }
+
+    if (len === 0) {
+      const data = false;
+      let groupList = await GroupModel.find({ state: 0, groupType: "normal" })
+        .populate("productInfo")
+        .limit(20)
+        .lean();
+      const toggleInfo = await ToggleModel.findOne({ userId });
+
+      if (!toggleInfo) {
+        const errorMessage =
+          "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+        return { errorMessage };
       }
-    ]);
-    
-    return groupList;
+
+      groupList = withToggleInfo(toggleInfo.groups, groupList);
+      return { data, groupList };
+    }
+
+    const toggleInfo = await ToggleModel.findOne({ userId });
+
+    if (!toggleInfo) {
+      const errorMessage =
+        "userId에 대한 토글 데이터가 없습니다. 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+    return withToggleInfo(toggleInfo.groups, groupList[0].data);
   }
 }

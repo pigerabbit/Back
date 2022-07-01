@@ -3,13 +3,25 @@ import { stringify } from "uuid";
 
 const alertSchema = new Schema(
   {
+    alertId: {
+      type: String,
+      required: true,
+    },
     from: {
+      type: String,
+      required: true,
+    },
+    productId: {
       type: String,
       required: true,
     },
     sendId: {
       type: String,
       required: true,
+    },
+    postId: {
+      type: String,
+      required: false,
     },
     image: {
       type: String,
@@ -26,6 +38,11 @@ const alertSchema = new Schema(
     content: {
       type: String,
       required: true,
+    },
+    seller: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
     removed: {
       type: Boolean,
@@ -93,6 +110,10 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
     type: {
       type: String,
       required: false,
@@ -119,6 +140,13 @@ const UserSchema = new Schema(
       default: false,
     },
     alertList: [alertSchema],
+    alertsExist: {
+      type: Boolean,
+      default: false,
+    },
+    viewAlertTime: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

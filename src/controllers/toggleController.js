@@ -1,7 +1,7 @@
 import { toggleService } from "../services/toggleService";
 
-class toggleController {
-  static async createToggle(req, res, next) {
+const toggleController = {
+  createToggle: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const newToggle = await toggleService.addToggle({
@@ -16,9 +16,9 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updateToggleGroup(req, res, next) {
+  updateToggleGroup: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const objectId = req.params.objectId;
@@ -37,9 +37,9 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updateToggleProduct(req, res, next) {
+  updateToggleProduct: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const objectId = req.params.objectId;
@@ -58,9 +58,9 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updateToggleSearchWord(req, res, next) {
+  updateToggleSearchWord: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const searchWord = req.params.searchWord;
@@ -79,9 +79,29 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getToggleGroups(req, res, next) {
+  deleteToggleSearchWord: async (req, res, next) => {
+    try {
+      const userId = req.currentUserId;
+      const searchWord = req.params.searchWord;
+
+      const updatedSearchWordInfo = await toggleService.deleteToggleSearchWord({
+        userId,
+        searchWord,
+      });
+
+      if (updatedSearchWordInfo.errorMessage) {
+        throw new Error(updatedSearchWordInfo.errorMessage);
+      }
+
+      res.status(200).json(updatedSearchWordInfo);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  getToggleGroups: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
 
@@ -95,9 +115,9 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getToggleProducts(req, res, next) {
+  getToggleProducts: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
 
@@ -111,9 +131,9 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async getToggleSearchWords(req, res, next) {
+  getToggleSearchWords: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
 
@@ -127,9 +147,9 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async updateToggleViewedProducts(req, res, next) {
+  updateToggleViewedProducts: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
       const objectId = req.params.objectId;
@@ -149,9 +169,9 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
-  static async ToggleViewedProducts(req, res, next) {
+  ToggleViewedProducts: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
 
@@ -167,7 +187,7 @@ class toggleController {
     } catch (error) {
       next(error);
     }
-  }
-}
+  },
+};
 
 export { toggleController };

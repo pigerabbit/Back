@@ -9,7 +9,15 @@ import { toggleService } from "../services/toggleService";
 import { addressToXY } from "../utils/addressToXY.js";
 
 class userService {
-  static async addUser({ id, name, email, password, address, type }) {
+  static async addUser({
+    id,
+    name,
+    email,
+    password,
+    address,
+    phoneNumber,
+    type,
+  }) {
     //일반회원가입일때
     if (type === "sogongx2") {
       const emailExits = await User.isEmailExists({ email, type });
@@ -42,7 +50,7 @@ class userService {
     }
 
     // 주소를 통해 좌표값 구하기
-    const coordinates = await addressToXY(address);
+    const coordinates = await addressToXY(address.split('(')[0]);
 
     const newUser = {
       id,
@@ -50,6 +58,7 @@ class userService {
       email,
       password: hashedPassword,
       address,
+      phoneNumber,
       type,
       imageLink,
       locationXY: {
@@ -115,7 +124,7 @@ class userService {
   static async getUserInfo({ userId }) {
     const user = await User.findById({ userId });
 
-    // db에서 찾지 못한 경우, 에러 메시지 반환
+    // db에서 찾지 못한 경우, 에러 메시지 반환 
     if (!user) {
       const errorMessage =
         "해당 유저는 가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
@@ -142,14 +151,14 @@ class userService {
       const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
       return { errorMessage };
     }
-
-    if (toUpdate.address !== null) {
-      coordinates = await addressToXY(toUpdate.address);
+    const address = toUpdate.address;
+    if (address !== undefined && address !== null) {
+      coordinates = await addressToXY(address.split('(')[0]);
     }
 
     const locationXY = {
       type: "Point",
-      coordinates: coordinates,
+      coordinates: user.locationXY.coordinates,
     };
     const updateLocationXY = { locationXY };
     const updatedLocationXY = await User.updateAll({
@@ -196,26 +205,10 @@ class userService {
         setter: business,
       });
     }
+    await User.updateAll({ userId, locationXY: user.locationXY });
 
     const updatedUser = await User.updateAll({ userId, setter: toUpdate });
     const resultUser = getRequiredInfoFromData(updatedUser);
-    return resultUser;
-  }
-
-  static async getUserInfo({ userId }) {
-    const user = await User.findById({ userId });
-
-    // db에서 찾지 못한 경우, 에러 메시지 반환
-    if (!user) {
-      const errorMessage =
-        "해당 유저는 가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
-      return { errorMessage };
-    }
-    if (user.deleted === true) {
-      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
-      return { errorMessage };
-    }
-    const resultUser = getRequiredInfoFromData(user);
     return resultUser;
   }
 
@@ -246,7 +239,7 @@ class userService {
   static async nodeMailer({ email, name, password }) {
     const message = sendMail(
       email,
-      "소공소공 임시 비밀번호입니다.",
+      "동구라미 임시 비밀번호입니다.",
       `안녕하세요 ${name}님, 임시 비밀번호는: ${password} 입니다. 로그인 후 비밀번호를 꼭 변경해주세요!`
     );
 
@@ -338,8 +331,30 @@ class userService {
       return { errorMessage };
     }
 
-    const alertList = await User.getAlertList({ userId });
-    return alertList;
+    // 알림 확인을 했다면 false로 바꾸고, 마지막으로 알림을 본 시간 업데이트
+    await UserModel.findOneAndUpdate(
+      { id: userId },
+      {
+        $set: {
+          alertsExist: false,
+          viewAlertTime: Date.now(),
+        },
+      },
+    );
+    
+    let alertList = await User.getAlertList({ userId });
+    alertList[0]?.alertList.sort((a, b) => {
+      return b.createdAt - a.createdAt;
+    });
+
+    let resultList = [];
+    alertList[0]?.alertList.map((v) => {
+      if (!v.removed) { 
+        resultList.push(v);
+      }
+    });
+
+    return resultList;
   }
 
   /** 유저 alert 삭제 함수
@@ -348,7 +363,8 @@ class userService {
    * @param {String} userId - param으로 받은 유저 아이디
    * @returns alertList
    */
-  static async deleteAlertList({ userId, sendId }) {
+  static async deleteAlertList({ userId, alertId }) {
+    console.log("user service sendId ==>", alertId);
     const user = await User.findById({ userId });
     if (!user || user === null) {
       const errorMessage = "해당 유저가 존재하지 않습니다.";
@@ -360,7 +376,23 @@ class userService {
       return { errorMessage };
     }
 
-    const alertList = await User.deleteAlertList({ sendId });
+    const alertList = await User.deleteAlertList({ alertId });
+    return alertList;
+  }
+
+  static async deleteAlertListByPostId({ userId, postId }) { 
+    const user = await User.findById({ userId });
+    if (!user || user === null) {
+      const errorMessage = "해당 유저가 존재하지 않습니다.";
+      return { errorMessage };
+    }
+
+    if (user.deleted === true) {
+      const errorMessage = "해당 계정은 이미 탈퇴하였습니다.";
+      return { errorMessage };
+    }
+
+    const alertList = await User.deleteAlertListByPostId({ postId });
     return alertList;
   }
 }

@@ -5,6 +5,11 @@ const ParticipantSchema = new Schema({
     type: String,
     required: true,
   },
+  userInfo: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: false,
+  },
   participantDate: {
     type: String,
     required: true,
@@ -14,8 +19,9 @@ const ParticipantSchema = new Schema({
     required: true,
   },
   payment: {
-    type: Boolean,
-    required: true,
+    type: Schema.Types.ObjectId,
+    ref: "Payment",
+    required: false,
   },
   complete: {
     type: Boolean,

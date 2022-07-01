@@ -5,6 +5,7 @@ export function getRequiredInfoFromData(data) {
       email: data.email,
       name: data.name,
       address: data.address,
+      phoneNumber: data.phoneNumber,
       nickname: data.nickname,
       seller: data.seller,
       business: data.business,
@@ -12,6 +13,7 @@ export function getRequiredInfoFromData(data) {
       type: data.type,
       imageLink: data.imageLink,
       reportedBy: data.reportedBy,
+      alertsExist: data.alertsExist,
     };
   } else {
     return {
@@ -19,6 +21,7 @@ export function getRequiredInfoFromData(data) {
       email: data.email,
       name: data.name,
       address: data.address,
+      phoneNumber: data.phoneNumber,
       nickname: data.nickname,
       seller: data.seller,
       distance: data.distance,
@@ -29,6 +32,7 @@ export function getRequiredInfoFromData(data) {
         type: data.locationXY.type,
         coordinates: data.locationXY.coordinates,
       },
+      alertsExist: data.alertsExist,
     };
   }
 }

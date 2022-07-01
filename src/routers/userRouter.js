@@ -1,4 +1,3 @@
-import is from "@sindresorhus/is";
 import { Router } from "express";
 import { login_required } from "../middlewares/login_required";
 
@@ -21,39 +20,17 @@ userRouter.put(
   userController.defaultProfileImage
 );
 
-userRouter.post(
-  "/users",
-  userController.create
-);
+userRouter.post("/users", userController.create);
 
-userRouter.post(
-  "/users/login",
-  userController.login
-);
+userRouter.post("/users/login", userController.login);
 
-userRouter.get(
-  "/users",
-  login_required,
-  userController.getUserList  
-);
+userRouter.get("/users", login_required, userController.getUserList);
 
-userRouter.get(
-  "/users/current",
-  login_required,
-  userController.getCurrentUser
-);
+userRouter.get("/users/current", login_required, userController.getCurrentUser);
 
-userRouter.put(
-  "/users/:id",
-  login_required,
-  userController.editUser
-);
+userRouter.put("/users/:id", login_required, userController.editUser);
 
-userRouter.get(
-  "/users/:id",
-  login_required,
-  userController.getUser
-);
+userRouter.get("/users/:id", userController.getUser);
 
 userRouter.put(
   "/users/:id/changePassword",
@@ -62,21 +39,13 @@ userRouter.put(
 );
 
 userRouter.post(
-  "/users/:id/resetPassword",
-  login_required,
+  "/users/email/:email/resetPassword",
   userController.resetPassword
 );
 
-userRouter.delete(
-  "/users/:id",
-  login_required,
-  userController.deleteUser
-);
+userRouter.delete("/users/:id", login_required, userController.deleteUser);
 
-userRouter.get(
-  "/users/checkName/:name",
-  userController.checkName
-);
+userRouter.get("/users/checkName/:name", userController.checkName);
 
 userRouter.put(
   "/users/:badId/vote",
@@ -89,6 +58,5 @@ userRouter.get(
   login_required,
   userController.countReport
 );
-
 
 export { userRouter };

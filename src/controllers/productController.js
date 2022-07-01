@@ -3,6 +3,7 @@ import { ProductService } from "../services/productService";
 import { groupService } from "../services/groupService";
 import { toggleService } from "../services/toggleService";
 import { TopicService } from "../services/topicService";
+import { regExp } from "../utils/regexTools";
 
 const productController = {
   createProduct: async (req, res, next) => { 
@@ -22,7 +23,7 @@ const productController = {
         shippingFeeCon,
         detail,
         shippingInfo,
-        dueDate,
+        term,
       } = req.body;
 
       const newProduct = await ProductService.addProduct({
@@ -39,7 +40,7 @@ const productController = {
         shippingFeeCon,
         detail,
         shippingInfo,
-        dueDate,
+        term,
       });
 
       const body = {
@@ -116,7 +117,8 @@ const productController = {
       const userId = req.currentUserId;
       const { page, perPage, option } = req.query;
       let search = decodeURIComponent(req.query.search);
-
+      search = regExp(search);
+      
       if (page <= 0 || perPage <= 0) {
         const body = {
           success: false,
@@ -198,7 +200,7 @@ const productController = {
     const shippingFeeCon = req.body.shippingFeeCon ?? null;
     const detail = req.body.detail ?? null;
     const shippingInfo = req.body.shippingInfo ?? null;
-    const dueDate = req.body.dueDate ?? null;
+    const term = req.body.term ?? null;
 
     const toUpdate = {
       productType,
@@ -213,7 +215,7 @@ const productController = {
       shippingFeeCon,
       detail,
       shippingInfo,
-      dueDate,
+      term,
     };
 
     const updatedProduct = await ProductService.setProduct({
@@ -362,6 +364,8 @@ const productController = {
       return res.status(400).send(body);
     }
 
+    await toggleService.setToggleViewedProducts({ userId, objectId: product._id });
+
     const body = {
       success: true,
       payload: product,
@@ -425,6 +429,18 @@ const productController = {
     // 존재한다면 유저가 판매하는 상품 목록 조회
     // 유저가 판매하는 상품이 없을 때는 에러메시지로 "해당 유저의 상품이 존재하지 않습니다"를 전달
     const resultList = await ProductService.getUserProduct({ userId });
+
+    const body = {
+      success: true,
+      payload: resultList,
+    };
+
+    return res.status(200).send(body);
+  },
+
+  getBestList: async (req, res, next) => {
+    const userId = req.currentUserId;
+    const resultList = await ProductService.getProductTopList(userId);
 
     const body = {
       success: true,

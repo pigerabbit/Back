@@ -11,15 +11,15 @@ const alertRouter = Router();
 alertRouter.get(
   "/users/:id/alert",
   login_required,
-  alertController.createAlert
+  alertController.viewAlert
 );
 
 /** user 알림 삭제 함수
  * 
- * param : sendId
+ * param : alertId
  */
  alertRouter.delete(
-  "/users/:sendId/alert",
+  "/users/:alertId/alert",
   login_required,
   alertController.deleteAlert
 );

@@ -2,6 +2,8 @@ import { Post } from "../db/index.js";
 import { User } from "../db/index.js";
 import { Product } from "../db/index.js";
 import { Group } from "../db/index.js";
+import { userService } from "./userService.js";
+import { groupService } from "./groupService.js";
 import crypto from "crypto";
 import { getRequiredInfoFromPostData } from "../utils/post";
 
@@ -22,6 +24,7 @@ class PostService {
     receiver,
     title,
     content,
+    groupId,
   }) {
     const postId = crypto.randomUUID();
     let authorizedUsers = [];
@@ -32,7 +35,7 @@ class PostService {
     // groupChat : 그룹 공구에 참여하는 사람
     // review : 모두
     if (type === "cs") {
-      const { userId, name } = await Product.findProduct({ id: receiver });
+      const { userId, name, images } = await Product.findProduct({ id: receiver });
 
       if (!userId) { 
         const errorMessage = "존재하지 않는 상품입니다.";
@@ -45,32 +48,51 @@ class PostService {
       await User.updateAlert({
         userId: userId,
         from: type,
+        productId: receiver,
         sendId: receiver, // productId
+        postId,
+        image: images,
         content: `'${name}' 상품에 문의가 생성되었습니다.`,
+        seller: true,
       });
       
     } else if (type === "groupChat") { 
       authorizedUsers = await Group.findParticipantsByGroupId({ groupId: receiver });
-      const { groupName } = await Group.findByGroupId({ groupId: receiver });
+      const group = await Group.findByGroupId({ groupId: receiver });
+      const groupName = group.groupName;
 
       // 공동 구매 댓글이 생겼다면 공동구매 참여자 전원에게 알림
-      authorizedUsers.map(async (v) => await User.updateAlert({
-        userId: v,
-        from: type,
-        sendId: receiver, // groupId
-        content: `'${groupName}'에 공동 구매 댓글이 생성되었습니다.`,
-      }));
+      authorizedUsers.map(async (v) => {
+        if (v !== writer) { 
+          await User.updateAlert({
+            userId: v,
+            from: type,
+            productId: group.productId,
+            sendId: receiver, // groupId
+            postId,
+            image: group.productInfo.images,
+            content: `'${groupName}'에 공동 구매 댓글이 생성되었습니다.`,
+            seller: false,
+          });
+        }
+      });
     } else if (type === "review") {
       authorizedUsers = [];
 
       // 후기가 생겼다면 상품 판매자에게 알림
-      const { userId, name } = await Product.findProduct({ id: receiver });
+      const { userId, id, name, images } = await Product.findProduct({ id: receiver });
       await User.updateAlert({
         userId: userId,
         from: type,
+        productId: id,
         sendId: receiver, // productId
+        postId,
+        image: images,
         content: `'${name}' 상품에 후기가 생성되었습니다.`,
+        seller: true,
       });
+
+      await groupService.setReview({ groupId, userId: writer, review: true });
 
     } else if (type === "comment") { // 댓글일 때 postId가 있는지 확인 => 없다면 에러
       authorizedUsers = [];
@@ -83,16 +105,20 @@ class PostService {
       const addCommentCount = post.commentCount + 1;
       const toUpdate = { commentCount: addCommentCount, reply: true };
       post = await Post.update({ postId: updateId, toUpdate });
-
+      const { id, images } = await Product.findProduct({ id: post.receiver });
       // 댓글이 추가되었다면 글 쓴 유저에게 알림
       if (writer !== post.writer) {
         const toUpdate = { reply: true };
         await Post.update({ postId: updateId, toUpdate });
         await User.updateAlert({
           userId: post.writer,
-          from: type,
+          from: post.type,
+          productId: id,
           sendId: post.postId,
+          postId,
+          image: images,
           content: `'${post.title}' 글에 댓글이 생성되었습니다.`,
+          seller: false,
         });
       }
     } else { 
@@ -102,6 +128,7 @@ class PostService {
 
     const newPost = {
       postId,
+      groupId,
       type,
       authorizedUsers,
       writer,
@@ -249,6 +276,30 @@ class PostService {
         status: 400,
         errorMessage,
       };
+    }
+
+    // 글의 type이 후기나 문의라면, 삭제될 때 후기/문의 생성 알림 삭제
+    if (post.type === "review" || post.type === "cs") { 
+      console.log("여기1");
+      const product = await Product.findProduct({ id: post.receiver });
+      console.log("product ==>", product);
+      console.log("post ==>", post);
+      userService.deleteAlertListByPostId({ userId: product.userId, postId: post.postId });
+    }
+
+    // 글의 type이 공구 채팅이라면, 삭제될 때 그룹 전체에게 댓글 생성 알림 삭제
+    if (post.type === "groupChat") { 
+      console.log("groupId ==>", post.receiver);
+      const group = await groupService.getGroupInfoByGroupId({ groupId: post.receiver });
+      console.log("group", group);
+      group.participants.map((v) => {
+        userService.deleteAlertListByPostId({ userId: v.userId, postId: post.postId });
+      });
+    }
+
+    // 리뷰는 2번 이상 작성할 수 없음. 리뷰를 작성했다면 더이상 못하게 함
+    if (post.type === "review") { 
+      await groupService.setReview({ groupId: post.groupId, userId: writer, review: false });
     }
 
     let toUpdate = {};

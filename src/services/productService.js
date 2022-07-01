@@ -11,11 +11,10 @@ class ProductService {
   /** 판매 상품 생성 함수
    * 
    * @param {Strings} userId - 유저 Id
-   * @param {Strings} images - 이미지
+   * @param {String} productType - 상품 type ['local', 'normal', 'coupon']
    * @param {Strings} category - 상품 카테고리
    * @param {Strings} name - 상품 이름
    * @param {Strings} description - 상품 설명
-   * @param {Strings} descriptionImg - 상품 설명 사진
    * @param {Number} price - 상품 원가
    * @param {Number} salePrice - 판매 가격
    * @param {Number} minPurchaseQty - 공동구매 최소 인원
@@ -23,8 +22,8 @@ class ProductService {
    * @param {Number} shippingFee - 배송비
    * @param {Number} shippingFeeCon - 무료 배송 조건
    * @param {Strings} detail - 상품 상세 설명
-   * @param {Strings} detailImg - 상품 상세 설명 사진
    * @param {Strings} shippingInfo - 배송 안내
+   * @param {Number} term - 상품 type이 coupon일 때 얼마 이내에 사용해야 하는지
    * @return {Object} 생성된 상품 정보 
    */
   static async addProduct({
@@ -41,13 +40,16 @@ class ProductService {
     shippingFeeCon,
     detail,
     shippingInfo,
-    dueDate,
+    term,
   }) { 
+    // PK는 UUID로 설정
     const id = crypto.randomUUID();
+    // discountRate(할인율)는 {(정가 - 판매가) / 정가 } * 100
     const discountRate = Math.ceil(((price - salePrice) / price) * 100);
     const user = await User.findById({ userId });
     const userInfo = user._id;
 
+    // 유저와 product 관계를 맺어주기 위해 유저를 조회한 뒤, 새 product 생성
     const newProduct = {
       id,
       userId,
@@ -65,17 +67,21 @@ class ProductService {
       shippingFeeCon,
       detail,
       shippingInfo,
-      dueDate,
+      term,
     };
 
+    // 상품을 생성한 뒤 변수로 저장
     let product = await Product.create({ newProduct });
-    product = await Product.findProduct({ id });
+    // 상품 생성 시에는 populate가 되어 있지 않기 때문에, 한 번 더 findProduct
+    product = await Product.findProduct({ id: product.id });
+    // 프론트에 전해줄 데이터만 정리해주는 함수로 다녀옴
     const resultProduct = getRequiredInfoFromProductData(product);
 
     return { resultProduct };
   }
 
   /** 상품 정보 수정 함수
+   * 
    * @param {uuid} id - 상품 id
    * @param {Object} toUpdate - 수정할 상품 내용
    * @return {Object} 수정된 상품 정보
