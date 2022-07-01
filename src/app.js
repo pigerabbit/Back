@@ -13,6 +13,7 @@ import { locationRouter } from "./routers/locationRouter";
 import { topicRouter } from "./routers/topicRouter";
 import { recommendRouter } from "./routers/recommendRouter";
 import { paymentRouter } from "./routers/paymentRouter";
+import { oauthRouter } from "./routers/oauthRouter";
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use(locationRouter);
 app.use(topicRouter);
 app.use(recommendRouter);
 app.use(paymentRouter);
+app.use(oauthRouter);
 
 // 순서 중요 (router 에서 next() 시 아래의 에러 핸들링  middleware로 전달됨)
 app.use(errorMiddleware);
