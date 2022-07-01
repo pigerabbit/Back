@@ -6,7 +6,7 @@ const oauthRouter = Router();
 
 oauthRouter.post("/oauth/login", oauthController.login);
 
-oauthRouter.get("/oauth/login/kakao", async (req, res, next) => {
+oauthRouter.get("/login/kakao", async (req, res, next) => {
   try {
     const code = req.query.code;
 
