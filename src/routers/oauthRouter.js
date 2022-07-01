@@ -1,11 +1,7 @@
 import { Router } from "express";
-import { oauthController } from "../controllers/oauthController";
 import { oauthService } from "../services/oauthService";
 
 const oauthRouter = Router();
-
-oauthRouter.post("/oauth/login", oauthController.login);
-
 oauthRouter.get("/login/kakao", async (req, res, next) => {
   try {
     const code = req.query.code;
