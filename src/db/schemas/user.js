@@ -15,6 +15,10 @@ const alertSchema = new Schema(
       type: String,
       required: true,
     },
+    postId: {
+      type: String,
+      required: false,
+    },
     image: {
       type: String,
       required: true,
