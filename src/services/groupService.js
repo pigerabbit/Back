@@ -228,6 +228,38 @@ export class groupService {
     return updatedParticipants;
   }
 
+  // participant의 complete(이용권을 다 사용하면 true)를 변경
+  static async setComplete({ groupObjectId, userId, complete }) {
+    let groupInfo = await Group.findByGroupIdByObjectId({ _id: groupObjectId });
+
+    if (!groupInfo) {
+      const errorMessage =
+        "정보가 없습니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+
+    let participantsInfo = groupInfo.participants;
+    let newValue = {};
+
+    const index = participantsInfo.findIndex((f) => f.userId === userId);
+
+    if (index > -1) {
+      participantsInfo[index]["complete"] = complete;
+    } else {
+      const errorMessage =
+        "참여중인 공동구매가 아닙니다. groupId 값을 다시 한 번 확인해 주세요.";
+      return { errorMessage };
+    }
+    newValue = participantsInfo;
+    const updatedParticipants = await GroupModel.findOneAndUpdate(
+      { _id: groupObjectId },
+      { $set: { participants: newValue } },
+      { returnOriginal: false }
+    );
+
+    return updatedParticipants;
+  }
+
   static async setReview({ groupId, userId, review }) {
     let groupInfo = await Group.findByGroupId({ groupId });
 
@@ -315,9 +347,9 @@ export class groupService {
   }
 
   static async setGroup({ groupId, toUpdate }) {
-    let group = await Group.findByGroupId({ groupId });
+    let groupInfo = await Group.findByGroupId({ groupId });
 
-    if (!group) {
+    if (!groupInfo) {
       const errorMessage = "그룹 아이디를 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
@@ -584,7 +616,7 @@ export class groupService {
         );
 
         groupInfo.participants.map(async (v) => {
-          if (!v.manager) { 
+          if (!v.manager) {
             await User.updateAlert({
               userId: v.userId,
               from: "group",
@@ -755,7 +787,7 @@ export class groupService {
     );
 
     groupInfo.participants.map(async (v) => {
-      if (!v.manager) { 
+      if (!v.manager) {
         await User.updateAlert({
           userId: v.userId,
           from: "group",
@@ -783,7 +815,6 @@ export class groupService {
 
     switch (distanceOption) {
       case "1000":
-        console.log("여기");
         list = await GroupModel.aggregate([
           {
             $geoNear: {

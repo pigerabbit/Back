@@ -26,6 +26,7 @@ const ParticipantSchema = new Schema({
   complete: {
     type: Boolean,
     required: true,
+    default: false,
   },
   manager: {
     type: Boolean,

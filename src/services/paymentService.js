@@ -1,6 +1,7 @@
 import { Payment, Group, User } from "../db";
 import crypto from "crypto";
 import { PaymentModel } from "../db/schemas/payment";
+import { groupService } from "./groupService";
 
 export class paymentService {
   static async addPayment({ userId, groupId, used, voucher, paymentMethod }) {
@@ -53,6 +54,14 @@ export class paymentService {
         { $set: { voucher } },
         { reteurnOriginal: false }
       );
+    }
+
+    // 이용권이 0개인 경우 해당 participant의complete를 true로 변경
+    if (voucher === 0) {
+      const userId = paymentInfo.userId;
+      const groupObjectId = paymentInfo.groupId;
+      const complete = true;
+      await groupService.setComplete({ groupObjectId, userId, complete });
     }
 
     const updatedPayment = await Payment.findByPaymentId({
