@@ -35,7 +35,7 @@ class oauthService {
     }
 
     // 임시주소: 서울특별시 강남구 테헤란로53길
-    const address = "서울 강남구 테헤란로5길 53 (역삼동)";
+    const address = "서울 강남구 선릉로 433 (역삼동, 세방빌딩) 16층 엘리스";
     const coordinates = await addressToXY(address);
 
     const newUser = {
