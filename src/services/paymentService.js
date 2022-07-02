@@ -52,7 +52,7 @@ export class paymentService {
       await PaymentModel.findOneAndUpdate(
         { paymentId },
         { $set: { voucher } },
-        { reteurnOriginal: false }
+        { returnOriginal: false }
       );
     }
 
