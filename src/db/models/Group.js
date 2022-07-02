@@ -147,6 +147,7 @@ class Group {
         path: "participants",
         populate: { path: "payment" },
       })
+      .sort({ createdAt: -1 })
       .lean();
     return listWhenOwner;
   }
