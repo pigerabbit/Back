@@ -347,9 +347,9 @@ export class groupService {
   }
 
   static async setGroup({ groupId, toUpdate }) {
-    let groupInfo = await Group.findByGroupId({ groupId });
+    let group = await Group.findByGroupId({ groupId });
 
-    if (!groupInfo) {
+    if (!group) {
       const errorMessage = "그룹 아이디를 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
@@ -383,14 +383,15 @@ export class groupService {
           content = "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.";
           break;
       }
-      groupInfo.participants.map(async (v) => {
+      group.participants.map(async (v) => {
+        console.log("여기기ㅣ기기");
         await User.updateAlert({
           userId: v.userId,
           from: "group",
-          productId: groupInfo.productId,
-          sendId: groupInfo.groupId,
-          image: groupInfo.productInfo.images,
-          type: groupInfo.groupType,
+          productId: group.productId,
+          sendId: group.groupId,
+          image: group.productInfo.images,
+          type: group.groupType,
           groupName: groupInfo.groupName,
           content: "공동구매 개최자의 중단으로 공동구매가 취소되었습니다.",
           seller: false,
@@ -560,6 +561,19 @@ export class groupService {
     let state;
     if (updatedRemainedPersonnel === 0) {
       state = 5;
+      participantsInfo.map(async (v) => {
+        await User.updateAlert({
+          userId: v.userId,
+          from: "group",
+          productId: groupInfo.productId,
+          sendId: groupInfo.groupId,
+          image: groupInfo.productInfo.images,
+          type: groupInfo.groupType,
+          groupName: groupInfo.groupName,
+          content: "배송이 완료되었습니다.",
+          seller: false,
+        });
+      });
     }
 
     newValue = participantsInfo;
