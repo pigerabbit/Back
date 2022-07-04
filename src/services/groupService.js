@@ -906,7 +906,7 @@ export class groupService {
           {
             $geoNear: {
               spherical: true,
-              maxDistance: parseInt(distanceOption), // 5km 이내의 공구
+              maxDistance: Number(distanceOption), // 5km 이내의 공구
               near: {
                 type: "Point",
                 coordinates: [
@@ -938,7 +938,7 @@ export class groupService {
           {
             $geoNear: {
               spherical: true,
-              maxDistance: parseInt(distanceOption), // 5km 이내의 공구
+              maxDistance: Number(distanceOption), // 5km 이내의 공구
               near: {
                 type: "Point",
                 coordinates: [
