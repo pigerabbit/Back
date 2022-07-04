@@ -828,152 +828,6 @@ export class groupService {
     let groupList;
 
     switch (distanceOption) {
-      case "1000":
-        list = await GroupModel.aggregate([
-          {
-            $geoNear: {
-              spherical: true,
-              maxDistance: 1000, // 1km 이내의 공구
-              near: {
-                type: "Point",
-                coordinates: [
-                  parseFloat(user.locationXY.coordinates[0]),
-                  parseFloat(user.locationXY.coordinates[1]),
-                ],
-              },
-              distanceField: "distance",
-              query: { state: 0, groupType: "local" },
-            },
-          },
-          {
-            $lookup: {
-              from: "products",
-              localField: "productInfo",
-              foreignField: "_id",
-              as: "productInfo",
-            },
-          },
-          { $sort: { createdAt: -1 } },
-        ]);
-
-        len = list.length;
-
-        // 랜덤 페이지 생성 (최댓값 포함 X)
-        page = Math.floor(Math.random() * (len / perPage)) + 1;
-
-        groupList = await GroupModel.aggregate([
-          {
-            $geoNear: {
-              spherical: true,
-              maxDistance: 1000, // 1km 이내의 공구
-              near: {
-                type: "Point",
-                coordinates: [
-                  parseFloat(user.locationXY.coordinates[0]),
-                  parseFloat(user.locationXY.coordinates[1]),
-                ],
-              },
-              distanceField: "distance",
-              query: {
-                state: 0,
-                $or: [{ groupType: "local" }, { groupType: "coupon" }],
-              },
-            },
-          },
-          {
-            $lookup: {
-              from: "products",
-              localField: "productInfo",
-              foreignField: "_id",
-              as: "productInfo",
-            },
-          },
-          {
-            $unwind: {
-              path: "$productInfo",
-            },
-          },
-          { $sort: { createdAt: -1 } },
-          {
-            $facet: {
-              data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
-            },
-          },
-        ]);
-        break;
-      case "3000":
-        list = await GroupModel.aggregate([
-          {
-            $geoNear: {
-              spherical: true,
-              maxDistance: 3000, // 3km 이내의 공구
-              near: {
-                type: "Point",
-                coordinates: [
-                  parseFloat(user.locationXY.coordinates[0]),
-                  parseFloat(user.locationXY.coordinates[1]),
-                ],
-              },
-              distanceField: "distance",
-              query: { state: 0, groupType: "local" },
-            },
-          },
-          {
-            $lookup: {
-              from: "products",
-              localField: "productInfo",
-              foreignField: "_id",
-              as: "productInfo",
-            },
-          },
-          { $sort: { createdAt: -1 } },
-        ]);
-
-        len = list.length;
-
-        // 랜덤 페이지 생성 (최댓값 포함 X)
-        page = Math.floor(Math.random() * (len / perPage)) + 1;
-
-        groupList = await GroupModel.aggregate([
-          {
-            $geoNear: {
-              spherical: true,
-              maxDistance: 3000, // 3km 이내의 공구
-              near: {
-                type: "Point",
-                coordinates: [
-                  parseFloat(user.locationXY.coordinates[0]),
-                  parseFloat(user.locationXY.coordinates[1]),
-                ],
-              },
-              distanceField: "distance",
-              query: {
-                state: 0,
-                $or: [{ groupType: "local" }, { groupType: "coupon" }],
-              },
-            },
-          },
-          {
-            $lookup: {
-              from: "products",
-              localField: "productInfo",
-              foreignField: "_id",
-              as: "productInfo",
-            },
-          },
-          {
-            $unwind: {
-              path: "$productInfo",
-            },
-          },
-          { $sort: { createdAt: -1 } },
-          {
-            $facet: {
-              data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
-            },
-          },
-        ]);
-        break;
       case "5000":
         list = await GroupModel.aggregate([
           {
@@ -1047,6 +901,79 @@ export class groupService {
           },
         ]);
         break;
+      default: 
+        list = await GroupModel.aggregate([
+          {
+            $geoNear: {
+              spherical: true,
+              maxDistance: parseInt(distanceOption), // 5km 이내의 공구
+              near: {
+                type: "Point",
+                coordinates: [
+                  parseFloat(user.locationXY.coordinates[0]),
+                  parseFloat(user.locationXY.coordinates[1]),
+                ],
+              },
+              distanceField: "distance",
+              query: { state: 0, groupType: "local" },
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productInfo",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          { $sort: { createdAt: -1 } },
+        ]);
+
+        len = list.length;
+
+        // 랜덤 페이지 생성 (최댓값 포함 X)
+        page = Math.floor(Math.random() * (len / perPage)) + 1;
+
+        groupList = await GroupModel.aggregate([
+          {
+            $geoNear: {
+              spherical: true,
+              maxDistance: parseInt(distanceOption), // 5km 이내의 공구
+              near: {
+                type: "Point",
+                coordinates: [
+                  parseFloat(user.locationXY.coordinates[0]),
+                  parseFloat(user.locationXY.coordinates[1]),
+                ],
+              },
+              distanceField: "distance",
+              query: {
+                state: 0,
+                $or: [{ groupType: "local" }, { groupType: "coupon" }],
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productInfo",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          {
+            $unwind: {
+              path: "$productInfo",
+            },
+          },
+          { $sort: { createdAt: -1 } },
+          {
+            $facet: {
+              data: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
+            },
+          },
+        ]
+      );
     }
 
     if (len === 0) {
