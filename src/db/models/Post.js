@@ -149,7 +149,6 @@ class Post {
     reviewList = reviewList.sort((a, b) => {
       return b.total_pop - a.total_pop;
     });
-    console.log("reviewList =========", reviewList);
     return reviewList;
   }
 }
