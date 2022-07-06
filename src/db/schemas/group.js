@@ -22,7 +22,7 @@ const ParticipantSchema = new Schema({
     type: Number,
     required: true,
   },
-  // 지불 여부. 현재에는 선불로 정책이 변경됨에 따라 true로 저장되야 함.
+  // payment에 대한 objectId를 저장.
   payment: {
     type: Schema.Types.ObjectId,
     ref: "Payment",
