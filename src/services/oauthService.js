@@ -52,7 +52,7 @@ class oauthService {
         coordinates: coordinates,
       },
     };
-    //소셜로그인시 회원가입이 자동으로될때 없는 성분이 있기때문에 없는 성분들을 삭제
+    //소셜로그인시 회원가입이 자동으로될때 없는 성분이 있기 때문에 없는 성분들을 삭제
     Object.keys(newUser).forEach((key) => {
       if (newUser[key] === undefined) {
         delete newUser[key];
