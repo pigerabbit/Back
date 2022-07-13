@@ -8,7 +8,7 @@
 
 아래 공식 문서 참조 \
 https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/ \
-`mongosh` 커맨드로 서버가 들어가지면 성공적으로 구축된 것입니다. \
+`mongosh` 커맨드로 서버가 들어가지면 성공적으로 구축된 것입니다.
 
 ### b. Atlas 서버
 
