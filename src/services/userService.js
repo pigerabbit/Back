@@ -342,6 +342,7 @@ class userService {
       },
     );
     
+    // 최근에 온 알림 순으로 정렬
     let alertList = await User.getAlertList({ userId });
     alertList[0]?.alertList.sort((a, b) => {
       return b.createdAt - a.createdAt;
@@ -364,7 +365,6 @@ class userService {
    * @returns alertList
    */
   static async deleteAlertList({ userId, alertId }) {
-    console.log("user service sendId ==>", alertId);
     const user = await User.findById({ userId });
     if (!user || user === null) {
       const errorMessage = "해당 유저가 존재하지 않습니다.";

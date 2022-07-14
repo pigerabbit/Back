@@ -1,6 +1,7 @@
 import { PostService } from "../services/postService";
 
 const postController = {
+  // 글 생성
   createPost: async (req, res, next) => {
     try {
       const writer = req.currentUserId;
@@ -42,6 +43,7 @@ const postController = {
     }
   },
 
+  // 글 쓸 때 사진 첨부
   createPostImg: async (req, res, next) => {
     try {
       const writer = req.currentUserId;
@@ -81,7 +83,10 @@ const postController = {
       next(err);
     }
   },
-
+  
+  // 어디에 글을 썼는지 전체 목록 받아오기
+  // receiver : 글 쓴 장소
+  // type : review, cs, comment
   getPostList: async (req, res, next) => {
     try {
       const { receiver, type } = req.query;
@@ -100,13 +105,14 @@ const postController = {
         success: true,
         payload: postList,
       };
-      ``
+      
       return res.status(200).json(body);
     } catch (err) {
       next(err);
     }
   },
 
+  // 글 한 개 읽는 함수
   getPost: async (req, res, next) => {
     try {
       const postId = req.params.postId;
@@ -134,6 +140,7 @@ const postController = {
     }
   },
 
+  // 글 수정 함수
   editPost: async (req, res, next) => {
     try {
       const writer = req.currentUserId;
@@ -170,6 +177,7 @@ const postController = {
     }
   },
 
+  // 글 삭제 함수
   deletePost: async (req, res, next) => {
     try {
       const writer = req.currentUserId;
@@ -197,6 +205,8 @@ const postController = {
     }
   },
 
+  // 내가 쓴 글 목록 찾는 함수
+  // option : review, cs
   getMyPosts: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
@@ -226,6 +236,7 @@ const postController = {
     }
   },
 
+  // 리뷰 많은 순 정렬 함수 테스트 -> 프론트에서 사용 X
   getReviewList: async (req, res, next) => {
     const reviewList = await PostService.getReviewList();
     return res.status(200).send(reviewList);

@@ -1,6 +1,7 @@
 import { userService } from "../services/userService";
 
 const alertController = {
+  // 알림 전체 보여주기 함수
   viewAlert: async (req, res, next) => {
     try {
       const currentUserId = req.currentUserId;
@@ -18,6 +19,7 @@ const alertController = {
     }
   },
 
+  // 알림 삭제 함수
   deleteAlert: async (req, res, next) => {
     try {
       const userId = req.currentUserId;
