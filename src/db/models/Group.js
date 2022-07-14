@@ -67,6 +67,7 @@ class Group {
   }
 
   static async findSortedGroupsByRemainedTimeInfo() {
+    console.log("nextOneDay ===>", nextOneDay());
     const groups = await GroupModel.find({
       $and: [
         { state: 0 },

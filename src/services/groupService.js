@@ -384,7 +384,6 @@ export class groupService {
           break;
       }
       group.participants.map(async (v) => {
-        console.log("여기기ㅣ기기");
         await User.updateAlert({
           userId: v.userId,
           from: "group",
