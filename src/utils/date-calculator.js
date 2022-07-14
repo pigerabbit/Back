@@ -1,4 +1,6 @@
 import moment from "moment";
+import "moment-timezone";
+moment.tz.setDefault("Asia/Seoul");
 
 export function nextOneDay() {
   return moment().add(1, "days").format("YYYY-MM-DD HH:mm:ss");
