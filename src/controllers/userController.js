@@ -40,14 +40,6 @@ const userController = {
       const toUpdate = {};
       toUpdate.imageLink = process.env.initial_image;
 
-      // } else if (user.type === "naver") {
-      //   toUpdate.imageLink = process.env.initial_naver;
-      // } else if (user.type === "kakao") {
-      //   toUpdate.imageLink = process.env.initial_kakao;
-      // } else {
-      //   toUpdate.imageLink = process.env.initial_google;
-      // }
-
       const updatedUser = await userService.setUser({
         userId,
         toUpdate,
