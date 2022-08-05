@@ -34,7 +34,8 @@ const groupController = {
         success: true,
         payload: newGroup,
       };
-      res.status(200).json(body);
+
+      return res.status(201).json(body);
     } catch (error) {
       next(error);
     }
