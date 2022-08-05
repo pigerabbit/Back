@@ -5,7 +5,11 @@ import { groupController } from "../controllers/groupController";
 const groupRouter = Router();
 
 // 공구 생성
-groupRouter.post("/groups", login_required, groupController.createGroup);
+groupRouter.post(
+  "/groups", 
+  login_required, 
+  groupController.createGroup
+);
 
 // 공구 수량 값 변경
 groupRouter.put(
@@ -57,9 +61,8 @@ groupRouter.get(
   groupController.getGroupsByNumberInfo
 );
 
-/* 내가 공구장인 공동구매 반환
- * 내가 참여한(공구장이 아닌) 공동구매 반환
- */
+// true : 내가 공구장인 공동구매 반환
+// false : 참여한(공구장이 아닌) 공동구매 반환
 groupRouter.get(
   "/groups/manager/:boolean",
   login_required,
